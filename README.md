@@ -10,8 +10,8 @@ Una home con il cartellino e i tre settori, e una pagina-curriculum per ciascun 
 | `…/luce/` · `…/en/luce/` | **In luce / In focus** · foto, video, comunicazione | aziende, agenzie, eventi |
 | `…/cura/` · `…/en/cura/` | **In cura / In care** · OSS e soccorritore | cooperative, RSA, famiglie |
 
-Ogni pagina ha **Scarica CV**: apre la stampa del browser con una versione bianca e pulita, da salvare in PDF.
-Il CV si aggiorna da solo quando aggiorni la pagina.
+Ogni pagina ha **Scarica CV**, che scarica il PDF del curriculum di quel settore (in `assets/cv/`, italiano e inglese).
+Anche la chat lo offre a chi chiede il CV. I PDF si rigenerano dalle pagine a ogni aggiornamento dei contenuti.
 
 ## Struttura
 ```

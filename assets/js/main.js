@@ -38,8 +38,11 @@
     opened: 'I’ve opened WhatsApp with your message ready: just hit send there and it reaches me. 🚀',
     fallback: 'Didn’t open? Tap here',
     prefix: label => `Hi Mattia! I’m writing from your website (${label}).`,
+    cvChip: 'Download my CV', cvAsk: 'Can you send me your full CV?', cvBtn: 'Download CV',
+    cvReply: 'Sure! Here it is, download the PDF right away 👇', cvAll: 'Sure! Here are my three CVs, pick the one you need 👇',
+    cvAfter: 'If you want to add anything, write below: I’ll reply on WhatsApp.', sendAnyway: 'Send the message on WhatsApp anyway',
     topics: {
-      quota: { label: 'Rope access', emoji: '🧗', reply: 'Great! Tell me about the job: where, when and what kind of work.', sugg: ['I’m looking for an IRATA technician', 'We need a standby rescue operator', 'Can you send me your full CV?'] },
+      quota: { label: 'Rope access', emoji: '🧗', reply: 'Great! Tell me about the job: where, when and what kind of work.', sugg: ['I’m looking for an IRATA technician', 'We need a standby rescue operator'] },
       luce: { label: 'Photo & video', emoji: '📸', reply: 'Nice! What do you have in mind? An event, a video, photos for your brand… tell me everything.', sugg: ['I’d like a quote for an event', 'I need a video for social media', 'I need photos for my company'] },
       cura: { label: 'Care work (OSS)', emoji: '🤝', reply: 'Sure. Who needs care, where, and at what times?', sugg: ['I’m looking for home care', 'We are a care home looking for an OSS', 'We need urgent cover'] },
       altro: { label: 'Other', emoji: '💬', reply: 'Go ahead, I’m listening.', sugg: ['I’d like to get to know you for a collaboration'] }
@@ -55,8 +58,11 @@
     opened: 'Ti ho aperto WhatsApp con il messaggio già pronto: premi invio lì e mi arriva subito. 🚀',
     fallback: 'Non si è aperto? Tocca qui',
     prefix: label => `Ciao Mattia! Ti scrivo dal tuo sito (${label}).`,
+    cvChip: 'Scarica il mio CV', cvAsk: 'Mi mandi il tuo CV completo?', cvBtn: 'Scarica CV',
+    cvReply: 'Certo! Eccolo, puoi scaricarlo subito in PDF 👇', cvAll: 'Certo! Ecco i miei tre curriculum, scegli quello che ti serve 👇',
+    cvAfter: 'Se vuoi aggiungere qualcosa, scrivimi qui sotto: ti rispondo su WhatsApp.', sendAnyway: 'Invia comunque il messaggio su WhatsApp',
     topics: {
-      quota: { label: 'Lavori in quota', emoji: '🧗', reply: 'Perfetto! Raccontami il lavoro: dove, quando e che tipo di intervento.', sugg: ['Cerco un tecnico IRATA per un cantiere', 'Ci serve un soccorritore su fune (standby rescue)', 'Mi mandi il tuo CV completo?'] },
+      quota: { label: 'Lavori in quota', emoji: '🧗', reply: 'Perfetto! Raccontami il lavoro: dove, quando e che tipo di intervento.', sugg: ['Cerco un tecnico IRATA per un cantiere', 'Ci serve un soccorritore su fune (standby rescue)'] },
       luce: { label: 'Foto & video', emoji: '📸', reply: 'Bello! Che progetto hai in mente? Evento, video, foto per il tuo brand… dimmi tutto.', sugg: ['Vorrei un preventivo per un evento', 'Mi serve un video per i social', 'Cerco foto per la mia azienda'] },
       cura: { label: 'Assistenza OSS', emoji: '🤝', reply: 'Certo. Per chi serve l’assistenza, in che zona e con quali orari?', sugg: ['Cerco assistenza a domicilio', 'Siamo una struttura e cerchiamo un OSS', 'Ci serve una copertura urgente'] },
       altro: { label: 'Altro', emoji: '💬', reply: 'Dimmi pure, ti leggo volentieri.', sugg: ['Vorrei conoscerti per una collaborazione'] }
@@ -564,6 +570,10 @@
      ============================================================= */
   const TOPICS = T.topics;
   const TOPIC_C = { quota: '#ff5b1f', luce: '#c45cff', cura: '#2fe3c0', altro: '#ece8e1' };
+  const CV = EN
+    ? { quota: ['Mattia-Crapanzano-CV-Rope-access-EN.pdf', 'Rope access'], luce: ['Mattia-Crapanzano-CV-Photo-video-EN.pdf', 'Photo & video'], cura: ['Mattia-Crapanzano-CV-Care-worker-EN.pdf', 'Care worker'] }
+    : { quota: ['Mattia-Crapanzano-CV-Lavori-in-quota.pdf', 'Lavori in quota'], luce: ['Mattia-Crapanzano-CV-Foto-e-video.pdf', 'Foto e video'], cura: ['Mattia-Crapanzano-CV-OSS.pdf', 'OSS'] };
+  const CV_WORDS = /(^|[^a-zà-ú])(cv|c\.v\.|curricul\w*|resume|résumé)([^a-zà-ú]|$)/i;
 
   const chatWrap = d.createElement('div');
   chatWrap.innerHTML = `
@@ -614,12 +624,39 @@
     });
     return add(box);
   };
+  /* chi chiede il CV lo scarica subito */
+  const cvLinks = k => busy.then(() => {
+    const box = d.createElement('div');
+    box.className = 'cv-list';
+    (CV[k] ? [k] : Object.keys(CV)).forEach(key => {
+      const a = d.createElement('a');
+      a.className = 'cv-dl';
+      a.href = BASE + 'assets/cv/' + CV[key][0];
+      a.setAttribute('download', '');
+      a.innerHTML = icon('i-down');
+      a.append(T.cvBtn + ' · ' + CV[key][1]);
+      box.append(a);
+    });
+    add(box);
+  });
+  const giveCV = question => {
+    $$('.qr', cBody).forEach(q => q.remove());
+    if (question) bubble(question, 'out');
+    say(CV[topic] ? T.cvReply : T.cvAll);
+    cvLinks(topic);
+    say(T.cvAfter);
+  };
   const askTopic = () => busy.then(() => chips(
-    Object.entries(TOPICS).map(([k, t]) => ({ k, text: t.emoji + ' ' + t.label, c: TOPIC_C[k] })), '',
-    (it, box) => { box.remove(); bubble(it.text, 'out'); topic = it.k; say(TOPICS[topic].reply); suggest(); }
+    Object.entries(TOPICS).map(([k, t]) => ({ k, text: t.emoji + ' ' + t.label, c: TOPIC_C[k] })).concat({ k: 'cv', text: '📄 ' + T.cvChip, c: '#ece8e1' }), '',
+    (it, box) => {
+      box.remove();
+      if (it.k === 'cv') { giveCV(it.text); return; }
+      bubble(it.text, 'out'); topic = it.k; say(TOPICS[topic].reply); suggest();
+    }
   ));
   const suggest = () => busy.then(() => {
-    const box = chips(TOPICS[topic].sugg.map(s => ({ text: s })), 'qr--sugg', it => {
+    const box = chips(TOPICS[topic].sugg.map(s => ({ text: s })).concat({ text: T.cvAsk, cv: true }), 'qr--sugg', it => {
+      if (it.cv) { giveCV(it.text); return; }
       ta.value = it.text + (it.text.endsWith('?') ? '' : ': ');
       grow();
       ta.focus();
@@ -648,6 +685,14 @@
     if (!text) return;
     const label = topic ? TOPICS[topic].label : (EN ? 'contact' : 'contatto');
     const url = `https://wa.me/${CONTACT.wa}?text=${encodeURIComponent(T.prefix(label) + '\n\n' + text)}`;
+    if (CV_WORDS.test(text)) {
+      bubble(text, 'out');
+      ta.value = '';
+      grow();
+      giveCV(null);
+      busy.then(() => add(Object.assign(d.createElement('a'), { className: 'qr__more', href: url, target: '_blank', rel: 'noopener', textContent: T.sendAnyway })));
+      return;
+    }
     window.open(url, '_blank', 'noopener');
     $$('.qr', cBody).forEach(q => q.remove());
     bubble(text, 'out');
