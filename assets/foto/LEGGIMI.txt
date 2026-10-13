@@ -9,7 +9,8 @@ Gli originali ad alta risoluzione sono in _privato/foto/originali (non pubblicat
 
 home/
   cartellino.jpg     la foto nel cartellino in home (verticale, viso in alto)
-  avatar.jpg         la foto tonda della chat e della card LinkedIn (quadrata, solo viso)
+  avatar.jpg         la foto tonda della chat (quadrata, solo viso)
+  linkedin.jpg       la foto tonda della card LinkedIn (quadrata, viso e spalle su sfondo nero)
 
 quota/
   sfondo.jpg         dietro allo schema della doppia fune, in alto (verticale)

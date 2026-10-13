@@ -97,7 +97,7 @@
     el.append(em, rest.length ? ' ' + rest.join(' ') : '');
   };
   if (wipe) {
-    wipe.innerHTML = `<div class="wipe__in"><svg class="wipe__mark" viewBox="240 270 1450 1390" aria-hidden="true"><use href="${ICONS}#i-m"/></svg><span class="wipe__label"></span><span class="wipe__bar"><i></i></span><span class="wipe__meta mono"></span></div>`;
+    wipe.innerHTML = `<div class="wipe__in"><svg class="wipe__mark" aria-hidden="true"><use href="${ICONS}#i-m"/></svg><span class="wipe__label"></span><span class="wipe__bar"><i></i></span><span class="wipe__meta mono"></span></div>`;
   }
   const fillWipe = k => {
     const home = !COLORS[k];

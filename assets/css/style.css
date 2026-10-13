@@ -475,11 +475,13 @@ kbd { display: inline-grid; place-items: center; min-width: 24px; height: 24px; 
 
 /* card LinkedIn */
 .li-card { position: relative; display: block; border-radius: 22px; overflow: hidden; isolation: isolate; background: linear-gradient(170deg, #17181c, #0d0e11); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 0 0 1px rgba(255, 255, 255, .06), 0 30px 60px -28px rgba(0, 0, 0, .9), 0 0 80px -40px rgba(196, 92, 255, .6); transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .6s var(--ease-out), box-shadow .5s; will-change: transform; }
-.li-card__banner { display: block; height: 104px; background: repeating-linear-gradient(118deg, transparent 0 26px, rgba(255, 255, 255, .09) 26px 27px), radial-gradient(80% 140% at 85% 0%, rgba(255, 79, 216, .75), transparent 60%), linear-gradient(115deg, #0c0612 0%, #2a0f46 38%, #6a22a8 70%, #b13fd6 100%); }
+.li-card__banner { display: block; height: 104px; background: url(../img/logo/m-linee.svg) 78% 42% / 185% auto no-repeat, radial-gradient(58% 130% at 14% 115%, rgba(176, 72, 255, .8), transparent 62%), radial-gradient(42% 120% at 100% 0%, rgba(205, 95, 255, .7), transparent 60%), #060507; }
 .li-card__logo { position: absolute; top: 14px; right: 14px; width: 30px; height: 30px; border-radius: 7px; background: #0a66c2; color: #fff; display: grid; place-items: center; }
 .li-card__logo svg { width: 16px; height: 16px; }
-.li-card__avatar { position: absolute; top: 54px; left: 20px; width: 92px; height: 92px; border-radius: 50%; border: 3px solid #121317; box-shadow: 0 0 0 2px #b14cff, 0 10px 30px -8px rgba(177, 76, 255, .8); object-fit: cover; background: #000; }
-.li-card__body { display: block; padding: 52px 20px 20px; }
+.li-card__avatar { position: absolute; top: 46px; left: 18px; width: 106px; height: 106px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, #8f5bff, #c45cff 50%, #ff4fd8); box-shadow: 0 0 0 3px #121317, 0 12px 30px -8px rgba(177, 76, 255, .8); }
+.li-card__avatar > span { display: block; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #000 url(../img/logo/m-linee.svg) 30% 40% / 300% auto no-repeat; }
+.li-card__avatar img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: lighten; }
+.li-card__body { display: block; padding: 60px 20px 20px; }
 .li-card__name { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 1.2rem; letter-spacing: -.01em; }
 .li-card__name svg { width: 18px; height: 18px; color: #a7a9af; }
 .li-card__head { display: block; margin-top: .3rem; font-size: .86rem; line-height: 1.45; color: var(--ink-2); }
