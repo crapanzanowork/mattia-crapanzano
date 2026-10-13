@@ -1,0 +1,27 @@
+COME CAMBIARE LE FOTO DEL SITO
+==============================
+Sostituisci il file con una tua foto che abbia ESATTAMENTE lo stesso nome
+(stesso nome, tutto minuscolo, estensione .jpg). Il sito la usa subito,
+sia nella versione italiana sia in quella inglese.
+
+Consigli: JPG, peso sotto i 400 KB, lato lungo circa 1600 px.
+Gli originali ad alta risoluzione sono in _privato/foto/originali (non pubblicati).
+
+home/
+  cartellino.jpg     la foto nel cartellino in home (verticale, viso in alto)
+  avatar.jpg         la foto tonda della chat e della card LinkedIn (quadrata, solo viso)
+
+quota/
+  sfondo.jpg         dietro allo schema della doppia fune, in alto (verticale)
+  allenamento.jpg    sezione "Il mio obiettivo" (orizzontale)
+  imbrago.jpg        sezione "Esperienza" (verticale, 4:5)
+
+luce/
+  mirino/01.jpg ... 06.jpg       le foto che scorrono nel mirino (verticali)
+  galleria/01.jpg ... 14.jpg     la galleria "Scatti" (verticali, circa 4:5)
+  sul-set.jpg                    sezione "Metodo"
+  Le didascalie (es. "Live", "Wedding") si cambiano in luce/index.html e en/luce/index.html.
+
+cura/
+  ritratto.jpg       il ritratto grande in alto nella pagina "In cura" (verticale)
+  soccorritore.jpg   sezione "Soccorso" (verticale, 4:5)

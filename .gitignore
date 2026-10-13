@@ -1,0 +1,12 @@
+# file di sistema del Mac
+.DS_Store
+
+# documenti personali (codice fiscale, contratti, fatture, attestati, foto originali):
+# restano SOLO sul computer, non vengono MAI pubblicati
+/_privato/
+
+# sorgenti del logo (le versioni usate dal sito sono in assets/img/logo)
+/Logo/
+
+# impostazioni locali dell'anteprima
+/.claude/
