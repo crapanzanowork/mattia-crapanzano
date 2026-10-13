@@ -418,7 +418,7 @@ kbd { display: inline-grid; place-items: center; min-width: 24px; height: 24px; 
   .world__top { flex-direction: column; gap: .5rem; }
   .world__big, .world__role, .world__meta { display: none; }
   .world__bottom { gap: .7rem; }
-  .world__title { writing-mode: vertical-rl; rotate: 180deg; font-size: clamp(1.8rem, 26cqw, 2.8rem); line-height: 1; padding: 0; }
+  .world__title { writing-mode: vertical-rl; rotate: 180deg; font-size: clamp(1.6rem, min(26cqw, 4.4vh), 2.8rem); line-height: 1; padding: 0; }
   .world__go { margin-top: 0; width: 100%; justify-content: center; padding: 0 .5rem; height: 40px; }
   .world__go .long { display: none; }
   .world__go .short { display: inline; }
