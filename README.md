@@ -3,9 +3,9 @@
 Sito statico (HTML, CSS, JavaScript, nessuna libreria) pubblicato con GitHub Pages, in italiano e in inglese.
 Una home con il cartellino e i tre settori, e una pagina-curriculum per ciascun mestiere.
 
-| Indirizzo (dopo la pubblicazione) | Pagina | Da mandare a… |
+| Indirizzo | Pagina | Da mandare a… |
 |---|---|---|
-| `crapanzanowork.github.io/mattia-crapanzano/` | Home: cartellino, tre settori, chi sono, LinkedIn | chiunque |
+| `crapanzano.work` | Home: cartellino, tre settori, chi sono, LinkedIn | chiunque |
 | `…/quota/` · `…/en/quota/` | **In quota / At height** · IRATA L1, Modulo A, ITRA, soccorso, scheda candidato | aziende rope access e cantieri |
 | `…/luce/` · `…/en/luce/` | **In luce / In focus** · foto, video, comunicazione | aziende, agenzie, eventi |
 | `…/cura/` · `…/en/cura/` | **In cura / In care** · OSS e soccorritore | cooperative, RSA, famiglie |
@@ -44,10 +44,17 @@ poi apri http://localhost:5520
 3. In basso a sinistra scrivi "Prima versione" → **Commit to main**.
 4. In alto **Publish repository** → togli la spunta *Keep this code private* → **Publish**.
 5. Su github.com apri il repository → **Settings → Pages** → Source: *Deploy from a branch*, Branch: **main** / **(root)** → **Save**.
-6. Dopo 1-2 minuti il sito è online su **https://crapanzanowork.github.io/mattia-crapanzano/**
+6. Dopo 1-2 minuti il sito è online su **https://crapanzano.work** (dominio collegato con il file `CNAME`).
 
 Per gli aggiornamenti: GitHub Desktop → messaggio → **Commit to main** → **Push origin**.
 
 ## Chat
 Il numero è in `assets/js/main.js` (`CONTACT`). La chat non salva nulla: quando il visitatore preme Invia
 si apre WhatsApp con il messaggio già scritto e l'indicazione della pagina da cui arriva.
+
+## Dominio crapanzano.work (GoDaddy)
+- Il file `CNAME` nel progetto contiene `crapanzano.work`: dice a GitHub su quale dominio servire il sito. Non cancellarlo.
+- DNS su GoDaddy: quattro record **A** `@` → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+  e un record **CNAME** `www` → `crapanzanowork.github.io`.
+- Su GitHub: **Settings → Pages → Enforce HTTPS** attivo.
+- Rinnovo del dominio: ottobre di ogni anno (vedi GoDaddy).

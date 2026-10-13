@@ -24,7 +24,7 @@
     tel: '+393514658810',
     telLabel: '+39 351 465 8810',
     mail: 'crapanzano.work@gmail.com',
-    site: 'https://crapanzanowork.github.io/mattia-crapanzano/'
+    site: 'https://crapanzano.work/'
   };
 
   const T = EN ? {
