@@ -11,7 +11,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { ombreContatto, aggiungiGrana, PellicolaShader } from './realismo.js';
 import { costruisci } from './costruisci.js';
-import { VISTE, PUNTI, ZONA_DI, PANNELLI, T, COLORI, VIDEO_YT, VIDEO_QUOTA, VIDEO_QUOTA_NOMI, SITI, ATTESTATI, CV, K, PERCORSO } from './dati.js';
+import { VISTE, PUNTI, ZONA_DI, PANNELLI, T, COLORI, VIDEO_YT, VIDEO_QUOTA, VIDEO_QUOTA_NOMI, SITI, ATTESTATI, CV, K, PERCORSO, CHIAVI } from './dati.js';
 
 const $ = s => document.querySelector(s);
 const Q = new URLSearchParams(location.search);
@@ -32,7 +32,7 @@ function applyLang() {
   if ($('#q').value) cerca();
   $('#hint').textContent = tr(TOUCH ? T.suggerimentoTouch : T.suggerimento);
   $('#luce').title = tr(T.comandi.giorno) + ' / ' + tr(T.comandi.notte); $('#audio').title = tr(T.comandi.audio); $('#audio').setAttribute('aria-label', tr(T.comandi.audio));
-  hots.forEach(h => h.el.querySelector('.lbl').textContent = labelOf(h.p.id));
+  hots.forEach(h => { h.el.querySelector('.lbl').textContent = labelOf(h.p.id); h.lw = 0; });
   if (panel.classList.contains('open') && current) openPanel(current);
   orologio();
   if (W) { W.lingua(L); disegnaStampante(); telStato = ''; }
@@ -173,7 +173,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 function openPanel(k) {
   const d = PANNELLI[k]; if (!d) return closePanel();
   panel.style.setProperty('--c', COLORI[d.c] || COLORI.base);
-  let h = `<button class="x" aria-label="${tr(T.chiudi)}">×</button><div class="lab mono">${tr(d.lab)}</div><h2>${tr(d.h)}</h2>`;
+  let h = `<div class="lab mono">${tr(d.lab)}</div><h2>${tr(d.h)}</h2>`, passi = '';
   if (d.p) h += `<p>${tr(d.p)}</p>`;
   if (d.li) h += `<ul>${tr(d.li).map(([a, b]) => `<li><b>${esc(a)}</b><span class="mono">${esc(b)}</span></li>`).join('')}</ul>`;
   if (d.tappe) h += `<div class="tappe">${d.tappe.map(t => `<div><b>${esc(L ? t[2] : t[0])}</b><span>${esc(L ? t[3] : t[1])}</span></div>`).join('')}</div>`;
@@ -187,8 +187,10 @@ function openPanel(k) {
   // avanti e indietro nel giro guidato
   const i = PERCORSO.indexOf(k);
   if (i >= 0) { const n = PERCORSO.length, pv = PERCORSO[(i + n - 1) % n], nx = PERCORSO[(i + 1) % n];
-    h += `<nav class="passi"><button class="pv" data-goto="${pv}" aria-label="${tr(T.prima)}: ${esc(labelOf(pv))}">←</button><span class="mono">${i + 1} / ${n}</span><button class="nx" data-goto="${nx}"><small class="mono">${tr(T.poi)}</small><b>${esc(labelOf(nx))}</b><i>→</i></button></nav>`; }
-  panel.innerHTML = h;
+    passi = `<nav class="passi"><button class="pv" data-goto="${pv}" aria-label="${tr(T.prima)}: ${esc(labelOf(pv))}">←</button><span class="mono">${i + 1} / ${n}</span><button class="nx" data-goto="${nx}"><small class="mono">${tr(T.poi)}</small><b>${esc(labelOf(nx))}</b><i>→</i></button></nav>`; }
+  panel.innerHTML = `<button class="maniglia" aria-label="${tr(T.espandi)}"><i></i></button><button class="x" aria-label="${tr(T.chiudi)}">×</button><div class="corpo">${h}</div>${passi}`;
+  panel.classList.remove('esteso');
+  panel.querySelector('.maniglia').onclick = () => panel.classList.toggle('esteso');
   panel.querySelector('.x').onclick = () => go('casa');
   panel.querySelectorAll('[data-goto]').forEach(b => b.onclick = () => go(b.dataset.goto));
   panel.querySelectorAll('[data-yt]').forEach(b => b.onclick = () => { const [id, n] = VIDEO_YT[+b.dataset.yt]; video(`<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`, n); });
@@ -197,7 +199,7 @@ function openPanel(k) {
   panel.querySelectorAll('a,button').forEach(b => b.addEventListener('click', () => sfx.click()));
   // i link verso altri siti si aprono sempre in una scheda nuova, il laboratorio resta aperto
   panel.querySelectorAll('a[href^="http"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); window.open(a.href, '_blank', 'noopener'); }));
-  panel.classList.add('open'); panel.scrollTop = 0;
+  panel.classList.add('open'); panel.querySelector('.corpo').scrollTop = 0;
 }
 function closePanel() { panel.classList.remove('open'); }
 
@@ -261,26 +263,49 @@ function indice() {   // testo cercabile di ogni punto, nella lingua scelta
   });
 }
 const qIn = $('#q'), ris = $('#risultati'); let selez = 0, trovati = [];
+// parole da ignorare nelle frasi ("vorrei scaricare il tuo cv" → "scaricare", "cv")
+const VUOTE = new Set('il lo la i gli le un uno una di a da in con su per tra fra e o ed che chi cosa come dove quando mi ti si ci vi me te tu io lui lei noi voi loro mio tuo suo tua mia sua del della dei delle al alla ai alle dal dalla nel nella sul sulla vorrei voglio posso puoi hai ho sei sono e è cerco cercando trovare vedere avere fare serve servirebbe bisogno need want can you your my the a an of to for in on with and or i is are me show find please'.split(' '));
+const radice = w => w.length > 5 ? w.slice(0, w.length - 2) : w;   // "scaricare" e "scarica" condividono "scaric"
+function vicine(a, b) {   // stessa radice, oppure al massimo una lettera sbagliata (errori di battitura)
+  if (a === b) return true;
+  if (a.length > 3 && b.length > 3 && (b.startsWith(radice(a)) || a.startsWith(radice(b)))) return true;   // parole troppo corte non contano
+  if (Math.abs(a.length - b.length) > 1 || a.length < 5) return false;
+  let i = 0, j = 0, d = 0; while (i < a.length && j < b.length) { if (a[i] === b[j]) { i++; j++; continue; } if (++d > 1) return false; if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; } }
+  return d + (a.length - i) + (b.length - j) <= 1;
+}
 function cerca() {
   const q = senzaAccenti(qIn.value.trim()); selez = 0;
-  if (q.length < 2) { ris.classList.remove('aperto'); ris.innerHTML = ''; return; }
-  const parole = q.split(/\s+/);
-  trovati = indice().map(r => { const t = senzaAccenti(r.titolo), b = senzaAccenti(r.testo);
-    let punti = 0; for (const p of parole) { if (t.includes(p)) punti += 3; else if (b.includes(p)) punti += 1; else return null; } return { ...r, punti }; })
-    .filter(Boolean).sort((a, b) => b.punti - a.punti).slice(0, 6);
-  ris.innerHTML = trovati.length ? trovati.map((r, i) => {
-    const b = senzaAccenti(r.testo), j = b.indexOf(parole[0]), da = Math.max(0, j - 30);
+  if (q.length < 2) { suggerisci(); return; }
+  const parole = q.split(/[^a-z0-9]+/).filter(w => w && !VUOTE.has(w));
+  if (!parole.length) { suggerisci(); return; }
+  trovati = indice().map(r => {
+    const t = senzaAccenti(r.titolo).split(/[^a-z0-9]+/), c = senzaAccenti(CHIAVI[r.k] || '').split(/[^a-z0-9]+/), b = senzaAccenti(r.testo).split(/[^a-z0-9]+/);
+    let punti = 0;
+    for (const p of parole) { if (t.some(w => vicine(p, w))) punti += 4; else if (c.some(w => vicine(p, w))) punti += 3; else if (b.some(w => vicine(p, w))) punti += 1; }
+    return punti ? { ...r, punti } : null; })
+    .filter(Boolean).sort((a, b) => b.punti - a.punti);
+  const top = trovati[0]?.punti || 0; trovati = trovati.filter(r => r.punti >= Math.max(2, top * .5)).slice(0, 5);   // solo i risultati vicini al migliore
+  if (!trovati.length) { suggerisci(true); return; }
+  ris.innerHTML = trovati.map((r, i) => {
+    const b = senzaAccenti(r.testo), j = Math.max(0, ...parole.map(p => b.indexOf(radice(p)))), da = Math.max(0, j - 30);
     const pezzo = (da ? '…' : '') + r.testo.slice(da, da + 90) + '…';
-    return `<button data-i="${i}" class="${i === selez ? 'sel' : ''}"><b>${esc(r.titolo)}</b><small>${esc(pezzo)}</small></button>`; }).join('')
-    : `<p class="mono">${tr(T.nessuno)}</p>`;
+    return `<button data-i="${i}" class="${i === selez ? 'sel' : ''}"><b>${esc(r.titolo)}</b><small>${esc(pezzo)}</small></button>`; }).join('');
   ris.classList.add('aperto');
   ris.querySelectorAll('[data-i]').forEach(b => b.onclick = () => scegli(+b.dataset.i));
 }
+function suggerisci(nulla = false) {   // senza testo (o senza risultati): scorciatoie alle cose più richieste
+  const ids = ['stampante', 'telefono', 'quota', 'luce', 'cura', 'tv'];
+  trovati = ids.map(k => ({ k, titolo: k === 'stampante' ? tr(T.barra.stampante) : k === 'telefono' ? tr(T.barra.telefono) : labelOf(k).replace(/^0\d · /, '') }));
+  ris.innerHTML = `<p class="mono">${tr(nulla ? T.nessuno : T.suggeriti)}</p><div class="chips">${trovati.map((r, i) => `<button data-i="${i}" class="chip">${esc(r.titolo)}</button>`).join('')}</div>`;
+  ris.classList.add('aperto'); selez = -1;
+  ris.querySelectorAll('[data-i]').forEach(b => b.onclick = () => scegli(+b.dataset.i));
+}
+qIn.addEventListener('focus', () => { if (!qIn.value.trim()) suggerisci(); });
 function scegli(i) { const r = trovati[i]; if (!r) return; qIn.value = ''; qIn.blur(); ris.classList.remove('aperto'); $('#cerca').classList.remove('aperta'); go(r.k); }
 qIn.addEventListener('input', cerca);
 qIn.addEventListener('keydown', e => {
   if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); selez = (selez + (e.key === 'ArrowDown' ? 1 : trovati.length - 1)) % Math.max(1, trovati.length); ris.querySelectorAll('[data-i]').forEach((b, i) => b.classList.toggle('sel', i === selez)); }
-  if (e.key === 'Enter') scegli(selez);
+  if (e.key === 'Enter') scegli(Math.max(0, selez));
   if (e.key === 'Escape') { qIn.value = ''; cerca(); qIn.blur(); $('#cerca').classList.remove('aperta'); }
   e.stopPropagation();
 });
@@ -603,6 +628,16 @@ function frame() {
   for (const riga of [ai.filter(h => oriz(h) && h.sy >= by1 - 1), ai.filter(h => oriz(h) && h.sy <= by0 + 1)]) {   // in basso e in alto si distanziano in orizzontale (etichette larghe)
     riga.sort((a, b) => a.sx - b.sx);
     for (let i = 1; i < riga.length; i++) if (riga[i].sx - riga[i - 1].sx < 190) riga[i].sx = riga[i - 1].sx + 190;
+  }
+  // etichette che si toccherebbero: la seconda sale o scende di una riga; se non c'è posto resta solo il pallino
+  const posti = [];
+  for (const h of hots.filter(h => !h.el.classList.contains('hide')).sort((a, b) => a.sy - b.sy)) {
+    const flip = h.sx > bx1 - 200, lbl = h.el.querySelector('.lbl'); h.lw ||= lbl.offsetWidth || 120;
+    const x0 = flip ? h.sx - 16 - h.lw : h.sx + 16, x1 = flip ? h.sx - 16 : h.sx + 16 + h.lw;
+    let dy = null;
+    for (const d of [0, -30, 30, -60, 60]) { const y0 = h.sy + d - 15, y1 = y0 + 30;
+      if (!posti.some(r => x0 < r[2] && x1 > r[0] && y0 < r[3] && y1 > r[1])) { dy = d; posti.push([x0, y0, x1, y1]); break; } }
+    h.el.style.setProperty('--ly', (dy ?? 0) + 'px'); h.el.classList.toggle('nolbl', dy === null);
   }
   for (const h of hots) { h.el.classList.toggle('flip', h.sx > bx1 - 200); h.el.style.transform = `translate(${h.sx}px,${h.sy}px)`; }
   pellicola.uniforms.tempo.value = t % 10;

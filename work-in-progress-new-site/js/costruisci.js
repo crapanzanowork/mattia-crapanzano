@@ -480,13 +480,13 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
       if (m.name.includes('teca_cartello')) { uvPiano(m); m.material = new THREE.MeshStandardMaterial({ roughness: .45, map: daeTex() }); } });
   });
   parete('caricatore-radio.glb', 7.8, 1.25, 'radio');
-  add(SM + 'armadietti.glb', [10.2, 0, Z1 - .4], 180, { punto: 'vvf' }).then(o => { o.traverse(m => {   // armadietti in lamiera grigia: il ruolo lo dice la targhetta colorata
+  add(SM + 'armadietti.glb', [11.0, 0, Z1 - .4], 180, { punto: 'vvf' }).then(o => { o.traverse(m => {   // armadietti in lamiera grigia: il ruolo lo dice la targhetta colorata
     if (!m.isMesh) return; const k = m.name.match(/targa_(\d)/);
     if (k) { uvPiano(m); m.material = new THREE.MeshStandardMaterial({ map: targaTex(...[['OSS', '#2fe3c0'], ['SOCCORSO 118', '#ff6a13'], ['VIGILI DEL FUOCO', '#d2322b']][+k[1]]), roughness: .6 }); return; }
     (Array.isArray(m.material) ? m.material : [m.material]).forEach(x => { if (['oss_blu', 'rosso', 'vvf'].includes(x.name)) { x.color.set(0x5d6266); x.metalness = .55; x.roughness = .48; } });
   }); });
-  add(SM + 'casco-vvf.glb', [10.8, 1.95, Z1 - .4], 180, { punto: 'vvf' });
-  add(DL + 'faro.glb', [9.6, 1.95, Z1 - .4], 160);
+  add(SM + 'casco-vvf.glb', [10.38, 1.95, Z1 - .4], 180, { punto: 'vvf' });   // sopra l'armadietto dei vigili del fuoco
+  add(DL + 'faro.glb', [11.62, 1.95, Z1 - .4], 160);
   add(SM + 'panca.glb', [13.4, 0, Z1 - .35], 0, { punto: 'borsone' });
   add(SM + 'zaino-118.glb', [12.7, .475, Z1 - .35], 170, { punto: 'borsone' }).then(o => {
     const t = canvasTex(256, 256, (g, w) => { g.fillStyle = '#f4f3ef'; g.fillRect(0, 0, w, w); g.fillStyle = '#1d4fa0'; g.translate(w / 2, w / 2);
@@ -495,7 +495,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
     const d = new THREE.Mesh(new THREE.PlaneGeometry(.1, .1), new THREE.MeshStandardMaterial({ map: t, roughness: .6 })); d.position.set(0, .2, .2025); o.add(d); });
   add(SM + 'borsone-oss.glb', [13.6, .475, Z1 - .35], 190, { punto: 'borsone' });
   add(DL + 'cassetta-medica.glb', [14.3, .475, Z1 - .38], 180, { punto: 'borsone' });
-  parete('manichette.glb', 15.9, 0, 'vvf');
+  parete('manichette.glb', 9.2, 0, 'vvf');   // accanto all'armadietto dei vigili del fuoco
   add(SM + 'estintore.glb', [5.4, 0, Z1 - .35], 180, { punto: 'vvf' }).then(o => { o.traverse(m => { if (m.isMesh && m.name.includes('etichetta')) { uvPiano(m); m.material = new THREE.MeshStandardMaterial({ roughness: .5, map: canvasTex(260, 400, (g, w, h) => {
     g.fillStyle = '#f2f0ea'; g.fillRect(0, 0, w, h); g.fillStyle = '#c4161c'; g.fillRect(0, 0, w, 86); g.fillStyle = '#fff'; g.font = '800 40px Archivo'; g.textAlign = 'center'; g.fillText('ESTINTORE', w / 2, 58);
     g.fillStyle = '#16171a'; g.font = '700 30px Archivo'; g.fillText('POLVERE ABC', w / 2, 140); g.font = '800 64px Archivo'; g.fillText('6 kg', w / 2, 220);

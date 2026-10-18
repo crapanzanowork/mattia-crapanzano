@@ -40,7 +40,7 @@ export const VISTE = {
   barella:   { pos: [8.9, 2.1, 5.2], look: [12.0, .8, 8.4] },
   radio:     { pos: [6.9, 1.7, 8.6], look: [7.0, 1.15, 13.4] },
   borsone:   { pos: [13.4, 1.5, 11.0], look: [13.4, .7, 13.3] },
-  vvf:       { pos: [12.6, 1.9, 9.4], look: [12.6, 1.3, 13.4] },
+  vvf:       { pos: [10.2, 1.85, 9.2], look: [10.2, 1.3, 13.4], portrait: { pos: [10.3, 2.2, 6.6], look: [10.3, 1.15, 13.4], fov: 1.15 } },
 };
 
 // Punti cliccabili. zona = a quale zona appartiene ('' = sempre visibile dalla panoramica)
@@ -73,7 +73,7 @@ export const PUNTI = [
   { id: 'barella', zona: 'cura', livello: 2, colore: 'cura', at: [11.9, 1.4, 8.7] },
   { id: 'radio', zona: 'cura', livello: 2, colore: 'cura', at: [6.6, 2.1, 13.3] },
   { id: 'borsone', zona: 'cura', livello: 2, colore: 'cura', at: [13.4, 1.2, 13.2] },
-  { id: 'vvf', zona: 'cura', livello: 2, colore: 'cura', at: [10.4, 2.5, 13.2] },
+  { id: 'vvf', zona: 'cura', livello: 2, colore: 'cura', at: [10.38, 2.45, 13.2] },
 ];
 // a quale zona porta ogni punto (per la barra in basso e per mostrare i pallini interni)
 export const ZONA_DI = Object.fromEntries(PUNTI.map(p => [p.id, p.zona || (['quota', 'luce', 'cura'].includes(p.id) ? p.id : '')]));
@@ -128,9 +128,9 @@ export const T = {
            stampante: ['Scarica il CV', 'Download CV'], telefono: ['Contatti', 'Contacts'] },
   comandi: { giorno: ['Giorno', 'Day'], notte: ['Notte', 'Night'], audio: ['Musica e suoni', 'Music and sounds'] },
   ora: { giorno: ['luce del giorno', 'daylight'], notte: ['luci accese', 'lights on'], alba: ['alba', 'dawn'], tramonto: ['tramonto', 'sunset'] },
-  chiudi: ['Chiudi', 'Close'], torna: ['Torna alla panoramica', 'Back to overview'],
+  chiudi: ['Chiudi', 'Close'], espandi: ['Mostra tutto', 'Show more'], torna: ['Torna alla panoramica', 'Back to overview'],
   giro: ['Fai il giro', 'Take the tour'], poi: ['Poi', 'Next'], prima: ['Indietro', 'Back'],
-  cerca: ['Cerca nel laboratorio', 'Search the workshop'], nessuno: ['Niente da mostrare: prova un\'altra parola', 'Nothing found: try another word'], indietro: ['Indietro', 'Back'],
+  cerca: ['Chiedimi cosa ti serve', 'Ask me what you need'], nessuno: ['Non l\'ho trovato. Prova con una di queste:', 'I couldn\'t find that. Try one of these:'], suggeriti: ['Ti potrebbe servire', 'You might need'], indietro: ['Indietro', 'Back'],
 };
 
 // Giro guidato: l'ordine in cui si visitano i punti con Avanti / Indietro (finisce sui contatti)
@@ -168,7 +168,7 @@ export const PANNELLI = {
     h: ['Il corso, <em>in cinque foto.</em>', 'The course, <em>in five photos.</em>'],
     p: ['L\'imbrago nuovo, la palestra di Sicurlive, le corde in coppia e il giorno dell\'esame.', 'The new harness, the Sicurlive gym, the twin ropes and exam day.'],
     foto: ['foto/irata-allenamento-sicurlive.jpg', 'foto/irata-imbrago.jpg', 'foto/quota-capannone.jpg', 'foto/quota-attrezzatura.jpg'] },
-  videoquota: { c: 'quota', lab: ['Video', 'Videos'], h: ['Guardami <em>salire.</em>', 'Watch me <em>climb.</em>'],
+  videoquota: { c: 'quota', lab: ['Video dal corso', 'Course videos'], h: ['Guardami <em>salire.</em>', 'Watch me <em>climb.</em>'],
     p: ['Spezzoni girati durante il corso IRATA da Sicurlive: salite, attrezzatura e il capannone dove mi sono allenato.', 'Clips shot during the IRATA course at Sicurlive: ascents, gear and the hall where I trained.'], video: 'quota' },
   sup: { c: 'base', lab: ['Fuori orario', 'Off duty'], h: ['Il tempo libero <em>lo passo così.</em>', 'This is how <em>I spend my time off.</em>'],
     p: ['Sul SUP quando c\'è acqua, sulla parete boulder quando piove. Equilibrio, presa e testa libera: sono anche il miglior allenamento per la corda.',
@@ -202,7 +202,7 @@ export const PANNELLI = {
     p: ['A questo tavolo partono i progetti: cosa raccontare, a chi e su quali canali. Poi foto, video, sito e social seguono la stessa idea, invece di andare ognuno per conto suo.',
         'Projects start at this table: what to say, to whom and on which channels. Then photos, video, website and social media follow the same idea instead of going their own way.'],
     btn: [{ t: ['Parliamone', 'Let\'s talk'], go: 'telefono', cl: 'c' }] },
-  tv: { c: 'luce', lab: ['Video', 'Videos'], h: ['Qualche lavoro <em>recente.</em>', 'Some <em>recent work.</em>'],
+  tv: { c: 'luce', lab: ['Video di lavoro', 'Video work'], h: ['Qualche lavoro <em>recente.</em>', 'Some <em>recent work.</em>'],
     p: ['Spot, videoclip ed eventi per aziende, scuole e associazioni: riprese, montaggio e colore.', 'Commercials, music videos and events for companies, schools and associations: shooting, editing and grading.'], video: 'yt' },
   stampante: { c: 'base', lab: ['Curriculum', 'Résumé'], h: ['Quale CV <em>ti stampo?</em>', 'Which résumé <em>shall I print?</em>'],
     p: ['Ne ho uno per ogni mestiere, aggiornato. Prendi quello che ti serve.', 'I keep one for each job, up to date. Take the one you need.'],
@@ -248,6 +248,35 @@ export const PANNELLI = {
         'I am 30 and I live in Legnago, near Verona. I do three different jobs: ropes, images and rescue. I am happy to travel, abroad too.'],
     li: [[['Novità', 'corso ITRA, 16–21 novembre'], ['Lingue', 'italiano, inglese'], ['Base', 'Legnago (VR)']], [['News', 'ITRA course, 16–21 November'], ['Languages', 'Italian, English'], ['Base', 'Legnago (VR), Italy']]],
     btn: [{ t: ['Scrivimi', 'Message me'], go: 'telefono', cl: 'c' }] },
+};
+
+// Parole chiave per la ricerca: sinonimi e domande tipiche che portano a ogni punto (italiano e inglese insieme)
+export const CHIAVI = {
+  stampante: 'stampante stampa stampare cv curriculum curriculum vitae pdf scarica scaricare download printer print resume résumé',
+  telefono: 'contatti contatto telefono numero chiama chiamare whatsapp scrivimi scrivere messaggio email mail preventivo prezzo costo lavoro assunzione disponibilita disponibile contact phone call message quote hire',
+  quota: 'quota fune funi corda corde altezza rope access irata lavori in quota tecnico manutenzione ispezione trasferte offshore estero height',
+  struttura: 'struttura addestramento sicurlive corso irata esame palestra rig training',
+  tripode: 'tripode barella soccorso su fune itra prevent recupero pozzo spazi confinati verricello rescue tripod stretcher',
+  polaroid: 'foto polaroid immagini corso sicurlive photos',
+  videoquota: 'video filmati salita discesa irata clips',
+  boulder: 'boulder arrampicata arrampicare climbing parete prese hobby sport tempo libero',
+  sup: 'sup tavola paddle acqua hobby sport tempo libero fuori orario board',
+  luce: 'foto fotografia fotografo video videomaker riprese drone aziende scuole eventi comunicazione social photo video drone',
+  macchina: 'macchina fotografica fotocamera storia inizio reportage studio tv biennale camera story',
+  scrivania: 'siti web sito internet wordpress wix website websites clienti portfolio',
+  consulenza: 'consulenza comunicazione strategia social instagram linkedin marketing progetto consulting strategy',
+  tv: 'video spot videoclip lavori portfolio showreel youtube montaggio work commercials',
+  set: 'set fotografico shooting ritratti ritratto foto profilo linkedin prodotti studio portrait headshot',
+  cura: 'cura soccorso soccorritore croce rossa 118 ambulanza oss operatore socio sanitario assistenza vigile del fuoco care rescue',
+  finestra: 'garage ambulanza autopompa mezzi 118 115 pompieri ambulance fire engine',
+  barella: 'barella ossigeno bombole ambulanza trasporto stretcher oxygen',
+  radio: 'dae defibrillatore blsd rianimazione massaggio cardiaco radio primo soccorso ptc aed cpr first aid',
+  divise: 'divise divisa oss soccorritore vigile del fuoco uniformi uniforms',
+  borsone: 'zaino borsone 118 oss bag',
+  vvf: 'vigili del fuoco pompiere pompieri vvf antincendio estintore manichette casco firefighter fire',
+  attestati: 'attestati certificati certificazioni corsi formazione qualifiche brevetto patentino drone irata oss blsd certificates courses training',
+  salottino: 'salottino social linkedin instagram blog riviste lounge',
+  bacheca: 'chi sei chi e mattia presentazione bacheca eta anni dove legnago verona about me who',
 };
 
 // Scritte sui muri e sugli oggetti, in italiano e in inglese (stesso numero di righe nelle due lingue)
