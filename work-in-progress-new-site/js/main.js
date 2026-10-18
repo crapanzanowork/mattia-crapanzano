@@ -43,27 +43,32 @@ const labelOf = id => { const p = PANNELLI[id]; if (!p) return id; const lab = t
 // ------------------------------------------------------------ motore
 const canvas = $('#c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: !MOBILE, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(devicePixelRatio, MOBILE ? 1.5 : 1.75));
+renderer.setPixelRatio(Math.min(devicePixelRatio, MOBILE ? 1.25 : 1.75));
+THREE.Cache.enabled = true;   // la stessa immagine si scarica e si decodifica una volta sola
 renderer.setSize(innerWidth, innerHeight);
 // AgX: curva dei colori più vicina a una foto (alte luci morbide, meno saturazione "da videogioco"); ?tm=aces per confronto
 renderer.toneMapping = Q.get('tm') === 'aces' ? THREE.ACESFilmicToneMapping : THREE.AgXToneMapping; renderer.toneMappingExposure = 1;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.enabled = !MOBILE; renderer.shadowMap.type = THREE.PCFSoftShadowMap;   // sui telefoni bastano le ombre morbide a terra (calcolate una volta)
 const scene = new THREE.Scene(); scene.fog = new THREE.FogExp2(0x0e1014, .011);
 const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, .05, 400);
 
-const composer = new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene, camera));
+// post-produzione (occlusione, bagliore, pellicola) solo su computer: sui telefoni si disegna direttamente, senza memoria in più
+const composer = MOBILE ? null : new EffectComposer(renderer);
 let gtao = null;
-if (!MOBILE && Q.get('ao') !== '0') {
-  try { gtao = new GTAOPass(scene, camera, innerWidth, innerHeight); gtao.blendIntensity = .9;
-    gtao.updateGtaoMaterial({ radius: .6, distanceExponent: 1.4, thickness: 2, scale: 1.2, samples: 12 });
-    gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 12 });
-    composer.addPass(gtao); } catch (e) { gtao = null; }
+const pellicola = new ShaderPass(PellicolaShader);
+if (composer) {
+  composer.addPass(new RenderPass(scene, camera));
+  if (Q.get('ao') !== '0') {
+    try { gtao = new GTAOPass(scene, camera, innerWidth, innerHeight); gtao.blendIntensity = .9;
+      gtao.updateGtaoMaterial({ radius: .6, distanceExponent: 1.4, thickness: 2, scale: 1.2, samples: 12 });
+      gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 12 });
+      composer.addPass(gtao); } catch (e) { gtao = null; }
+  }
+  composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), .28, .5, .92));
+  composer.addPass(new OutputPass());
+  if (Q.get('fx') !== '0') composer.addPass(pellicola);
 }
-const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), .28, .5, .92); composer.addPass(bloom);
-composer.addPass(new OutputPass());
-const pellicola = new ShaderPass(PellicolaShader); if (Q.get('fx') !== '0') composer.addPass(pellicola);
 
 // ------------------------------------------------------------ caricamento
 const manager = new THREE.LoadingManager();
@@ -71,7 +76,8 @@ const tl = new THREE.TextureLoader(manager);
 const draco = new DRACOLoader().setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/draco/gltf/');
 const gl = new GLTFLoader(manager).setDRACOLoader(draco);
 const cache = {};
-const gltf = f => { if (!cache[f]) cache[f] = gl.loadAsync(f); return cache[f].then(g => ({ scene: g.scene.clone(true) })); };
+const gltf = f => { if (MOBILE) f = f.replace(/^modelli\//, 'modelli-mobile/');   // sui telefoni: stessi modelli con immagini più leggere
+  if (!cache[f]) cache[f] = gl.loadAsync(f); return cache[f].then(g => ({ scene: g.scene.clone(true) })); };
 const prog = $('#prog'), msg = $('#msg');
 let mi = 0; msg.textContent = tr(T.carico)[0];
 const mt = setInterval(() => { const m = tr(T.carico); mi = (mi + 1) % m.length; msg.textContent = m[mi]; }, 1100);
@@ -90,9 +96,9 @@ sun.castShadow = true; sun.shadow.mapSize.set(MOBILE ? 1024 : 2048, MOBILE ? 102
 Object.assign(sun.shadow.camera, { left: -26, right: 26, top: 22, bottom: -22, near: 5, far: 90 }); sun.shadow.bias = -.0005; sun.shadow.normalBias = .03;
 scene.add(sun, sun.target);
 const hemi = new THREE.HemisphereLight(0xdbe6ff, 0x3a3631, .2); scene.add(hemi);
-const deskSpot = new THREE.SpotLight(0xfff4e6, 0, 9, .6, .8, 1.2); deskSpot.position.set(1.3, 2.6, -11.3); deskSpot.target.position.set(-.6, .8, -10.2); scene.add(deskSpot, deskSpot.target);
+const deskSpot = new THREE.SpotLight(0xfff4e6, 0, 9, .6, .8, 1.2); deskSpot.position.set(1.3, 2.6, -11.3); deskSpot.target.position.set(-.6, .8, -10.2); if (!MOBILE) scene.add(deskSpot, deskSpot.target);
 const ringLight = new THREE.PointLight(0xfff3e2, 0, 10, 1.6); ringLight.position.set(0, 2.4, 1.5); scene.add(ringLight);
-const certLight = new THREE.RectAreaLight(0xfff0d8, 0, 6, .4); certLight.position.set(0, 3.8, 7.6); certLight.lookAt(0, 1.8, 9.0); scene.add(certLight);
+const certLight = new THREE.RectAreaLight(0xfff0d8, 0, 6, .4); certLight.position.set(0, 3.8, 7.6); certLight.lookAt(0, 1.8, 9.0); if (!MOBILE) scene.add(certLight);
 const extLight = new THREE.HemisphereLight(0x9fb4d8, 0x1a1a1a, 0);
 
 let W = null;   // mondo costruito
@@ -378,7 +384,7 @@ function stopRing(answered) { ring.on = false; clearTimeout(ring.timer); if (ans
 // ------------------------------------------------------------ schermi
 const SITI_TEX = ['tex/siti/lorenzics.jpg', 'tex/siti/alessioburini.jpg'].map(u => { const t = tl.load(u); t.colorSpace = THREE.SRGBColorSpace; return t; });
 const YT_IMG = VIDEO_YT.map(([id]) => { const i = new Image(); i.src = `yt/${id}.jpg`; return i; });
-const canvasTV = document.createElement('canvas'); canvasTV.width = 1280; canvasTV.height = 720; const gTV = canvasTV.getContext('2d');
+const canvasTV = document.createElement('canvas'); canvasTV.width = MOBILE ? 640 : 1280; canvasTV.height = MOBILE ? 360 : 720; const gTV = canvasTV.getContext('2d'); if (MOBILE) gTV.scale(.5, .5);
 const texTV = new THREE.CanvasTexture(canvasTV); texTV.colorSpace = THREE.SRGBColorSpace;
 function disegnaTV(t) {  // immagine proiettata: i video scorrono lenti, con solo una didascalia discreta (niente comandi da TV)
   const per = 7, i = Math.floor(t / per) % VIDEO_YT.length, k = (t % per) / per, img = YT_IMG[i], g = gTV, W = 1280, H = 720;
@@ -461,8 +467,8 @@ async function fine() {
   clearInterval(mt); prog.style.width = '100%'; msg.textContent = tr(T.pronto);
   schermi(); DAY = dayTarget; applyLight(DAY); window.__W = W;
   // realismo: grana sulle superfici lisce e ombre morbide a terra (calcolate una volta, a scena ferma)
-  if (Q.get('fx') !== '0') { aggiungiGrana(scene); W.ombre = ombreContatto(renderer, scene, { w: 40 * K, d: 32 * K, res: MOBILE ? 1024 : 2048, salta: o => o.userData.senzaOmbra || /fronde|foglie/.test(o.name) }); }
-  scene.add(extLight);
+  if (Q.get('fx') !== '0') { if (!MOBILE) aggiungiGrana(scene); W.ombre = ombreContatto(renderer, scene, { w: 40 * K, d: 32 * K, res: MOBILE ? 1024 : 2048, salta: o => o.userData.senzaOmbra || /fronde|foglie/.test(o.name) }); }
+  if (!MOBILE) scene.add(extLight);
   if (Q.has('auto')) { $('#loader').style.transition = 'none'; $('#loader').classList.add('gone'); autoEnter(); } else setTimeout(() => { $('#loader').classList.add('gone'); $('#entra').classList.remove('gone'); }, 500);
 }
 setTimeout(() => fine(), 25000);
@@ -488,7 +494,7 @@ function autoEnter() {
 const PANEL_W = 440; let offX = 0, offY = 0;
 function resize() {
   camera.aspect = innerWidth / innerHeight; camera.fov = baseFov() * fovMul; camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight);
+  renderer.setSize(innerWidth, innerHeight); composer?.setSize(innerWidth, innerHeight);
 }
 addEventListener('resize', resize); resize();
 
@@ -548,7 +554,7 @@ function frame() {
     if (W.mat.lampeggiante2) W.mat.lampeggiante2.emissiveIntensity = 8 * on2; if (W.luci.vvf) W.luci.vvf.intensity = (110 + 150 * (1 - DAY)) * on2; }
   // telefono che vibra
   if (W.anim.telefono) { const r = ring.on && (t * 2.6) % 2.6 < .9; W.anim.telefono.userData.x0 ??= W.anim.telefono.position.x; W.anim.telefono.position.x = W.anim.telefono.userData.x0 + (r ? Math.sin(t * 90) * .003 : 0); W.anim.telefono.rotation.y = .38 + (r ? Math.sin(t * 70) * .05 : 0); disegnaTel(ring.on); }
-  if (W.schermi.tv && (frameN++ % 2 === 0)) disegnaTV(t);
+  if (W.schermi.tv && (frameN++ % (MOBILE ? 4 : 2) === 0)) disegnaTV(t);
   // schermi che cambiano
   screenT += dt; if (screenT > 5) { screenT = 0; siteI = (siteI + 1) % SITI_TEX.length;
     if (W.schermi.monitor) W.schermi.monitor.material.map = SITI_TEX[siteI]; }
@@ -600,6 +606,6 @@ function frame() {
   }
   for (const h of hots) { h.el.classList.toggle('flip', h.sx > bx1 - 200); h.el.style.transform = `translate(${h.sx}px,${h.sy}px)`; }
   pellicola.uniforms.tempo.value = t % 10;
-  composer.render();
+  if (composer) composer.render(); else renderer.render(scene, camera);   // sui telefoni niente effetti di post-produzione: pesano su ogni pixel
 }
 frame();
