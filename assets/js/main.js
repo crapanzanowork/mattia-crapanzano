@@ -316,7 +316,7 @@
     if (root.classList.contains('chat-open') || $('.lb.is-open')) return;
     const k = { 1: 'quota', 2: 'luce', 3: 'cura' }[e.key];
     if (k && k !== PAGE) go(HOME + k + '/', k);
-    if ((e.key === '0' || e.key === 'h') && PAGE !== 'home') go(HOME || './', null);
+    if ((e.key === '0' || e.key === 'h') && PAGE !== 'home') go(body.dataset.index || HOME || './', null);
   });
 
   /* ---------- orologio di Verona ---------- */

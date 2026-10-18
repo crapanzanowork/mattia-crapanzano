@@ -3,6 +3,8 @@
 
 export const BASE = '/';                    // radice del sito (per CV e pagine): vale sia in anteprima sia online
 export const CV = f => BASE + 'assets/cv/' + f;
+// età calcolata dalla data di nascita (12/08/1996), così il testo non invecchia
+export const ETA = (() => { const o = new Date(); return o.getFullYear() - 1996 - (o.getMonth() < 7 || (o.getMonth() === 7 && o.getDate() < 12) ? 1 : 0); })();
 export const CONTATTI = {
   tel: '+393514658810', telTxt: '+39 351 465 8810', mail: 'crapanzano.work@gmail.com',
   wa: t => 'https://wa.me/393514658810?text=' + encodeURIComponent(t),
@@ -17,6 +19,7 @@ export const VISTE = {
   fuori:     { pos: [0, 2.0, 34], look: [0, 4.6, 13.6] },
   casa:      { pos: [0, 5.6, 1.6], look: [0, 1.3, -9], fov: 1.25, portrait: { pos: [0, 5.4, 2.4], look: [0, 1.1, -8], fov: 1.3 } },
   salottino: { pos: [0, 2.3, 6.2], look: [0, .5, 1.6] },
+  faq:       { pos: [.25, 1.25, 3.05], look: [-.05, .4, 2.05] },
   attestati: { pos: [0, 2.3, 4.9], look: [0, 2.15, 9.0] },
   bacheca:   { pos: [-3.7, 1.7, 8.2], look: [-5.0, 1.35, 10.4] },
   sup:       { pos: [-12.9, 1.9, 7.0], look: [-16.6, 1.6, 8.6] },
@@ -53,6 +56,7 @@ export const PUNTI = [
   { id: 'bacheca', zona: '', livello: 1, colore: 'base', at: [-5.0, 2.3, 10.4] },
   { id: 'sup', zona: '', livello: 1, colore: 'base', at: [-16.0, 2.6, 8.4] },
   { id: 'attestati', zona: '', livello: 1, colore: 'base', at: [0, 3.9, 8.7] },
+  { id: 'faq', zona: '', livello: 1, colore: 'base', at: [-.05, .75, 2.09] },
 
   { id: 'boulder', zona: 'quota', livello: 2, colore: 'quota', at: [-14.6, 3.4, 3.4] },
   { id: 'struttura', zona: 'quota', livello: 2, colore: 'quota', at: [-8.2, 4.6, -8.6] },
@@ -118,6 +122,10 @@ export const ATTESTATI = [  // [titolo, dettaglio, nota] in italiano e in ingles
 // Testi: [italiano, inglese]
 export const T = {
   entra: ['Entra nel mio laboratorio', 'Enter my workshop'],
+  classico: ['Preferisci leggere? Vai al sito classico', 'Rather read? Go to the classic site'],
+  legali: ['Note legali', 'Legal notice'],
+  canvas: ['Laboratorio 3D di Mattia Crapanzano: tutti i contenuti sono anche nella versione testo', 'Mattia Crapanzano\'s 3D workshop: all the content is also in the text version'],
+  salta: ['Vai alla versione testo', 'Skip to the text version'],
   carico: [['Accendo le luci del capannone…', 'Controllo i nodi…', 'Pulisco l\'obiettivo…', 'Sistemo la barella…', 'Preparo il caffè…'],
            ['Switching on the warehouse lights…', 'Checking the knots…', 'Cleaning the lens…', 'Setting up the stretcher…', 'Making coffee…']],
   pronto: ['Pronto.', 'Ready.'],
@@ -128,6 +136,7 @@ export const T = {
            stampante: ['Scarica il CV', 'Download CV'], telefono: ['Contatti', 'Contacts'] },
   comandi: { giorno: ['Giorno', 'Day'], notte: ['Notte', 'Night'], audio: ['Musica e suoni', 'Music and sounds'] },
   ora: { giorno: ['luce del giorno', 'daylight'], notte: ['luci accese', 'lights on'], alba: ['alba', 'dawn'], tramonto: ['tramonto', 'sunset'] },
+  testo: ['Versione testo', 'Text version'], torna3d: ['Torna al laboratorio', 'Back to the workshop'],
   chiudi: ['Chiudi', 'Close'], espandi: ['Mostra tutto', 'Show more'], torna: ['Torna alla panoramica', 'Back to overview'],
   giro: ['Fai il giro', 'Take the tour'], poi: ['Poi', 'Next'], prima: ['Indietro', 'Back'],
   cerca: ['Chiedimi cosa ti serve', 'Ask me what you need'], nessuno: ['Non l\'ho trovato. Prova con una di queste:', 'I couldn\'t find that. Try one of these:'], suggeriti: ['Ti potrebbe servire', 'You might need'], indietro: ['Indietro', 'Back'],
@@ -135,7 +144,7 @@ export const T = {
 
 // Giro guidato: l'ordine in cui si visitano i punti con Avanti / Indietro (finisce sui contatti)
 export const PERCORSO = ['bacheca', 'attestati', 'quota', 'struttura', 'tripode', 'polaroid', 'videoquota', 'boulder', 'sup', 'luce', 'macchina', 'scrivania', 'consulenza', 'tv', 'set', 'stampante',
-  'cura', 'finestra', 'barella', 'radio', 'divise', 'borsone', 'vvf', 'salottino', 'telefono'];
+  'cura', 'finestra', 'barella', 'radio', 'divise', 'borsone', 'vvf', 'salottino', 'faq', 'telefono'];
 
 const cvBtn = (it, en, f, fEn) => ({ t: [it, en], u: [CV(f), CV(fEn)], dl: 1 });
 
@@ -146,9 +155,9 @@ export const PANNELLI = {
     h: ['Due corde, <em>un obiettivo.</em>', 'Two ropes, <em>one goal.</em>'],
     p: ['Sono tecnico IRATA di livello 1 e ho il Modulo A, quindi posso lavorare su fune anche in Italia. Cerco il primo cantiere: manutenzioni, ispezioni, lavori in quota. Il traguardo è il soccorso su fune.',
         'I am an IRATA Level 1 rope access technician with the Italian Module A, so I can work on ropes in Italy too. I am looking for my first job site: maintenance, inspections, work at height. The goal is rope rescue.'],
-    li: [[['IRATA', 'livello 1'], ['Modulo A', 'valido in Italia'], ['Prossimo corso', 'ITRA, 16–21 nov'], ['Trasferte', 'Italia, estero, offshore']],
-         [['IRATA', 'level 1'], ['Module A', 'valid in Italy'], ['Next course', 'ITRA, 16–21 Nov'], ['Travel', 'Italy, abroad, offshore']]],
-    btn: [{ t: ['Leggi il curriculum', 'Read the résumé'], u: [BASE + 'quota/', BASE + 'en/quota/'], cl: 'c' }, cvBtn('Scarica il CV', 'Download CV', 'Mattia-Crapanzano-CV-Lavori-in-quota.pdf', 'Mattia-Crapanzano-CV-Rope-access-EN.pdf')] },
+    li: [[['IRATA', 'livello 1'], ['Modulo A', 'valido in Italia'], ['Prossimo corso', 'ITRA, 16–21 nov'], ['Trasferte', 'Italia ed estero']],
+         [['IRATA', 'level 1'], ['Module A', 'valid in Italy'], ['Next course', 'ITRA, 16–21 Nov'], ['Travel', 'Italy and abroad']]],
+    btn: [{ t: ['Guarda i video', 'Watch the videos'], go: 'videoquota', cl: 'c' }, cvBtn('Scarica il CV', 'Download CV', 'Mattia-Crapanzano-CV-Lavori-in-quota.pdf', 'Mattia-Crapanzano-CV-Rope-access-EN.pdf')] },
   struttura: { c: 'quota', lab: ['Struttura di addestramento', 'Training rig'],
     h: ['Cinque giorni <em>appeso qui.</em>', 'Five days <em>hanging here.</em>'],
     p: ['L\'IRATA l\'ho preso da Sicurlive: cinque giorni di corso e un esame con un valutatore esterno. Salite, discese, frazionamenti, deviatori e il recupero di un compagno bloccato sulla corda. Questa struttura è la copia di quella dove mi sono allenato.',
@@ -181,14 +190,14 @@ export const PANNELLI = {
         'I have been doing photo and video for ten years: I ran a production studio and worked in TV and on film sets. Today I work with companies and schools: photo, video, drone footage, websites and communication consulting.'],
     li: [[['Foto e video', 'eventi, scuole, aziende'], ['Drone', 'EASA A1/A3'], ['Siti web', 'dal progetto alla messa online'], ['Consulenza', 'comunicazione e social']],
          [['Photo and video', 'events, schools, companies'], ['Drone', 'EASA A1/A3'], ['Websites', 'from design to launch'], ['Consulting', 'communication and social']]],
-    btn: [{ t: ['Guarda i lavori', 'See the work'], u: [BASE + 'luce/', BASE + 'en/luce/'], cl: 'c' }, cvBtn('Scarica il CV', 'Download CV', 'Mattia-Crapanzano-CV-Foto-e-video.pdf', 'Mattia-Crapanzano-CV-Photo-video-EN.pdf')] },
+    btn: [{ t: ['Guarda i lavori', 'See the work'], go: 'tv', cl: 'c' }, cvBtn('Scarica il CV', 'Download CV', 'Mattia-Crapanzano-CV-Foto-e-video.pdf', 'Mattia-Crapanzano-CV-Photo-video-EN.pdf')] },
   macchina: { c: 'luce', lab: ['Come ho cominciato', 'How I started'],
     h: ['Prima di tutto, <em>una macchina fotografica.</em>', 'First of all, <em>a camera.</em>'],
-    p: ['Ho cominciato raccontando storie di persone. Poi sono arrivati lo studio, la televisione e i grandi eventi.', 'I started by telling people\'s stories. Then came the studio, television and big events.'],
-    tappe: [['Reportage', 'A Milano, la storia di Fatima Haidari: ritratti e racconto.', 'Reportage', 'In Milan, the story of Fatima Haidari: portraits and storytelling.'],
-            ['Magistral Studio\'s', 'Il mio studio di produzione: videoclip, moda, set.', 'Magistral Studio\'s', 'My production studio: music videos, fashion, sets.'],
-            ['TV ed eventi', 'Operatore di ripresa, anche alla Biennale di Venezia.', 'TV and events', 'Camera operator, including the Venice Biennale.'],
-            ['Oggi', 'Foto, video e drone per aziende e scuole, e i siti web.', 'Today', 'Photo, video and drone for companies and schools, plus websites.']] },
+    p: ['Ho cominciato raccontando storie di persone, con una macchina fotografica. Poi sono arrivati lo studio, la televisione e la comunicazione per le aziende.', 'I started by telling people\'s stories with a camera. Then came the studio, television and communication for companies.'],
+    tappe: [['2017 · Fotografo e videomaker', 'Reportage e storytelling documentaristico per brand, progetti culturali ed eventi. Oggi con partita IVA.', '2017 · Photographer and videomaker', 'Reportage and documentary storytelling for brands, cultural projects and events. Now freelance with a VAT number.'],
+            ['2021 · Magistral Studios', 'Ho fondato e guidato uno studio di produzione indipendente a Lonigo: video, foto e visual storytelling.', '2021 · Magistral Studios', 'I founded and ran an independent production studio in Lonigo: video, photo and visual storytelling.'],
+            ['2023 · Operatore di ripresa TV', 'Videomedia, Vicenza: telegiornali, servizi esterni e format documentaristici.', '2023 · TV camera operator', 'Videomedia, Vicenza: news, outside broadcasts and documentary formats.'],
+            ['2025 · Comunicazione e strategia visiva', 'Arked Partners, Verona: identità visiva, social e direzione foto e video.', '2025 · Communication and visual strategy', 'Arked Partners, Verona: visual identity, social media, photo and video direction.']] },
   scrivania: { c: 'luce', lab: ['Siti web', 'Websites'], h: ['Siti fatti <em>per farsi trovare.</em>', 'Websites built <em>to be found.</em>'],
     p: ['Progetto e metto online siti per professionisti e piccole aziende, insieme a un collaboratore: struttura, testi, foto e messa online. Questi sono alcuni dei clienti.',
         'Together with a partner, I design and launch websites for professionals and small businesses: structure, copy, photos and launch. These are some of the clients.'], siti: 1 },
@@ -214,7 +223,7 @@ export const PANNELLI = {
     h: ['Soccorso, fuoco <em>e assistenza.</em>', 'Rescue, fire <em>and care.</em>'],
     p: ['Faccio il soccorritore con la Croce Rossa di Vicenza e con Legnago Soccorso, sono vigile del fuoco volontario e lavoro come Operatore Socio Sanitario. Tre divise diverse, la stessa regola: restare lucidi.',
         'I am a first responder with the Vicenza Red Cross and Legnago Soccorso, a volunteer firefighter, and I work as a healthcare assistant (OSS). Three different uniforms, one rule: stay clear-headed.'],
-    btn: [{ t: ['Leggi il curriculum', 'Read the résumé'], u: [BASE + 'cura/', BASE + 'en/cura/'], cl: 'c' }, cvBtn('Scarica il CV', 'Download CV', 'Mattia-Crapanzano-CV-OSS.pdf', 'Mattia-Crapanzano-CV-Care-worker-EN.pdf')] },
+    btn: [{ t: ['Scrivimi', 'Message me'], go: 'telefono', cl: 'c' }, cvBtn('Scarica il CV', 'Download CV', 'Mattia-Crapanzano-CV-OSS.pdf', 'Mattia-Crapanzano-CV-Care-worker-EN.pdf')] },
   divise: { c: 'cura', lab: ['Le divise', 'The uniforms'], h: ['Tre divise <em>nell\'armadio.</em>', 'Three uniforms <em>in the closet.</em>'],
     p: ['Bianca per il turno in struttura, gialla per l\'ambulanza, blu per la caserma.', 'White for the care home, yellow for the ambulance, blue for the fire station.'],
     li: [[['OSS', 'assistenza in struttura'], ['Soccorritore', 'Croce Rossa e Legnago Soccorso'], ['Vigile del fuoco', 'volontario']],
@@ -222,8 +231,8 @@ export const PANNELLI = {
   attestati: { c: 'base', lab: ['Formazione continua', 'Training never stops'], h: ['Dodici corsi, <em>e non è finita.</em>', 'Twelve courses, <em>and counting.</em>'],
     p: ['Corde, soccorso, sicurezza e drone: la formazione è la parte che tiene insieme i tre mestieri. Ogni corso nuovo finisce su questa parete.', 'Ropes, rescue, safety and drones: training is what holds the three jobs together. Every new course ends up on this wall.'], attestati: 1 },
   finestra: { c: 'cura', lab: ['Il garage', 'The garage'], h: ['Le luci <em>blu.</em>', 'The <em>blue lights.</em>'],
-    p: ['Faccio turni in ambulanza con Legnago Soccorso e con la Croce Rossa di Vicenza, e con i vigili del fuoco volontari. È lì che ho imparato a fare la cosa giusta anche quando il tempo è poco.',
-        'I do ambulance shifts with Legnago Soccorso and the Vicenza Red Cross, and I volunteer with the fire brigade. That is where I learned to do the right thing even when time is short.'] },
+    p: ['Faccio turni in ambulanza con Legnago Soccorso e con la Croce Rossa di Vicenza, ed esco con i vigili del fuoco volontari. È lì che ho imparato a fare la cosa giusta anche quando il tempo è poco.',
+        'I do ambulance shifts with Legnago Soccorso and the Vicenza Red Cross, and I go out on calls with the volunteer fire brigade. That is where I learned to do the right thing even when time is short.'] },
   radio: { c: 'cura', lab: ['DAE e radio', 'AED and radios'], h: ['Sempre <em>in carica.</em>', 'Always <em>charged.</em>'],
     p: ['La teca del defibrillatore, le radio in carica e il manichino per ripassare il massaggio cardiaco. Ho il BLSD adulto e pediatrico, il PTC base e il corso di primo soccorso da 16 ore.',
         'The defibrillator cabinet, the radios charging and the manikin for practising chest compressions. I hold adult and paediatric BLSD, basic PTC and a 16-hour first aid course.'] },
@@ -239,16 +248,48 @@ export const PANNELLI = {
   vvf: { c: 'cura', lab: ['Vigili del fuoco', 'Fire brigade'], h: ['Vigile del fuoco <em>volontario.</em>', 'Volunteer <em>firefighter.</em>'],
     p: ['Casco, armadietto, manichette e l\'attestato antincendio di livello 2. Quando arriva la chiamata, si esce.', 'Helmet, locker, fire hoses and level 2 fire safety training. When the call comes, we go.'] },
 
+  faq: { c: 'base', lab: ['Domande frequenti', 'FAQ'], h: ['Le domande <em>che mi fanno più spesso.</em>', 'The questions <em>I get asked most.</em>'],
+    p: ['Le ho raccolte in questo documento. Se manca la tua, chiedimela.', 'I collected them in this document. If yours is missing, just ask.'], faq: 1,
+    btn: [{ t: ['Scrivimi', 'Message me'], go: 'telefono', cl: 'c' }, { t: ['Versione testo', 'Text version'], azione: 'testo' }] },
   salottino: { c: 'base', lab: ['Salottino', 'Lounge'], h: ['Siediti <em>e sfoglia.</em>', 'Sit down <em>and browse.</em>'],
     p: ['LinkedIn per il lavoro, Instagram per le immagini, il curriculum e, presto, un blog con quello che imparo strada facendo.', 'LinkedIn for work, Instagram for pictures, my résumé and, soon, a blog about what I learn along the way.'],
     btn: [{ t: ['LinkedIn', 'LinkedIn'], u: [CONTATTI.linkedin, CONTATTI.linkedin], cl: 'c' }, { t: ['Instagram', 'Instagram'], u: [CONTATTI.instagram, CONTATTI.instagram] },
           { t: ['Curriculum', 'Résumé'], go: 'stampante' }, { t: ['Blog · presto', 'Blog · soon'], u: ['', ''] }] },
   bacheca: { c: 'base', lab: ['Bacheca', 'Board'], h: ['Ciao, <em>sono Mattia.</em>', 'Hi, <em>I\'m Mattia.</em>'],
-    p: ['Ho 30 anni e vivo a Legnago, in provincia di Verona. Faccio tre lavori diversi: corde, immagini e soccorso. Mi sposto volentieri, anche all\'estero.',
-        'I am 30 and I live in Legnago, near Verona. I do three different jobs: ropes, images and rescue. I am happy to travel, abroad too.'],
+    p: [`Ho ${ETA} anni e vivo a Legnago, in provincia di Verona. Faccio tre lavori diversi: corde, immagini e soccorso. Mi sposto volentieri, anche all'estero.`,
+        `I am ${ETA} and I live in Legnago, near Verona. I do three different jobs: ropes, images and rescue. I am happy to travel, abroad too.`],
     li: [[['Novità', 'corso ITRA, 16–21 novembre'], ['Lingue', 'italiano, inglese'], ['Base', 'Legnago (VR)']], [['News', 'ITRA course, 16–21 November'], ['Languages', 'Italian, English'], ['Base', 'Legnago (VR), Italy']]],
     btn: [{ t: ['Scrivimi', 'Message me'], go: 'telefono', cl: 'c' }] },
 };
+
+// Domande frequenti: [domanda, risposta] in italiano e in inglese. Compaiono nel documento sul tavolino del salottino,
+// nella versione testo del sito e nei dati strutturati che leggono Google e gli assistenti AI.
+export const FAQ = [
+  [['Chi è Mattia Crapanzano?', `Ho ${ETA} anni e vivo a Legnago, in provincia di Verona. Faccio tre lavori: tecnico su fune IRATA, fotografo e videomaker per aziende, Operatore Socio Sanitario e soccorritore.`],
+   ['Who is Mattia Crapanzano?', `I am ${ETA} and live in Legnago, near Verona, Italy. I do three jobs: IRATA rope access technician, photographer and videomaker for companies, and healthcare assistant and first responder.`]],
+  [['Che certificazioni hai per lavorare su fune?', 'IRATA Livello 1 e Modulo A (D.Lgs. 81/08), quindi posso lavorare su fune anche in Italia. L\'IRATA l\'ho preso da Sicurlive. A novembre 2026 faccio il corso ITRA con Prevent per il soccorso su fune.'],
+   ['What rope access certifications do you hold?', 'IRATA Level 1 and the Italian Module A (Legislative Decree 81/08), so I can also work on ropes in Italy. I trained for IRATA at Sicurlive. In November 2026 I take the ITRA rope rescue course with Prevent.']],
+  [['Hai già esperienza di lavoro in quota?', 'Non ancora in cantiere, e preferisco dirlo chiaramente. Sono certificato e allenato: cerco il primo incarico per manutenzioni, ispezioni e lavori in quota.'],
+   ['Do you already have experience working at height?', 'Not on a job site yet, and I prefer to say so clearly. I am certified and trained: I am looking for my first assignment in maintenance, inspections and work at height.']],
+  [['Sei disponibile per trasferte?', 'Sì, in Italia e all\'estero, anche per periodi lunghi. Il mio campo base è Legnago (VR).'],
+   ['Are you available to travel?', 'Yes, in Italy and abroad, including long assignments. My base is Legnago (Verona).']],
+  [['Cosa fai come fotografo e videomaker?', 'Foto e video per aziende, scuole ed eventi, riprese con il drone (attestato EASA A1/A3), montaggio e color grading, comunicazione e strategia visiva. Ho lavorato come operatore di ripresa TV e ho fondato Magistral Studios.'],
+   ['What do you do as a photographer and videomaker?', 'Photo and video for companies, schools and events, drone footage (EASA A1/A3), editing and colour grading, communication and visual strategy. I worked as a TV camera operator and founded Magistral Studios.']],
+  [['Realizzi anche siti web?', 'Sì, insieme a un collaboratore: struttura, testi, foto e messa online, per professionisti e piccole aziende.'],
+   ['Do you also build websites?', 'Yes, together with a partner: structure, copy, photos and launch, for professionals and small businesses.']],
+  [['Quanto costa un servizio?', 'Dipende da cosa ti serve. Scrivimi o chiamami: dopo una breve chiacchierata ti preparo un preventivo.'],
+   ['How much does a job cost?', 'It depends on what you need. Message or call me: after a short chat I will send you a quote.']],
+  [['Dove lavori come OSS e soccorritore?', 'Sono Operatore Socio Sanitario qualificato da oltre dieci anni, oggi in struttura a Montecchio Precalcino (VI) e a Legnago (VR). Faccio il soccorritore con la Croce Rossa di Vicenza e con Legnago Soccorso, e sono vigile del fuoco volontario al Comando di Verona.'],
+   ['Where do you work as a care worker and first responder?', 'I have been a qualified healthcare assistant (OSS) for over ten years, currently in care homes in Montecchio Precalcino (Vicenza) and Legnago (Verona). I am a first responder with the Vicenza Red Cross and Legnago Soccorso, and a volunteer firefighter with the Verona fire brigade.']],
+  [['Lavori con partita IVA?', 'Sì, ho la partita IVA attiva e lavoro anche in libera professione.'],
+   ['Do you work as a freelancer?', 'Yes, I am a registered freelancer in Italy (VAT number active).']],
+  [['Come scarico il tuo curriculum?', 'Ne ho tre, uno per mestiere, in italiano e in inglese. Li trovi alla stampante, nella zona In luce, o con il pulsante CV in basso.'],
+   ['How do I download your résumé?', 'I have three, one for each job, in Italian and English. You will find them at the printer in the In focus area, or with the CV button at the bottom.']],
+  [['Come ti contatto?', 'Telefono o WhatsApp +39 351 465 8810, email crapanzano.work@gmail.com. Rispondo io, di solito in giornata.'],
+   ['How can I contact you?', 'Phone or WhatsApp +39 351 465 8810, email crapanzano.work@gmail.com. I answer myself, usually the same day.']],
+  [['Parli inglese?', 'Sì, a livello base. Tutti i miei curriculum sono anche in inglese.'],
+   ['Do you speak English?', 'Yes, at a basic level. All my résumés are also available in English.']],
+];
 
 // Parole chiave per la ricerca: sinonimi e domande tipiche che portano a ogni punto (italiano e inglese insieme)
 export const CHIAVI = {
@@ -277,6 +318,7 @@ export const CHIAVI = {
   attestati: 'attestati certificati certificazioni corsi formazione qualifiche brevetto patentino drone irata oss blsd certificates courses training',
   salottino: 'salottino social linkedin instagram blog riviste lounge',
   bacheca: 'chi sei chi e mattia presentazione bacheca eta anni dove legnago verona about me who',
+  faq: 'domande frequenti faq domande risposte informazioni dubbi trasferte partita iva inglese esperienza prezzo questions answers',
 };
 
 // Scritte sui muri e sugli oggetti, in italiano e in inglese (stesso numero di righe nelle due lingue)
@@ -289,8 +331,8 @@ export const SCRITTE = {
   boulder: [['BOULDER', 'primi passi'], ['BOULDER', 'first steps']],
   riviste: [[['LinkedIn', 'LAVORO · CORDE · SOCCORSO'], ['Instagram', '@crapanzano.work'], ['Curriculum', 'TRE MESTIERI'], ['Blog', 'PRESTO']],
             [['LinkedIn', 'WORK · ROPES · RESCUE'], ['Instagram', '@crapanzano.work'], ['Résumé', 'THREE JOBS'], ['Blog', 'SOON']]],
-  bacheca: [[['Ciao, sono Mattia', 'Legnago (VR)', 'e in trasferta'], ['Prossimo corso', 'ITRA 16–21 nov', 'con Prevent'], ['Scrivimi!', '351 465 8810'], ['Tre mestieri,', 'un solo modo', 'di lavorare'], ['Drone', 'EASA A1/A3'], ['Mattia, 30 anni', 'in servizio', 'IRATA L1']],
-            [['Hi, I\'m Mattia', 'Legnago (VR)', 'and on the road'], ['Next course', 'ITRA 16–21 Nov', 'with Prevent'], ['Message me!', '+39 351 465 8810'], ['Three jobs,', 'one way', 'of working'], ['Drone', 'EASA A1/A3'], ['Mattia, 30', 'on duty', 'IRATA L1']]],
+  bacheca: [[['Ciao, sono Mattia', 'Legnago (VR)', 'e in trasferta'], ['Prossimo corso', 'ITRA 16–21 nov', 'con Prevent'], ['Scrivimi', '351 465 8810'], ['Tre mestieri,', 'un solo modo', 'di lavorare'], ['Drone', 'EASA A1/A3'], [`Mattia, ${ETA} anni`, 'IRATA L1', 'disponibile']],
+            [['Hi, I\'m Mattia', 'Legnago (VR)', 'and on the road'], ['Next course', 'ITRA 16–21 Nov', 'with Prevent'], ['Message me', '+39 351 465 8810'], ['Three jobs,', 'one way', 'of working'], ['Drone', 'EASA A1/A3'], [`Mattia, ${ETA}`, 'IRATA L1', 'available']]],
   attestato: ['ATTESTATO', 'CERTIFICATE'],
 };
 

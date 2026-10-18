@@ -11,23 +11,28 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { ombreContatto, aggiungiGrana, PellicolaShader } from './realismo.js';
 import { costruisci } from './costruisci.js';
-import { VISTE, PUNTI, ZONA_DI, PANNELLI, T, COLORI, VIDEO_YT, VIDEO_QUOTA, VIDEO_QUOTA_NOMI, SITI, ATTESTATI, CV, K, PERCORSO, CHIAVI } from './dati.js';
+import { VISTE, PUNTI, ZONA_DI, PANNELLI, T, COLORI, VIDEO_YT, VIDEO_QUOTA, VIDEO_QUOTA_NOMI, SITI, ATTESTATI, CV, K, PERCORSO, CHIAVI, FAQ } from './dati.js';
+import { testoHTML } from './testo.js';
 
 const $ = s => document.querySelector(s);
 const Q = new URLSearchParams(location.search);
 const TOUCH = matchMedia('(pointer: coarse)').matches;
 const SMALL = () => innerWidth < 760;
+const RIDUCI = matchMedia('(prefers-reduced-motion: reduce)').matches;   // "riduci movimento" attivo: voli brevi e diretti, niente animazioni automatiche
 const MOBILE = TOUCH || Math.min(screen.width, screen.height) < 700;
 const store = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
 
 // ------------------------------------------------------------ lingua
 let L = (Q.get('lang') || store.get('lab-lang') || (navigator.language || 'it').slice(0, 2)) === 'en' ? 1 : 0;
 const tr = a => Array.isArray(a) ? (a[L] ?? a[0]) : a;
+const TITOLO_IT = document.title;
 function applyLang() {
   document.documentElement.lang = L ? 'en' : 'it';
   $('#lang').dataset.v = L ? 'en' : 'it';
   document.querySelectorAll('#bar [data-go]').forEach(b => { b.querySelector('.tip').textContent = tr(T.barra[b.dataset.go]); b.setAttribute('aria-label', tr(T.barra[b.dataset.go])); });
-  $('#txtEntra').textContent = tr(T.entra); $('#giro b').textContent = tr(T.giro);
+  $('#txtEntra').textContent = tr(T.entra); $('#classico').textContent = tr(T.classico); $('#classico').href = L ? '/en/' : '/classico/';
+  $('#lnkPrivacy').href = L ? '/en/privacy/' : '/privacy/'; $('#lnkLegali').href = L ? '/en/legal/' : '/note-legali/'; $('#lnkLegali').textContent = tr(T.legali);
+  $('#c').setAttribute('aria-label', tr(T.canvas)); $('#salta').textContent = tr(T.salta); $('#giro b').textContent = tr(T.giro);
   $('#q').placeholder = tr(T.cerca); $('#q').setAttribute('aria-label', tr(T.cerca)); $('#indietro').setAttribute('aria-label', tr(T.indietro)); $('#indietro .tip').textContent = tr(T.indietro);
   if ($('#q').value) cerca();
   $('#hint').textContent = tr(TOUCH ? T.suggerimentoTouch : T.suggerimento);
@@ -36,9 +41,31 @@ function applyLang() {
   if (panel.classList.contains('open') && current) openPanel(current);
   orologio();
   if (W) { W.lingua(L); disegnaStampante(); telStato = ''; }
+  if (testo && !testo.classList.contains('chiuso')) apriTesto();
+  $('#btnTesto').title = $('#btnTesto').ariaLabel = tr(T.testo);
+  $('#testo').setAttribute('aria-label', tr(T.testo));
+  document.title = L ? 'Mattia Crapanzano · IRATA rope access technician, photographer and videomaker, care worker and first responder' : TITOLO_IT;
 }
 $('#lang').onclick = () => { L = 1 - L; store.set('lab-lang', L ? 'en' : 'it'); sfx.click(); applyLang(); };
 const labelOf = id => { const p = PANNELLI[id]; if (!p) return id; const lab = tr(p.lab); return lab.replace(/^0\d · /, ''); };
+
+// ------------------------------------------------------------ statistiche (Umami, senza cookie): solo azioni utili, mai dati personali
+const traccia = (nome, dati) => { try { window.umami?.track(nome, dati); } catch (e) {} };
+document.addEventListener('click', e => { const a = e.target.closest('a[href]'); if (!a) return; const h = a.getAttribute('href');
+  if (h.startsWith('tel:')) traccia('contatto', { tipo: 'telefono' }); else if (h.includes('wa.me')) traccia('contatto', { tipo: 'whatsapp' });
+  else if (h.startsWith('mailto:')) traccia('contatto', { tipo: 'email' }); else if (h.endsWith('.pdf')) traccia('cv', { file: h.split('/').pop() });
+  else if (/linkedin|instagram/.test(h)) traccia('social', { dove: /linkedin/.test(h) ? 'linkedin' : 'instagram' }); });
+
+// ------------------------------------------------------------ versione testo (motori di ricerca, assistenti AI, accessibilità, dispositivi senza 3D)
+const testo = $('#testo');
+function apriTesto() { if (testo.classList.contains('chiuso')) primaDelTesto = document.activeElement; $('#testoCorpo').innerHTML = testoHTML(L); $('#chiudiTesto').textContent = '← ' + tr(T.torna3d); testo.classList.remove('chiuso'); testo.scrollTop = 0; setTimeout(() => $('#chiudiTesto').focus(), 60);   /* dopo la comparsa: un elemento ancora invisibile non riceve il fuoco */ traccia('versione-testo'); }
+let primaDelTesto = null;
+function chiudiTesto() { testo.classList.add('chiuso'); (primaDelTesto && document.contains(primaDelTesto) ? primaDelTesto : $('#btnTesto')).focus?.(); }
+$('#btnTesto').onclick = apriTesto; $('#chiudiTesto').onclick = chiudiTesto;
+$('#salta').onclick = e => { e.preventDefault(); apriTesto(); };
+// senza WebGL il 3D non può partire: si mostra direttamente la versione testo
+const glOk = (() => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (e) { return false; } })();
+if (!glOk || Q.has('testo')) { $('#loader').classList.add('gone'); apriTesto(); $('#chiudiTesto').hidden = !glOk; if (!glOk) throw new Error('WebGL non disponibile: mostro la versione testo'); }
 
 // ------------------------------------------------------------ motore
 const canvas = $('#c');
@@ -151,6 +178,7 @@ function fit(k) {
 }
 const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 function flyTo(k, dur = 1.9, arco = true, via = null) {
+  if (RIDUCI) { dur = Math.min(dur, .5); arco = false; via = null; }
   const { p, l, f } = fit(k); const p0 = cam.pos.clone(), l0 = cam.look.clone();
   const mid = p0.clone().lerp(p, .5); if (arco) mid.y += Math.min(2.2, p0.distanceTo(p) * .12); else mid.y = Math.min(p0.y, p.y);
   fly = { t: 0, dur, p0, l0, p, l, mid, via, f0: fovMul, f1: f }; sfx.whoosh(dur);
@@ -183,7 +211,8 @@ function openPanel(k) {
   if (d.video === 'yt') h += `<div class="lista">${VIDEO_YT.map(([id, n, s, se], i) => `<button data-yt="${i}"><img src="yt/${id}.jpg" alt=""><span><b>${esc(n)}</b><small>${esc(L ? se : s)}</small></span></button>`).join('')}</div>`;
   if (d.video === 'quota') h += `<div class="lista">${VIDEO_QUOTA.map((v, i) => `<button data-vq="${i}"><span><b>${esc(VIDEO_QUOTA_NOMI[i][L])}</b><small class="mono">IRATA · Sicurlive</small></span><em class="mono">▶</em></button>`).join('')}</div>`;
   if (d.cv) h += `<div class="lista">${d.cv.map(([it, en, s, f, fe, c], i) => `<button data-cv="${i}" style="--k:${COLORI[c]}"><i class="k"></i><span><b>${esc(L ? en : it)}</b><small>${esc(tr(s))}</small></span><em class="mono">PDF ↓</em></button>`).join('')}</div><p class="stampa mono" id="stampa"></p>`;
-  if (d.btn) h += `<div class="ctas">${d.btn.map(b => { const u = b.u ? tr(b.u) : ''; return b.go ? `<button class="btn ${b.cl || ''}" data-goto="${b.go}">${tr(b.t)}</button>` : `<a class="btn ${b.cl || ''}" ${u ? `href="${u}"` : 'aria-disabled="true"'}${b.dl ? ' download' : ''}${u.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${tr(b.t)}</a>`; }).join('')}</div>`;
+  if (d.faq) h += `<div class="faq">${FAQ.map(q => `<details><summary>${esc(q[L][0])}</summary><p>${esc(q[L][1])}</p></details>`).join('')}</div>`;
+  if (d.btn) h += `<div class="ctas">${d.btn.map(b => { const u = b.u ? tr(b.u) : ''; return b.azione ? `<button class="btn ${b.cl || ''}" data-azione="${b.azione}">${tr(b.t)}</button>` : b.go ? `<button class="btn ${b.cl || ''}" data-goto="${b.go}">${tr(b.t)}</button>` : `<a class="btn ${b.cl || ''}" ${u ? `href="${u}"` : 'aria-disabled="true"'}${b.dl ? ' download' : ''}${u.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${tr(b.t)}</a>`; }).join('')}</div>`;
   // avanti e indietro nel giro guidato
   const i = PERCORSO.indexOf(k);
   if (i >= 0) { const n = PERCORSO.length, pv = PERCORSO[(i + n - 1) % n], nx = PERCORSO[(i + 1) % n];
@@ -193,6 +222,9 @@ function openPanel(k) {
   panel.querySelector('.maniglia').onclick = () => panel.classList.toggle('esteso');
   panel.querySelector('.x').onclick = () => go('casa');
   panel.querySelectorAll('[data-goto]').forEach(b => b.onclick = () => go(b.dataset.goto));
+  panel.querySelectorAll('[data-azione="testo"]').forEach(b => b.onclick = apriTesto);
+  panel.querySelectorAll('.faq details').forEach((x, i) => x.addEventListener('toggle', () => { if (x.open) traccia('faq', { domanda: FAQ[i][0][0] }); }));
+  traccia('pannello', { punto: k });
   panel.querySelectorAll('[data-yt]').forEach(b => b.onclick = () => { const [id, n] = VIDEO_YT[+b.dataset.yt]; video(`<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`, n); });
   panel.querySelectorAll('[data-vq]').forEach(b => b.onclick = () => video(`<video src="${VIDEO_QUOTA[+b.dataset.vq]}" autoplay controls playsinline></video>`, 'IRATA · Sicurlive', true));
   panel.querySelectorAll('[data-cv]').forEach(b => b.onclick = () => stampa(d.cv[+b.dataset.cv]));
@@ -214,6 +246,7 @@ $('#video .v-x').onclick = chiudiVideo; $('#video').onclick = e => { if (e.targe
 // ------------------------------------------------------------ stampante
 let stampaAnim = null;
 function stampa([it, en, s, f, fe]) {
+  traccia('cv', { file: L ? fe : f });
   const file = CV(L ? fe : f), el = $('#stampa'); el.textContent = L ? 'Printing…' : 'Stampa in corso…';
   sfx.stampa(); stampaAnim = { t: 0 }; disegnaStampante(L ? 'Printing…' : 'Stampa in corso…'); setTimeout(() => disegnaStampante(), 4200);
   setTimeout(() => { const a = document.createElement('a'); a.href = file; a.download = ''; document.body.appendChild(a); a.click(); a.remove(); el.textContent = L ? 'Done: your PDF is downloading.' : 'Fatto: il PDF si sta scaricando.'; }, 1600);
@@ -240,8 +273,8 @@ function go(k, indietro = false) {
 document.querySelectorAll('#bar [data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
 $('#indietro').onclick = () => { if (storia.length) go(storia.pop(), true); };
 addEventListener('keydown', e => {
-  if (e.key === 'Escape') { if (!$('#video').classList.contains('gone')) chiudiVideo(); else go('casa'); }
-  if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && started && $('#video').classList.contains('gone')) {
+  if (e.key === 'Escape') { if (!testo.classList.contains('chiuso')) chiudiTesto(); else if (!$('#video').classList.contains('gone')) chiudiVideo(); else if (started) go('casa'); }
+  if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && started && $('#video').classList.contains('gone') && testo.classList.contains('chiuso') && document.activeElement !== qIn) {
     const n = PERCORSO.length, i = PERCORSO.indexOf(current); go(PERCORSO[i < 0 ? 0 : (i + (e.key === 'ArrowRight' ? 1 : n - 1)) % n]); }
 });
 $('#giro').onclick = () => go(PERCORSO[0]);
@@ -301,7 +334,7 @@ function suggerisci(nulla = false) {   // senza testo (o senza risultati): scorc
   ris.querySelectorAll('[data-i]').forEach(b => b.onclick = () => scegli(+b.dataset.i));
 }
 qIn.addEventListener('focus', () => { if (!qIn.value.trim()) suggerisci(); });
-function scegli(i) { const r = trovati[i]; if (!r) return; qIn.value = ''; qIn.blur(); ris.classList.remove('aperto'); $('#cerca').classList.remove('aperta'); go(r.k); }
+function scegli(i) { const r = trovati[i]; if (!r) return; traccia('ricerca', { punto: r.k }); /* solo il punto scelto: il testo scritto non viene inviato (vedi privacy) */ qIn.value = ''; qIn.blur(); ris.classList.remove('aperto'); $('#cerca').classList.remove('aperta'); go(r.k); }
 qIn.addEventListener('input', cerca);
 qIn.addEventListener('keydown', e => {
   if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); selez = (selez + (e.key === 'ArrowDown' ? 1 : trovati.length - 1)) % Math.max(1, trovati.length); ris.querySelectorAll('[data-i]').forEach((b, i) => b.classList.toggle('sel', i === selez)); }
@@ -400,7 +433,7 @@ paintAudio();
 // ------------------------------------------------------------ telefono che squilla
 const ring = { on: false, timer: null, n: 0, done: false };
 function startRing() {
-  if (ring.done || current === 'telefono' || !started) return; ring.on = true; ring.n = 0; $('#btnTel').classList.add('vibra');
+  if (RIDUCI || ring.done || current === 'telefono' || !started) return; ring.on = true; ring.n = 0; $('#btnTel').classList.add('vibra');
   const h = hots.find(h => h.p.id === 'telefono'); if (h) { h.el.classList.add('ring'); h.el.querySelector('.lbl').textContent = tr(T.squilla); }
   const tick = () => { if (!ring.on) return; sfx.squillo(); if (++ring.n >= 4) { stopRing(false); ring.timer = setTimeout(startRing, 45000); return; } ring.timer = setTimeout(tick, 2600); }; tick();
 }
@@ -466,6 +499,8 @@ function schermi() {
 }
 
 // ------------------------------------------------------------ ingresso
+// se si entra da soli (link diretto a una sezione) il browser tiene l'audio fermo fino al primo tocco: lì lo si riattiva
+addEventListener('pointerdown', () => { if (AC && AC.state === 'suspended') AC.resume(); }, { capture: true });
 function entra() {
   sfx.init(); $('#entra').classList.add('gone'); started = true; sfx.whoosh(3.5);
   apri = { t: 0 };
@@ -494,7 +529,10 @@ async function fine() {
   // realismo: grana sulle superfici lisce e ombre morbide a terra (calcolate una volta, a scena ferma)
   if (Q.get('fx') !== '0') { if (!MOBILE) aggiungiGrana(scene); W.ombre = ombreContatto(renderer, scene, { w: 40 * K, d: 32 * K, res: MOBILE ? 1024 : 2048, salta: o => o.userData.senzaOmbra || /fronde|foglie/.test(o.name) }); }
   if (!MOBILE) scene.add(extLight);
-  if (Q.has('auto')) { $('#loader').style.transition = 'none'; $('#loader').classList.add('gone'); autoEnter(); } else setTimeout(() => { $('#loader').classList.add('gone'); $('#entra').classList.remove('gone'); }, 500);
+  const meta = location.hash.slice(1);
+  if (Q.has('auto')) { $('#loader').style.transition = 'none'; $('#loader').classList.add('gone'); autoEnter(); }
+  else if (PANNELLI[meta] || VISTE[meta]) setTimeout(() => { $('#loader').classList.add('gone'); entra(); }, 500);   // link diretto a una sezione: niente porta da aprire
+  else setTimeout(() => { $('#loader').classList.add('gone'); $('#entra').classList.remove('gone'); }, 500);
 }
 setTimeout(() => fine(), 25000);
 // per le anteprime: ?auto&vista=quota entra subito senza volo

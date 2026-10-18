@@ -562,6 +562,23 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
     cop.map = testi[testi.length - 1].make(lingua);
   });
 
+  // il documento delle domande frequenti, posato sul tavolino del salottino accanto alle riviste
+  { const g = new THREE.Group(); g.position.set(LX - .05, .387, LZ + .17 + .42); g.rotation.y = .22; scene.add(g);
+    const carta = new THREE.MeshStandardMaterial({ color: 0xf3f1ea, roughness: .9 }), cop = new THREE.MeshStandardMaterial({ roughness: .55 });
+    const fogli = new THREE.Mesh(new THREE.BoxGeometry(.21, .012, .297), carta); fogli.position.y = .006; g.add(fogli);   // risma di fogli
+    const cartella = new THREE.Mesh(new THREE.BoxGeometry(.225, .003, .31), [carta, carta, cop, carta, carta, carta]); cartella.position.y = .0135; g.add(cartella);
+    testi.push({ mesh: { material: cop }, make: L => canvasTex(450, 620, (c, w, h) => {
+      c.fillStyle = '#16171a'; c.fillRect(0, 0, w, h); c.fillStyle = '#ece8e1'; c.fillRect(0, 0, w, 10);
+      c.font = '500 22px "JetBrains Mono"'; c.fillStyle = '#9a9ca3'; c.fillText(['DOCUMENTO', 'DOCUMENT'][L], 34, 70);
+      c.font = '800 62px Archivo'; c.fillStyle = '#ece8e1'; (L ? ['Frequently', 'asked', 'questions'] : ['Domande', 'frequenti']).forEach((r, i) => c.fillText(r, 32, 170 + i * 66));
+      c.font = 'italic 40px "Instrument Serif"'; c.fillStyle = '#c45cff'; c.fillText(['e le mie risposte.', 'and my answers.'][L], 34, L ? 400 : 336);
+      c.fillStyle = 'rgba(236,232,225,.25)'; for (let i = 0; i < 5; i++) c.fillRect(34, 460 + i * 22, 380 - (i % 2) * 90, 6);
+      c.font = '700 24px Archivo'; c.fillStyle = '#ece8e1'; c.fillText('Mattia Crapanzano', 34, 590); }) });
+    cop.map = testi[testi.length - 1].make(lingua);
+    const penna = new THREE.Mesh(new THREE.CylinderGeometry(.005, .005, .14, 12), new THREE.MeshStandardMaterial({ color: 0x1b1c1f, roughness: .3, metalness: .5 }));
+    penna.rotation.z = Math.PI / 2; penna.rotation.y = .5; penna.position.set(.15, .006, .02); g.add(penna);
+    g.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } }); tag(g, 'faq'); }
+
   // foto stampate sul tavolo (formato polaroid, abbastanza grandi da riconoscerle)
   const fotoQ = ['foto/irata-allenamento-sicurlive.jpg', 'foto/irata-imbrago.jpg', 'foto/quota-capannone.jpg', 'foto/quota-attrezzatura.jpg', 'foto/irata-palestra-sicurlive.jpg'];
   const polM = new THREE.MeshStandardMaterial({ color: 0xeeebe4, roughness: .75 });

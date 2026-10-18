@@ -146,12 +146,16 @@ button{font:inherit;color:inherit}
 .cerchio .r2{animation-delay:1.3s;opacity:.6}
 .cerchio:hover{background:rgba(236,232,225,.14)}
 @keyframes anello{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.45);opacity:0}}
+#entra .classico{position:absolute;left:50%;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 44px);transform:translateX(-50%);pointer-events:auto;padding:11px 18px;border-radius:999px;color:var(--ink);text-decoration:none;font-weight:600;font-size:14px;white-space:nowrap}
+#entra .classico:hover{background:rgba(236,232,225,.14)}
+#entra .legale{position:absolute;left:0;right:0;bottom:max(12px,env(safe-area-inset-bottom));display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;pointer-events:auto;font-size:10px;color:var(--ink-2);text-shadow:0 1px 6px rgba(0,0,0,.8)}
+#entra .legale a{color:inherit}
 
 /* caricamento */
 #loader{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 60%,#16131c,#0a0b0d 70%);transition:opacity 1s,visibility 1s}
 .ld{width:min(420px,84vw);text-align:center}
 .ld svg{width:74px;height:74px;margin:0 auto 24px;display:block}
-.ld h1{font-weight:800;font-stretch:112%;font-size:30px;letter-spacing:-.015em}
+.ld .nome{font-weight:800;font-stretch:112%;font-size:30px;letter-spacing:-.015em}
 .ld .msg{margin-top:10px;color:var(--ink-3);min-height:1.5em}
 .ld .track{margin:24px auto 0;height:4px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden}
 .ld .track i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--quota),var(--luce) 50%,var(--cura));transition:width .4s}
@@ -179,3 +183,41 @@ button{font:inherit;color:inherit}
   #hint{bottom:128px;font-size:10px;white-space:normal;text-align:center;width:calc(100% - 40px);border-radius:16px}
   .cerchio{width:160px;height:160px} .cerchio b{font-size:16px}
 }
+
+/* versione testo */
+.salta{position:fixed;left:12px;top:-60px;z-index:60;padding:10px 14px;border-radius:12px;background:var(--ink);color:var(--bg);font-weight:650;text-decoration:none}
+.salta:focus{top:12px}
+.testo{position:fixed;inset:0;z-index:55;overflow:auto;background:radial-gradient(120% 80% at 50% -10%,#131418,#0a0b0d 55%,#070809);transition:opacity .4s,visibility .4s;-webkit-overflow-scrolling:touch}
+.testo.chiuso{opacity:0;visibility:hidden;pointer-events:none}
+.t-barra{position:sticky;top:0;z-index:2;padding:14px 16px;background:linear-gradient(#0a0b0d 70%,rgba(10,11,13,0))}
+.t-corpo{max-width:720px;margin:0 auto;padding:10px 20px 80px;line-height:1.6;color:var(--ink-2);font-size:16.5px}
+.t-corpo h1{font-weight:800;font-stretch:112%;font-size:clamp(38px,8vw,60px);line-height:1;color:var(--ink);letter-spacing:-.02em;margin:6px 0 10px}
+.t-corpo h2{font-weight:800;font-stretch:110%;font-size:clamp(26px,5vw,34px);line-height:1.08;color:var(--ink);margin:6px 0 12px}
+.t-corpo h2 em,.t-corpo h3 em{font-family:"Instrument Serif",serif;font-weight:400}
+.t-corpo h3{font-weight:700;font-size:19px;color:var(--ink);margin:24px 0 6px}
+.t-corpo section{padding-top:36px;margin-top:36px;border-top:1px solid var(--line)}
+.t-corpo p{margin:8px 0} .t-corpo ul{margin:10px 0 0 20px} .t-corpo li{margin:4px 0} .t-corpo b{color:var(--ink);font-weight:650}
+.t-corpo a{color:var(--ink)}
+.t-k{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.t-q{color:var(--quota)} .t-l{color:var(--luce)} .t-c{color:var(--cura)}
+.t-sotto{font-size:18px;color:var(--ink)} .t-contatti{margin-top:14px}
+/* domande frequenti nel pannello */
+.faq{margin-top:14px;display:grid;gap:8px}
+.faq details{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03)}
+.faq summary{cursor:pointer;list-style:none;padding:12px 40px 12px 14px;font-weight:650;font-size:15px;color:var(--ink);position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:14px;top:9px;font-size:20px;color:var(--c)}
+.faq details[open] summary::after{content:"–"}
+.faq details p{margin:0;padding:0 14px 14px;font-size:14.5px}
+
+
+/* accessibilità: contorno ben visibile su ciò che è selezionato con la tastiera */
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.hot:focus-visible{outline:none} .hot:focus-visible .dot{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--ink)}
+.cerca input:focus-visible{outline:none}
+/* "riduci movimento" attivo nel dispositivo: niente animazioni decorative */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .cerchio .ring{display:none}
+}
+.t-piede{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px}

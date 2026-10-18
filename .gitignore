@@ -10,3 +10,6 @@
 
 # impostazioni locali dell'anteprima
 /.claude/
+
+# copie doppie create dalla sincronizzazione di iCloud ("nome 2.jpg"): non vanno pubblicate
+* 2.*

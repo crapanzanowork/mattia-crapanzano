@@ -1,0 +1,19 @@
+# crapanzano.work: tutto il sito è aperto ai motori di ricerca e agli assistenti AI
+User-agent: *
+Allow: /
+
+# assistenti AI e motori di risposta: benvenuti (servono per farsi trovare anche lì)
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://www.crapanzano.work/sitemap.xml

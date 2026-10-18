@@ -1082,3 +1082,18 @@ kbd { display: inline-grid; place-items: center; min-width: 24px; height: 24px; 
   .facts { grid-template-columns: repeat(5, 1fr); }
   a { color: #111 !important; }
 }
+
+/* ---------- richiami al laboratorio 3D (ottobre 2026) ---------- */
+.lab-link { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem .9rem .5rem .75rem; border-radius: 999px; border: 1px solid var(--line, rgba(236,232,225,.16));
+  color: var(--ink); text-decoration: none; font-weight: 600; font-size: .92rem; background: rgba(255, 255, 255, .04); transition: background .2s, border-color .2s; }
+.lab-link svg { width: 18px; height: 18px; flex: none; }
+.lab-link:hover { background: rgba(255, 255, 255, .1); border-color: rgba(236, 232, 225, .35); }
+.dock__lab svg { width: 18px; height: 18px; }
+.home__lab { display: inline-flex; align-items: center; gap: .6rem; margin-top: .9rem; padding: .7rem 1rem; border-radius: 14px; border: 1px solid var(--line, rgba(236,232,225,.16));
+  color: var(--ink); text-decoration: none; font-family: inherit; text-transform: none; letter-spacing: 0; font-size: .95rem; background: rgba(255, 255, 255, .04); }
+.home__lab svg { width: 20px; height: 20px; } .home__lab i { font-style: normal; margin-left: .2rem; }
+.home__lab:hover { background: rgba(255, 255, 255, .1); }
+.foot a { color: inherit; }
+@media (max-width: 640px) { .lab-link span { display: none; } .lab-link { padding: .5rem; } }
+/* video senza miniatura salvata: sfondo nel colore del mondo invece di un'immagine caricata da Vimeo */
+.clip:not(:has(img)) { background: radial-gradient(120% 90% at 20% 0%, rgba(196, 92, 255, .38), transparent 60%), radial-gradient(100% 80% at 100% 100%, rgba(255, 79, 216, .25), transparent 60%), #121216; }
