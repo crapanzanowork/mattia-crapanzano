@@ -1,0 +1,21 @@
+{
+ "name": "Mattia Crapanzano",
+ "short_name": "Crapanzano",
+ "start_url": "/",
+ "display": "standalone",
+ "background_color": "#f5f5f5",
+ "theme_color": "#0a0b0d",
+ "icons": [
+  {
+   "src": "/assets/img/favicon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "/assets/img/icona-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any maskable"
+  }
+ ]
+}

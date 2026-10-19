@@ -44,7 +44,7 @@ function applyLang() {
   if (testo && !testo.classList.contains('chiuso')) apriTesto();
   $('#btnTesto').title = $('#btnTesto').ariaLabel = tr(T.testo);
   $('#testo').setAttribute('aria-label', tr(T.testo));
-  document.title = L ? 'Mattia Crapanzano · IRATA rope access technician, photographer and videomaker, care worker and first responder' : TITOLO_IT;
+  document.title = L ? 'Mattia Crapanzano · IRATA rope access, photographer, care worker' : TITOLO_IT;
 }
 $('#lang').onclick = () => { L = 1 - L; store.set('lab-lang', L ? 'en' : 'it'); sfx.click(); applyLang(); };
 const labelOf = id => { const p = PANNELLI[id]; if (!p) return id; const lab = tr(p.lab); return lab.replace(/^0\d · /, ''); };
