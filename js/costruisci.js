@@ -196,7 +196,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   };
   frase('motto', [0, 0, ['#c45cff']], 6.6, 200, -9.8, 4.9, Z1 - .03, Math.PI);   // sulla parete del portone, a sinistra (sopra l'angolo caffè)
   frase('studio', [0, ['#c45cff', 'italic 400']], 5.2, 300, X1 - .03, 4.7, campata(0), -Math.PI / 2);   // parete destra, sopra la sala posa
-  frase('formazione', [0, ['#d9d2c5', 'italic 400']], 5.2, 330, 0, 5.3, 8.9, Math.PI);   // sopra la parete della formazione, al centro: vale per tutti e tre i mestieri
+  frase('formazione', [0, ['#d9d2c5', 'italic 400']], 6.4, 300, 0, 5.3, 8.9, Math.PI);   // sopra la parete della formazione, al centro: vale per tutti e tre i mestieri
   // scritte del garage: sopra i portoni (lato capannone) e sulla parete di fondo
   const insegnaPorta = (num, txt, col) => canvasTex(1024, 300, (g, w, h) => { g.fillStyle = '#16171a'; g.fillRect(0, 0, w, h); g.fillStyle = col; g.fillRect(0, 0, w, 16);
     g.font = '800 170px Archivo'; g.fillText(num, 40, 210); g.fillStyle = '#ece8e1'; g.font = '600 52px "JetBrains Mono"'; g.fillText(txt, 430, 182); });

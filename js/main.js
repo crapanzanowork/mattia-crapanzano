@@ -245,10 +245,18 @@ $('#video .v-x').onclick = chiudiVideo; $('#video').onclick = e => { if (e.targe
 
 // ------------------------------------------------------------ stampante
 let stampaAnim = null;
+const caricaFoglio = new THREE.TextureLoader();   // fuori dal LoadingManager: non deve far ripartire la schermata di caricamento
 function stampa([it, en, s, f, fe]) {
   traccia('cv', { file: L ? fe : f });
   const file = CV(L ? fe : f), el = $('#stampa'); el.textContent = L ? 'Printing…' : 'Stampa in corso…';
-  sfx.stampa(); stampaAnim = { t: 0 }; disegnaStampante(L ? 'Printing…' : 'Stampa in corso…'); setTimeout(() => disegnaStampante(), 4200);
+  if (stampaAnim?.m) scene.remove(stampaAnim.m);
+  // il foglio che esce è la prima pagina del curriculum vero, nella lingua scelta
+  const tex = caricaFoglio.load('tex/cv/' + (L ? fe : f).replace(/\.pdf$/, '.jpg')); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+  sfx.stampa(); stampaAnim = { t: 0, tex };
+  // la camera si avvicina al vassoio mentre il foglio esce, poi torna alla stampante
+  clearTimeout(stampa.vicino); clearTimeout(stampa.ritorno);
+  stampa.vicino = setTimeout(() => { if (current === 'stampante') { look.ty = look.tp = 0; flyTo('foglio', 1.5, false); } }, 350);
+  stampa.ritorno = setTimeout(() => { if (current === 'stampante' && !fly) flyTo('stampante', 1.4, false); }, 8500); disegnaStampante(L ? 'Printing…' : 'Stampa in corso…'); setTimeout(() => disegnaStampante(), 4200);
   setTimeout(() => { const a = document.createElement('a'); a.href = file; a.download = ''; document.body.appendChild(a); a.click(); a.remove(); el.textContent = L ? 'Done: your PDF is downloading.' : 'Fatto: il PDF si sta scaricando.'; }, 1600);
 }
 
@@ -649,8 +657,8 @@ function frame() {
   screenT += dt; if (screenT > 5) { screenT = 0; siteI = (siteI + 1) % SITI_TEX.length;
     if (W.schermi.monitor) W.schermi.monitor.material.map = SITI_TEX[siteI]; }
   // foglio che esce dalla stampante
-  if (stampaAnim) { stampaAnim.t += dt; if (!stampaAnim.m) { const m = new THREE.Mesh(new THREE.PlaneGeometry(.21, .297), new THREE.MeshStandardMaterial({ color: 0xf6f5f0, roughness: .9, side: THREE.DoubleSide })); m.rotation.x = -Math.PI / 2 + .25; scene.add(m); stampaAnim.m = m; }
-    const k = Math.min(1, stampaAnim.t / 1.5), d = .1 + k * .26; stampaAnim.m.rotation.order = 'YXZ'; stampaAnim.m.rotation.set(-Math.PI / 2 + .25, -.314, 0); stampaAnim.m.position.set(2.46 - .309 * d, .98, -9.48 + .951 * d); if (stampaAnim.t > 4) { scene.remove(stampaAnim.m); stampaAnim = null; } }
+  if (stampaAnim) { stampaAnim.t += dt; if (!stampaAnim.m) { const m = new THREE.Mesh(new THREE.PlaneGeometry(.21, .297), new THREE.MeshBasicMaterial({ color: 0xd2d0cb, map: stampaAnim.tex, side: THREE.DoubleSide })); m.rotation.x = -Math.PI / 2 + .25; scene.add(m); stampaAnim.m = m; }
+    const k = Math.min(1, stampaAnim.t / 1.5), d = .1 + k * .26; stampaAnim.m.rotation.order = 'YXZ'; stampaAnim.m.rotation.set(-Math.PI / 2 + .25, -.314, 0); stampaAnim.m.position.set(2.46 - .309 * d, .98, -9.48 + .951 * d); if (stampaAnim.t > 20) { scene.remove(stampaAnim.m); stampaAnim.tex.dispose(); stampaAnim = null; } }   // il foglio resta sul vassoio per un po'
   // pallini
   const zona = ZONA_DI[current] || (['quota', 'luce', 'cura'].includes(current) ? current : '');
   // area libera per i pallini: niente sotto la testata, la barra in basso o il pannello aperto

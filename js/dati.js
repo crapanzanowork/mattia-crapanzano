@@ -36,6 +36,7 @@ export const VISTE = {
   tv:        { pos: [5.6, 2.2, -6.9], look: [6.6, 2.35, -13.5] },
   consulenza:{ pos: [2.8, 2.25, -1.5], look: [2.8, .8, -4.8] },
   stampante: { pos: [2.09, 1.5, -8.34], look: [2.46, .98, -9.48] },
+  foglio: { pos: [2.25, 1.40, -8.83], look: [2.36, .97, -9.17] },   // primo piano sul CV appena stampato (lo usa la stampa, non è un punto da cliccare)
   set:       { pos: [8.8, 2.0, -10.2], look: [14.6, 1.3, -10.2] },
   cura:      { pos: [1.6, 3.9, 0.4], look: [12.0, 1.6, 9.0], fov: 1.15 },
   divise:    { pos: [9.6, 1.9, -.2], look: [9.6, 1.4, 3.0] },
@@ -228,7 +229,7 @@ export const PANNELLI = {
     p: ['Bianca per il turno in struttura, gialla per l\'ambulanza, blu per la caserma.', 'White for the care home, yellow for the ambulance, blue for the fire station.'],
     li: [[['OSS', 'assistenza in struttura'], ['Soccorritore', 'Croce Rossa e Legnago Soccorso'], ['Vigile del fuoco', 'volontario']],
          [['OSS', 'care home assistant'], ['First responder', 'Red Cross and Legnago Soccorso'], ['Firefighter', 'volunteer']]] },
-  attestati: { c: 'base', lab: ['Formazione continua', 'Training never stops'], h: ['Dodici corsi, <em>e non è finita.</em>', 'Twelve courses, <em>and counting.</em>'],
+  attestati: { c: 'base', lab: ['In formazione · continua', 'In training · ongoing'], h: ['Dodici corsi, <em>e non è finita.</em>', 'Twelve courses, <em>and counting.</em>'],
     p: ['Corde, soccorso, sicurezza e drone: la formazione è la parte che tiene insieme i tre mestieri. Ogni corso nuovo finisce su questa parete.', 'Ropes, rescue, safety and drones: training is what holds the three jobs together. Every new course ends up on this wall.'], attestati: 1 },
   finestra: { c: 'cura', lab: ['Il garage', 'The garage'], h: ['Le luci <em>blu.</em>', 'The <em>blue lights.</em>'],
     p: ['Faccio turni in ambulanza con Legnago Soccorso e con la Croce Rossa di Vicenza, ed esco con i vigili del fuoco volontari. È lì che ho imparato a fare la cosa giusta anche quando il tempo è poco.',
@@ -325,7 +326,7 @@ export const CHIAVI = {
 export const SCRITTE = {
   quota: [['IN QUOTA', '01'], ['AT HEIGHT', '01']], luce: [['IN LUCE', '02'], ['IN FOCUS', '02']], cura: [['IN CURA', '03'], ['IN CARE', '03']],
   motto: [['OSSERVO.', 'RESTO LUCIDO.', 'CI SONO QUANDO SERVE.'], ['I OBSERVE.', 'I STAY SHARP.', 'I\'M THERE WHEN IT MATTERS.']],
-  formazione: [['FORMAZIONE', 'continua.'], ['TRAINING', 'never stops.']],
+  formazione: [['IN FORMAZIONE', 'continua.'], ['IN TRAINING', 'ongoing.']],
   pronti: [['PRONTI', 'a uscire.'], ['READY', 'to go.']],
   studio: [['STUDIO', 'foto · video · web'], ['STUDIO', 'photo · video · web']],
   boulder: [['BOULDER', 'primi passi'], ['BOULDER', 'first steps']],
