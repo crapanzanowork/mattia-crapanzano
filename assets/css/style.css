@@ -1083,6 +1083,27 @@ kbd { display: inline-grid; place-items: center; min-width: 24px; height: 24px; 
   a { color: #111 !important; }
 }
 
+/* ---------- impaginazione dei CV in PDF (ottobre 2026): niente blocchi spezzati tra due pagine, niente titoli soli in fondo ---------- */
+@media print {
+  p, li { orphans: 3; widows: 3; }
+  h2, h3, .sh, .sh__title, .sh__lead, .eyebrow, .tl__when, .road__when { break-after: avoid; }
+  .sh + *, .sh__title + * { break-before: avoid; }
+  .card, .step, .steps, .tile, .stat, .stats, .scheda, .road, .tags, .tl li, .certs li, .specs > div, .scheda__dl > div, .scheda__exp li,
+  .list-check li, .facts, figure, blockquote, .other, .s-hero__text, .sh { break-inside: avoid; }
+  /* i quattro numeri su una riga sola, compatti: prima occupavano mezza pagina */
+  .stats { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; margin-top: 6px; }
+  .stat { padding: 8px 10px !important; } .stat b { font-size: 16pt; } .stat > span { margin-top: 2px; font-size: 8.5pt; }
+  /* niente rientri pensati per lo schermo; il percorso su una riga sola (la regola per i telefoni lo metteva in colonna) */
+  .body-indent { padding-left: 0 !important; }
+  .road, .road.body-indent { grid-template-columns: repeat(4, 1fr) !important; gap: 10px; padding: 8px 0 0 !important; }
+  .road b { font-size: 10.5pt; margin-top: 2px; } .road small { font-size: 8.5pt; }
+  .steps--col .step { column-gap: 8px; } .step h3, .step b { font-size: 11pt; } .step p { font-size: 9pt; margin-top: 2px; }
+  /* elenchi con la loro etichetta: restano interi */
+  .list-check, :has(> .list-check) { break-inside: avoid; } .label { break-after: avoid; }
+  .tags { margin-top: 10px !important; }
+  .certs { break-inside: avoid; }   /* l'elenco delle qualifiche resta su una pagina sola */   /* il margine dello schermo spingeva le competenze da sole su una pagina nuova */
+}
+
 /* ---------- richiami al laboratorio 3D (ottobre 2026) ---------- */
 .lab-link { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem .9rem .5rem .75rem; border-radius: 999px; border: 1px solid var(--line, rgba(236,232,225,.16));
   color: var(--ink); text-decoration: none; font-weight: 600; font-size: .92rem; background: rgba(255, 255, 255, .04); transition: background .2s, border-color .2s; }
