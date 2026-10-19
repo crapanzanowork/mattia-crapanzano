@@ -1,8 +1,7 @@
 # file di sistema del Mac
 .DS_Store
 
-# documenti personali (codice fiscale, contratti, fatture, attestati, foto originali):
-# restano SOLO sul computer, non vengono MAI pubblicati
+# file di lavoro e documenti personali: restano solo sul computer, non vengono mai pubblicati
 /_privato/
 
 # sorgenti del logo (le versioni usate dal sito sono in assets/img/logo)
@@ -11,5 +10,6 @@
 # impostazioni locali dell'anteprima
 /.claude/
 
-# copie doppie create dalla sincronizzazione di iCloud ("nome 2.jpg"): non vanno pubblicate
-* 2.*
+# copie doppie create dalla sincronizzazione di iCloud ("nome 2.jpg", "nome 3.glb"): non vanno pubblicate
+* [0-9].*
+* [0-9][0-9].*
