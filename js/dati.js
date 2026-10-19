@@ -257,8 +257,8 @@ export const PANNELLI = {
     btn: [{ t: ['LinkedIn', 'LinkedIn'], u: [CONTATTI.linkedin, CONTATTI.linkedin], cl: 'c' }, { t: ['Instagram', 'Instagram'], u: [CONTATTI.instagram, CONTATTI.instagram] },
           { t: ['Curriculum', 'Résumé'], go: 'stampante' }, { t: ['Blog · presto', 'Blog · soon'], u: ['', ''] }] },
   bacheca: { c: 'base', lab: ['Bacheca', 'Board'], h: ['Ciao, <em>sono Mattia.</em>', 'Hi, <em>I\'m Mattia.</em>'],
-    p: [`Ho ${ETA} anni e vivo a Legnago, in provincia di Verona. Faccio tre lavori diversi: corde, immagini e soccorso. Mi sposto volentieri, anche all'estero.`,
-        `I am ${ETA} and I live in Legnago, near Verona. I do three different jobs: ropes, images and rescue. I am happy to travel, abroad too.`],
+    p: [`Ho ${ETA} anni e la mia base di lavoro è Legnago, in provincia di Verona. Faccio tre lavori diversi: corde, immagini e soccorso. Mi sposto volentieri, anche all'estero.`,
+        `I am ${ETA} and my work base is Legnago, near Verona. I do three different jobs: ropes, images and rescue. I am happy to travel, abroad too.`],
     li: [[['Novità', 'corso ITRA, 16–21 novembre'], ['Lingue', 'italiano, inglese'], ['Base', 'Legnago (VR)']], [['News', 'ITRA course, 16–21 November'], ['Languages', 'Italian, English'], ['Base', 'Legnago (VR), Italy']]],
     btn: [{ t: ['Scrivimi', 'Message me'], go: 'telefono', cl: 'c' }] },
 };
@@ -266,8 +266,8 @@ export const PANNELLI = {
 // Domande frequenti: [domanda, risposta] in italiano e in inglese. Compaiono nel documento sul tavolino del salottino,
 // nella versione testo del sito e nei dati strutturati che leggono Google e gli assistenti AI.
 export const FAQ = [
-  [['Chi è Mattia Crapanzano?', `Ho ${ETA} anni e vivo a Legnago, in provincia di Verona. Faccio tre lavori: tecnico su fune IRATA, fotografo e videomaker per aziende, Operatore Socio Sanitario e soccorritore.`],
-   ['Who is Mattia Crapanzano?', `I am ${ETA} and live in Legnago, near Verona, Italy. I do three jobs: IRATA rope access technician, photographer and videomaker for companies, and healthcare assistant and first responder.`]],
+  [['Chi è Mattia Crapanzano?', `Ho ${ETA} anni e la mia base di lavoro è Legnago, in provincia di Verona. Faccio tre lavori: tecnico su fune IRATA, fotografo e videomaker per aziende, Operatore Socio Sanitario e soccorritore.`],
+   ['Who is Mattia Crapanzano?', `I am ${ETA} and my work base is Legnago, near Verona, Italy. I do three jobs: IRATA rope access technician, photographer and videomaker for companies, and healthcare assistant and first responder.`]],
   [['Che certificazioni hai per lavorare su fune?', 'IRATA Livello 1 e Modulo A (D.Lgs. 81/08), quindi posso lavorare su fune anche in Italia. L\'IRATA l\'ho preso da Sicurlive. A novembre 2026 faccio il corso ITRA con Prevent per il soccorso su fune.'],
    ['What rope access certifications do you hold?', 'IRATA Level 1 and the Italian Module A (Legislative Decree 81/08), so I can also work on ropes in Italy. I trained for IRATA at Sicurlive. In November 2026 I take the ITRA rope rescue course with Prevent.']],
   [['Hai già esperienza di lavoro in quota?', 'Non ancora in cantiere, e preferisco dirlo chiaramente. Sono certificato e allenato: cerco il primo incarico per manutenzioni, ispezioni e lavori in quota.'],
@@ -288,6 +288,8 @@ export const FAQ = [
    ['How do I download your résumé?', 'I have three, one for each job, in Italian and English. You will find them at the printer in the In focus area, or with the CV button at the bottom.']],
   [['Come ti contatto?', 'Telefono o WhatsApp +39 351 465 8810, email crapanzano.work@gmail.com. Rispondo io, di solito in giornata.'],
    ['How can I contact you?', 'Phone or WhatsApp +39 351 465 8810, email crapanzano.work@gmail.com. I answer myself, usually the same day.']],
+  [['Quali sono i tuoi profili ufficiali?', 'Questo sito, LinkedIn (linkedin.com/in/mattia-crapanzano) e Instagram @crapanzano.work. Ci sono altre persone con il mio nome: profili e attività diversi da questi non sono miei.'],
+   ['Which profiles are officially yours?', 'This website, LinkedIn (linkedin.com/in/mattia-crapanzano) and Instagram @crapanzano.work. Other people share my name: profiles and businesses other than these are not mine.']],
   [['Parli inglese?', 'Sì, a livello base. Tutti i miei curriculum sono anche in inglese.'],
    ['Do you speak English?', 'Yes, at a basic level. All my résumés are also available in English.']],
 ];
