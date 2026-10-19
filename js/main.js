@@ -256,7 +256,7 @@ function stampa([it, en, s, f, fe]) {
 let current = 'fuori', started = false;
 const storia = [];   // punti visitati, per il tasto indietro
 function go(k, indietro = false) {
-  if (!started) return;
+  if (!started) { if (!$('#entra').classList.contains('gone')) entra(k); return; }   // da fuori (es. dalla ricerca): si entra e si va lì
   if (k === 'interruttore') { $('#luce').click(); return; }
   sfx.click(); if (k === current && k !== 'casa') return;
   if (!indietro && current && current !== k && current !== 'fuori') { storia.push(current); if (storia.length > 40) storia.shift(); }
@@ -311,20 +311,44 @@ function cerca() {
   if (q.length < 2) { suggerisci(); return; }
   const parole = q.split(/[^a-z0-9]+/).filter(w => w && !VUOTE.has(w));
   if (!parole.length) { suggerisci(); return; }
+  const ultima = /\s$/.test(qIn.value) ? '' : parole[parole.length - 1];   // la parola che si sta scrivendo: basta l'inizio ("magis" → Magistral)
+  const vale = (p, w) => vicine(p, w) || (p === ultima && p.length >= 3 && w.startsWith(p));
   trovati = indice().map(r => {
     const t = senzaAccenti(r.titolo).split(/[^a-z0-9]+/), c = senzaAccenti(CHIAVI[r.k] || '').split(/[^a-z0-9]+/), b = senzaAccenti(r.testo).split(/[^a-z0-9]+/);
     let punti = 0;
-    for (const p of parole) { if (t.some(w => vicine(p, w))) punti += 4; else if (c.some(w => vicine(p, w))) punti += 3; else if (b.some(w => vicine(p, w))) punti += 1; }
+    for (const p of parole) { if (t.some(w => vale(p, w))) punti += 4; else if (c.some(w => vale(p, w))) punti += 3; else if (b.some(w => vale(p, w))) punti += 1; }
     return punti ? { ...r, punti } : null; })
     .filter(Boolean).sort((a, b) => b.punti - a.punti);
-  const top = trovati[0]?.punti || 0; trovati = trovati.filter(r => r.punti >= Math.max(2, top * .5)).slice(0, 5);   // solo i risultati vicini al migliore
+  const top = trovati[0]?.punti || 0; trovati = trovati.filter(r => r.punti >= Math.max(parole.length > 1 ? 2 : 1, top * .5)).slice(0, 5);   // solo i risultati vicini al migliore
   if (!trovati.length) { suggerisci(true); return; }
   ris.innerHTML = trovati.map((r, i) => {
-    const b = senzaAccenti(r.testo), j = Math.max(0, ...parole.map(p => b.indexOf(radice(p)))), da = Math.max(0, j - 30);
+    const b = senzaAccenti(r.testo), j = Math.max(0, ...parole.map(p => b.indexOf(radice(p)))), da = j > 30 ? r.testo.indexOf(' ', j - 30) + 1 : 0;   // l'anteprima parte da una parola intera
     const pezzo = (da ? '…' : '') + r.testo.slice(da, da + 90) + '…';
     return `<button data-i="${i}" class="${i === selez ? 'sel' : ''}"><b>${esc(r.titolo)}</b><small>${esc(pezzo)}</small></button>`; }).join('');
   ris.classList.add('aperto');
   ris.querySelectorAll('[data-i]').forEach(b => b.onclick = () => scegli(+b.dataset.i));
+}
+// completamento: vocabolario delle parole del laboratorio nella lingua scelta (titoli e parole chiave contano di più)
+let vocab = null, vocabL = -1;
+function vocabolario() {
+  if (vocab && vocabL === L) return vocab;
+  const peso = new Map(), forma = new Map();
+  const aggiungi = (testo, p) => String(testo).split(/[^A-Za-zÀ-ÿ0-9']+/).forEach(w => { w = w.replace(/^'+|'+$/g, ''); if (w.length < 4) return; const k = senzaAccenti(w);
+    if (VUOTE.has(k)) return; peso.set(k, (peso.get(k) || 0) + p); if (!forma.has(k) || /^[A-ZÀ-Ý]/.test(w)) forma.set(k, w); });
+  indice().forEach(r => { aggiungi(r.titolo, 6); aggiungi(r.testo, 1); aggiungi(CHIAVI[r.k] || '', 2); });
+  vocab = [...peso].map(([k, n]) => ({ k, n, w: forma.get(k) })); vocabL = L; return vocab;
+}
+const fantasma = $('#qFantasma'); let completa = '';
+function suggerimento() {   // aggiorna il testo grigio dopo il cursore
+  completa = ''; fantasma.textContent = '';
+  const v = qIn.value, m = v.match(/([A-Za-zÀ-ÿ0-9']{2,})$/);
+  if (!m || qIn.selectionStart !== v.length || qIn.scrollWidth > qIn.clientWidth) return;
+  const p = senzaAccenti(m[1]);
+  const c = vocabolario().filter(x => x.k.startsWith(p) && x.k.length > p.length).sort((a, b) => b.n - a.n || a.k.length - b.k.length)[0];
+  if (!c) return;
+  completa = c.w.slice(m[1].length);
+  fantasma.style.font = getComputedStyle(qIn).font;
+  fantasma.innerHTML = `<i>${esc(v)}</i>${esc(completa)}`;
 }
 function suggerisci(nulla = false) {   // senza testo (o senza risultati): scorciatoie alle cose più richieste
   const ids = ['stampante', 'telefono', 'quota', 'luce', 'cura', 'tv'];
@@ -334,9 +358,12 @@ function suggerisci(nulla = false) {   // senza testo (o senza risultati): scorc
   ris.querySelectorAll('[data-i]').forEach(b => b.onclick = () => scegli(+b.dataset.i));
 }
 qIn.addEventListener('focus', () => { if (!qIn.value.trim()) suggerisci(); });
-function scegli(i) { const r = trovati[i]; if (!r) return; traccia('ricerca', { punto: r.k }); /* solo il punto scelto: il testo scritto non viene inviato (vedi privacy) */ qIn.value = ''; qIn.blur(); ris.classList.remove('aperto'); $('#cerca').classList.remove('aperta'); go(r.k); }
-qIn.addEventListener('input', cerca);
+function scegli(i) { const r = trovati[i]; if (!r) return; traccia('ricerca', { punto: r.k }); /* solo il punto scelto: il testo scritto non viene inviato (vedi privacy) */ qIn.value = ''; fantasma.textContent = ''; completa = ''; qIn.blur(); ris.classList.remove('aperto'); $('#cerca').classList.remove('aperta'); go(r.k); }
+qIn.addEventListener('input', () => { cerca(); suggerimento(); });
+qIn.addEventListener('blur', () => { fantasma.textContent = ''; completa = ''; });
 qIn.addEventListener('keydown', e => {
+  if (completa && (e.key === 'Tab' || (e.key === 'ArrowRight' && qIn.selectionStart === qIn.value.length))) {   // accetta il completamento
+    e.preventDefault(); qIn.value += completa; cerca(); suggerimento(); e.stopPropagation(); return; }
   if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); selez = (selez + (e.key === 'ArrowDown' ? 1 : trovati.length - 1)) % Math.max(1, trovati.length); ris.querySelectorAll('[data-i]').forEach((b, i) => b.classList.toggle('sel', i === selez)); }
   if (e.key === 'Enter') scegli(Math.max(0, selez));
   if (e.key === 'Escape') { qIn.value = ''; cerca(); qIn.blur(); $('#cerca').classList.remove('aperta'); }
@@ -501,12 +528,12 @@ function schermi() {
 // ------------------------------------------------------------ ingresso
 // se si entra da soli (link diretto a una sezione) il browser tiene l'audio fermo fino al primo tocco: lì lo si riattiva
 addEventListener('pointerdown', () => { if (AC && AC.state === 'suspended') AC.resume(); }, { capture: true });
-function entra() {
+function entra(meta) {
   sfx.init(); $('#entra').classList.add('gone'); started = true; sfx.whoosh(3.5);
   apri = { t: 0 };
   setTimeout(() => { current = 'casa'; flyTo('casa', 4.6, false, [new THREE.Vector3(0, 2.6, 18), new THREE.Vector3(0, 5.9, 10.5)]); }, 900);   // passa sopra la parete della formazione
   setTimeout(() => $('#hint').classList.remove('gone'), 4400); setTimeout(() => $('#hint').classList.add('gone'), 11000);
-  const h = location.hash.slice(1); if (PANNELLI[h] || VISTE[h]) setTimeout(() => go(h), 4800);
+  const h = typeof meta === 'string' ? meta : location.hash.slice(1); if (PANNELLI[h] || VISTE[h]) setTimeout(() => go(h), RIDUCI ? 1200 : 4800);
   ring.timer = setTimeout(startRing, 12000); quotaVideo(true);
   document.querySelector('#bar [data-go="casa"]').classList.add('on'); $('#bar').classList.remove('gone');
   setTimeout(() => { if (current === 'casa') $('#giro').classList.remove('gone'); }, 4000);
