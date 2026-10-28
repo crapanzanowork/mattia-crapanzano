@@ -13,6 +13,7 @@ import { ombreContatto, aggiungiGrana, PellicolaShader } from './realismo.js';
 import { costruisci } from './costruisci.js';
 import { VISTE, PUNTI, ZONA_DI, PANNELLI, T, COLORI, VIDEO_YT, VIDEO_QUOTA, VIDEO_QUOTA_NOMI, SITI, ATTESTATI, CV, K, PERCORSO, CHIAVI, FAQ } from './dati.js';
 import { testoHTML } from './testo.js';
+import { portaHTML } from './porta.js';
 
 const $ = s => document.querySelector(s);
 const Q = new URLSearchParams(location.search);
@@ -43,6 +44,7 @@ function applyLang() {
   if (W) { W.lingua(L); disegnaStampante(); telStato = ''; }
   if (testo && !testo.classList.contains('chiuso')) apriTesto();
   $('#btnTesto').title = $('#btnTesto').ariaLabel = tr(T.testo);
+  if (portaAperta()) { porta.innerHTML = portaHTML(L); $('#pProg').style.width = (caricato ? 100 : carico) + '%'; }
   $('#testo').setAttribute('aria-label', tr(T.testo));
   document.title = L ? 'Mattia Crapanzano · IRATA rope access, photographer, care worker' : TITOLO_IT;
 }
@@ -106,9 +108,17 @@ const cache = {};
 const gltf = f => { if (MOBILE) f = f.replace(/^modelli\//, 'modelli-mobile/');   // sui telefoni: stessi modelli con immagini più leggere
   if (!cache[f]) cache[f] = gl.loadAsync(f); return cache[f].then(g => ({ scene: g.scene.clone(true) })); };
 const prog = $('#prog'), msg = $('#msg');
+// porta d'ingresso: sito classico o laboratorio. Chi sceglie il laboratorio mentre carica vede la barra e poi entra da solo
+const porta = $('#porta');
+let carico = 0, sceltoLab = false, caricato = false;
+const portaAperta = () => !document.documentElement.classList.contains('senza-porta') && !porta.classList.contains('via');
+porta.addEventListener('click', e => {
+  if (e.target.closest('#pLang')) $('#lang').click();
+  else if (e.target.closest('#pLab')) { porta.classList.add('via'); sceltoLab = true; if (caricato) { $('#loader').classList.add('gone'); entra(); } }
+});
 let mi = 0; msg.textContent = tr(T.carico)[0];
 const mt = setInterval(() => { const m = tr(T.carico); mi = (mi + 1) % m.length; msg.textContent = m[mi]; }, 1100);
-manager.onProgress = (u, a, b) => { prog.style.width = Math.round(a / b * 100) + '%'; };
+manager.onProgress = (u, a, b) => { carico = Math.round(a / b * 100); prog.style.width = carico + '%'; const p = $('#pProg'); if (p) p.style.width = carico + '%'; };
 const fonts = Promise.all(['800 100px Archivo', '400 100px Archivo', '600 30px Archivo', '500 20px "JetBrains Mono"', 'italic 30px "Instrument Serif"'].map(f => document.fonts.load(f))).catch(() => {});
 
 new RGBELoader(manager).load('hdri/capannone_1k.hdr', t => {
@@ -553,7 +563,6 @@ $('#btnEntra').onclick = entra;
 buildHots(); applyLang();
 $('#bar').classList.add('gone');
 const mondo = costruisci({ scene, tl, gltf, mobile: MOBILE, fonts, lingua: L });
-let caricato = false;
 manager.onLoad = () => fine();
 async function fine() {
   if (caricato) return;
@@ -567,6 +576,8 @@ async function fine() {
   const meta = location.hash.slice(1);
   if (Q.has('auto')) { $('#loader').style.transition = 'none'; $('#loader').classList.add('gone'); autoEnter(); }
   else if (PANNELLI[meta] || VISTE[meta]) setTimeout(() => { $('#loader').classList.add('gone'); entra(); }, 500);   // link diretto a una sezione: niente porta da aprire
+  else if (sceltoLab) setTimeout(() => { $('#loader').classList.add('gone'); entra(); }, 500);   // scelto dalla porta mentre caricava
+  else if (portaAperta()) { $('#loader').classList.add('gone'); const p = $('#pProg'); if (p) p.style.width = '100%'; }   // si entra dal pulsante della porta
   else setTimeout(() => { $('#loader').classList.add('gone'); $('#entra').classList.remove('gone'); }, 500);
 }
 setTimeout(() => fine(), 25000);

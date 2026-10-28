@@ -1118,3 +1118,44 @@ kbd { display: inline-grid; place-items: center; min-width: 24px; height: 24px; 
 @media (max-width: 640px) { .lab-link span { display: none; } .lab-link { padding: .5rem; } }
 /* video senza miniatura salvata: sfondo nel colore del mondo invece di un'immagine caricata da Vimeo */
 .clip:not(:has(img)) { background: radial-gradient(120% 90% at 20% 0%, rgba(196, 92, 255, .38), transparent 60%), radial-gradient(100% 80% at 100% 100%, rgba(255, 79, 216, .25), transparent 60%), #121216; }
+/* ---------- sottopagine di In luce: Foto e video, Siti web (ottobre 2026) ---------- */
+.page-luce .btn--solid { color: #fff; text-shadow: 0 1px 2px rgba(40, 0, 60, .35); }   /* sul viola sfumato il testo scuro si leggeva male */
+.s-title--long { font-size: clamp(2.8rem, min(7vw, 12vh), 7.4rem); line-height: .9; }
+.others--top { padding-top: clamp(1rem, 4vh, 3rem); }
+.tappe { list-style: none; margin: 0; align-items: stretch; }
+.shot.tappa { height: auto; aspect-ratio: auto; width: clamp(280px, 30vw, 440px); overflow: visible; background: none; border-radius: 0; display: flex; flex-direction: column; gap: 1.2rem; }
+.tappa__c { flex: 1; padding: clamp(1.3rem, 2vw, 1.9rem); }
+.tappa__c h3 { font-size: clamp(1.15rem, 1.5vw, 1.45rem); font-weight: 700; font-stretch: 106%; letter-spacing: -.02em; line-height: 1.2; }
+.tappa__c p { margin-top: .6rem; color: var(--ink-2); font-size: .96rem; }
+.tappa__anno { position: relative; margin-right: calc(-1 * clamp(10px, 1.4vw, 22px)); padding-top: 1.1rem; border-top: 1px solid rgba(236, 232, 225, .28); color: var(--ink); font-size: .85rem; letter-spacing: .08em; }
+.tappa__anno::before { content: ""; position: absolute; top: -5px; left: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--luce-grad); }
+.tappa:last-child .tappa__anno { margin-right: 0; }
+.tappe::after { content: ""; flex: 0 0 1px; }   /* il margine destro conta nello scorrimento: l'ultima tappa si vede intera */
+.solo-stampa { display: none; }
+@media print { .solo-stampa { display: block !important; } }
+.cards--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.card p a { color: var(--ink); }
+.badge-wix { float: right; width: clamp(72px, 7vw, 96px); height: auto; margin: 0 0 .6rem 1rem; }
+.duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(1rem, 3vw, 3rem); }
+.browser { border-radius: var(--r); overflow: hidden; background: #111; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1), 0 30px 60px -30px rgba(0, 0, 0, .9); }
+.browser__bar { display: flex; align-items: center; gap: .45rem; padding: .7rem .9rem; background: rgba(255, 255, 255, .06); border-bottom: 1px solid var(--line); }
+.browser__bar i { width: 10px; height: 10px; border-radius: 50%; background: rgba(255, 255, 255, .2); }
+.browser__bar span { margin-left: .6rem; font-size: .7rem; color: var(--ink-3); }
+.browser img, .sito img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
+.siti { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(10px, 1.1vw, 16px); }
+.sito { display: flex; flex-direction: column; gap: 1rem; padding: .7rem .7rem 1.2rem; color: var(--ink); text-decoration: none; }
+.sito figure { overflow: hidden; border-radius: calc(var(--r) - 8px); }
+.sito img { transition: scale .8s var(--ease-out); }
+.sito:hover img { scale: 1.04; }
+.sito b { display: block; padding-inline: .4rem; font-size: 1.1rem; }
+.sito small { display: block; padding-inline: .4rem; margin-top: .2rem; color: var(--ink-3); font-size: .86rem; }
+.faq { border-top: 1px solid var(--line); }
+.faq details { border-bottom: 1px solid var(--line); }
+.faq summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.25rem 0; font-size: clamp(1.05rem, 1.3vw, 1.25rem); font-weight: 600; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; flex: none; color: var(--accent); font-size: 1.5em; line-height: 1; transition: rotate .3s; }
+.page-luce .faq summary::after { color: var(--luce-2); }
+.faq details[open] summary::after { rotate: 45deg; }
+.faq p { padding: 0 0 1.3rem; color: var(--ink-2); max-width: 70ch; }
+@media (max-width: 900px) { .siti { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .siti, .cards--2, .duo { grid-template-columns: 1fr; } }
