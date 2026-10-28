@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Area clienti · Mattia Crapanzano</title>
+<meta name="description" content="Area riservata ai clienti di Mattia Crapanzano.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="theme-color" content="#0a0b0d">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/img/favicon-96.png" sizes="96x96" type="image/png">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/css/font.css">
+<link rel="stylesheet" href="/assets/css/pagine.css">
+<link rel="stylesheet" href="/area-clienti/clienti.css">
+<script src="/area-clienti/clienti.js" defer></script>
+</head>
+<body>
+<header class="capo">
+  <a class="marchio" href="/"><svg viewBox="240 270 1450 1390" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="270" x2="0" y2="1660" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#c85cff"/><stop offset="1" stop-color="#6f80ff"/></linearGradient></defs><g fill="url(#g)"><path d="M448 393L735 367V705Q735 735 710 752L562 850Q522 878 528 915L715 1340Q735 1390 735 1440V1650H450V1480Q450 1430 428 1380L262 1010Q245 955 290 920L430 826Q448 812 448 790Z"/><path d="M920 350L1207 325V595Q1207 625 1182 640L1035 735Q1005 760 1015 800L1185 1190Q1207 1240 1207 1290V1650H920V1330Q920 1280 898 1225L752 890Q735 830 790 790L897 712Q920 695 920 675Z"/><path d="M1392 307L1680 280V480Q1680 505 1652 523L1520 608Q1488 632 1497 675L1655 1025Q1680 1080 1680 1135V1650H1392V1145Q1392 1095 1368 1045L1235 745Q1222 690 1262 655L1370 585Q1392 568 1392 545Z"/></g></svg><span>Mattia Crapanzano</span></a>
+  <nav aria-label="Area clienti"><button class="pill" id="esci" type="button" hidden>Esci</button></nav>
+</header>
+<main id="contenuto">
+  <section id="accesso">
+    <p class="k">Area clienti</p>
+    <h1>La tua area <em>riservata.</em></h1>
+    <p>Preventivi, file e fatture dei nostri progetti, in un posto solo.</p>
+    <form id="modulo" class="entra" novalidate>
+      <label class="k" for="codice">Codice cliente</label>
+      <div class="riga">
+        <input id="codice" name="codice" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX">
+        <button class="pill pieno" id="vai" type="submit">Entra</button>
+      </div>
+      <p class="msg" id="msg" role="status" aria-live="polite"></p>
+    </form>
+    <p class="nota">Il codice resta sul tuo dispositivo e non viene inviato a nessuno. Per cambiarlo scrivimi a <a href="mailto:crapanzano.work@gmail.com">crapanzano.work@gmail.com</a>.</p>
+    <noscript><p class="msg">Per aprire l'area serve JavaScript attivo nel browser.</p></noscript>
+  </section>
+  <section id="area" aria-live="polite" hidden></section>
+  <section id="vista" hidden></section>
+</main>
+<footer class="piede">
+  <span>© 2026 Mattia Crapanzano</span><span>P.IVA 05209460236</span>
+  <a href="/privacy/#clienti">Privacy</a><a href="/note-legali/">Note legali</a>
+</footer>
+</body>
+</html>
