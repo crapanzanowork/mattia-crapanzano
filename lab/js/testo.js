@@ -19,7 +19,7 @@ export function testoHTML(L = 0) {
   <h1>Mattia Crapanzano</h1>
   <p class="t-sotto">${it ? 'Tecnico su fune IRATA · Fotografo e videomaker · Operatore Socio Sanitario e soccorritore' : 'IRATA rope access technician · Photographer and videomaker · Healthcare assistant and first responder'}</p>
   ${para('bacheca', L)}
-  <p>${it ? 'Lo stesso contenuto, impaginato come un sito tradizionale' : 'The same content, laid out as a traditional website'}: <a href="${it ? '/classico/' : '/en/'}">${it ? 'sito classico' : 'classic site'}</a>.</p>
+  <p>${it ? 'Lo stesso contenuto, impaginato come un sito tradizionale' : 'The same content, laid out as a traditional website'}: <a href="${it ? '/' : '/en/'}">${it ? 'sito classico' : 'classic site'}</a>.</p>
   <p class="t-contatti"><a href="tel:${CONTATTI.tel}">${esc(CONTATTI.telTxt)}</a> · <a href="mailto:${CONTATTI.mail}">${esc(CONTATTI.mail)}</a> · <a href="${CONTATTI.linkedin}">LinkedIn</a> · <a href="${CONTATTI.instagram}">Instagram</a></p>
 </header>
 <section id="t-quota"><p class="t-k t-q">01 · ${it ? 'In quota' : 'At height'}</p><h2>${titolo('quota', L)}</h2>${para('quota', L)}${elenco('quota', L)}
@@ -36,5 +36,5 @@ export function testoHTML(L = 0) {
 <section id="t-faq"><h2>${titolo('faq', L)}</h2>${FAQ.map(q => `<h3>${esc(q[L][0])}</h3><p>${esc(q[L][1])}</p>`).join('')}</section>
 <section id="t-cv"><h2>${it ? 'Curriculum in PDF' : 'Résumés (PDF)'}</h2><ul>${cv}</ul>
   <p>${it ? 'Partita IVA' : 'VAT number'} 05209460236</p></section>
-<footer class="t-piede"><span>© 2026 Mattia Crapanzano</span><a href="${it ? '/classico/' : '/en/'}">${it ? 'Sito classico' : 'Classic site'}</a><a href="${it ? '/privacy/' : '/en/privacy/'}">Privacy</a><a href="${it ? '/note-legali/' : '/en/legal/'}">${it ? 'Note legali' : 'Legal notice'}</a></footer>`;
+<footer class="t-piede"><span>© 2026 Mattia Crapanzano</span><a href="${it ? '/' : '/en/'}">${it ? 'Sito classico' : 'Classic site'}</a><a href="${it ? '/privacy/' : '/en/privacy/'}">Privacy</a><a href="${it ? '/note-legali/' : '/en/legal/'}">${it ? 'Note legali' : 'Legal notice'}</a></footer>`;
 }

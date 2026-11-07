@@ -45,9 +45,9 @@ button.cop:hover, button.cop:focus-visible { transform: translateY(-2px) rotate(
   color: #fff; background: linear-gradient(120deg, #c85cff, #6f80ff); box-shadow: 0 0 14px rgba(196, 92, 255, .45); }
 .chi { flex: none; padding: 3px 8px; border-radius: 8px; text-align: center; font: 500 10.5px "JetBrains Mono", monospace; letter-spacing: .08em; text-transform: uppercase;
   color: var(--luce); background: rgba(196, 92, 255, .12); }
-.chi.te { color: var(--cura); background: rgba(47, 227, 192, .1); }
+.chi.te { color: var(--cura); background: rgba(255, 77, 106, .1); }
 .stato { padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(196, 92, 255, .45); color: var(--luce); font: 500 11px "JetBrains Mono", monospace; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
-.stato.ok { border-color: rgba(47, 227, 192, .45); color: var(--cura); }
+.stato.ok { border-color: rgba(255, 77, 106, .45); color: var(--cura); }
 .stato.attesa { border-color: rgba(255, 91, 31, .5); color: #ff8a5c; }
 .fattura .importo { font-size: 18px; white-space: nowrap; }
 .vuoto { margin-top: 14px; padding: 18px; border: 1px dashed var(--line); border-radius: 18px; color: var(--ink-3); font-size: 15px; }

@@ -69,7 +69,7 @@
     }
   };
 
-  const COLORS = { quota: '#ff5b1f', luce: 'linear-gradient(120deg,#8f5bff,#c45cff 45%,#ff4fd8)', cura: '#2fe3c0' };
+  const COLORS = { quota: '#ff5b1f', luce: 'linear-gradient(120deg,#8f5bff,#c45cff 45%,#ff4fd8)', cura: '#ff4d6a' };
   const icon = id => `<svg aria-hidden="true"><use href="${ICONS}#${id}"/></svg>`;
 
   /* ---------- età calcolata ---------- */
@@ -300,7 +300,7 @@
   /* ---------- HOME: settori, indice laterale, tasti 1-2-3 ---------- */
   const idx = $$('.idx a');
   const setWorld = k => {
-    const col = { quota: '#ff5b1f', luce: '#c45cff', cura: '#2fe3c0' }[k] || '#ece8e1';
+    const col = { quota: '#ff5b1f', luce: '#c45cff', cura: '#ff4d6a' }[k] || '#ece8e1';
     root.style.setProperty('--spot', col);
     idx.forEach(a => a.classList.toggle('is-on', a.dataset.k === k));
   };
@@ -569,7 +569,7 @@
      si apre WhatsApp con il messaggio già scritto.
      ============================================================= */
   const TOPICS = T.topics;
-  const TOPIC_C = { quota: '#ff5b1f', luce: '#c45cff', cura: '#2fe3c0', altro: '#ece8e1' };
+  const TOPIC_C = { quota: '#ff5b1f', luce: '#c45cff', cura: '#ff4d6a', altro: '#ece8e1' };
   const CV = EN
     ? { quota: ['Mattia-Crapanzano-CV-Rope-access-EN.pdf', 'Rope access'], luce: ['Mattia-Crapanzano-CV-Photo-video-EN.pdf', 'Photo & video'], cura: ['Mattia-Crapanzano-CV-Care-worker-EN.pdf', 'Care worker'] }
     : { quota: ['Mattia-Crapanzano-CV-Lavori-in-quota.pdf', 'Lavori in quota'], luce: ['Mattia-Crapanzano-CV-Foto-e-video.pdf', 'Foto e video'], cura: ['Mattia-Crapanzano-CV-OSS.pdf', 'OSS'] };

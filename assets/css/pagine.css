@@ -1,5 +1,5 @@
 /* Pagine semplici del sito (404, privacy, note legali): stesso stile del brand, nessuna dipendenza esterna */
-:root { --bg: #0a0b0d; --ink: #ece8e1; --ink-2: #c3c5ca; --ink-3: #9a9ca3; --line: rgba(236, 232, 225, .14); --quota: #ff5b1f; --luce: #c45cff; --cura: #2fe3c0; }
+:root { --bg: #0a0b0d; --ink: #ece8e1; --ink-2: #c3c5ca; --ink-3: #9a9ca3; --line: rgba(236, 232, 225, .14); --quota: #ff5b1f; --luce: #c45cff; --cura: #ff4d6a; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { color-scheme: dark; -webkit-text-size-adjust: 100%; }
 body { min-height: 100vh; min-height: 100dvh; background: radial-gradient(120% 80% at 50% -10%, #131418 0%, #0a0b0d 55%, #070809 100%) fixed, var(--bg);

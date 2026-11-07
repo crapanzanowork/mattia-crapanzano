@@ -182,7 +182,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   // le scritte stanno tutte sotto la fascia delle finestre alte (6.6 m)
   testo(muro(6.2, 3.1, X0 + .03, 4.95, campata(1), Math.PI / 2), L => scrittaDoppia(SCRITTE.quota[L], '#ff5b1f'));
   testo(muro(7, 1.75, -.5, 5.75, Z0 + .03, 0), L => scritta(SCRITTE.luce[L], '#c45cff'));   // sopra le foto della parete attrezzatura
-  testo(muro(6.2, 3.1, 10.6, 4.95, Z1 - .03, Math.PI), L => scrittaDoppia(SCRITTE.cura[L], '#2fe3c0'));   // sulla parete del portone, sopra la zona In cura
+  testo(muro(6.2, 3.1, 10.6, 4.95, Z1 - .03, Math.PI), L => scrittaDoppia(SCRITTE.cura[L], '#ff4d6a'));   // sulla parete del portone, sopra la zona In cura
   // altre scritte su più righe: la tela si adatta al numero di righe, così niente resta tagliato.
   // stili = per ogni riga [colore, peso/corsivo]; le righe arrivano da SCRITTE in base alla lingua
   const frase = (chiave, stili, w, size, x, y, z, ry, col = '#ece8e1') => {
@@ -206,7 +206,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   });
   // numeri grandi dipinti a terra, uno per zona
   const numero = (n, col) => canvasTex(1024, 1024, g => { g.fillStyle = col; g.globalAlpha = .9; g.font = '800 700px Archivo'; g.textAlign = 'center'; g.fillText(n, 512, 760); });
-  [['01', '#ff5b1f', -9.5, -2.0, .35], ['02', '#c45cff', -1.6, -6.9, 0], ['03', '#2fe3c0', 8.6, 4.6, -.35]].forEach(([n, c, x, z, r]) => {
+  [['01', '#ff5b1f', -9.5, -2.0, .35], ['02', '#c45cff', -1.6, -6.9, 0], ['03', '#ff4d6a', 8.6, 4.6, -.35]].forEach(([n, c, x, z, r]) => {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 2.4), new THREE.MeshStandardMaterial({ map: numero(n, c), transparent: true, opacity: .55, roughness: .7, depthWrite: false }));
     m.rotation.set(-Math.PI / 2, 0, r); m.position.set(x, .007, z); m.receiveShadow = true; scene.add(m);
   });
@@ -217,7 +217,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   [[['OBBLIGO', 'CASCO'], -13.5], [['OBBLIGO', 'IMBRAGATURA'], -6.9]].forEach(([r, x]) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.5, .7), new THREE.MeshStandardMaterial({ map: cartello(r), roughness: .6 })); m.position.set(x, 1.7, -8.54); scene.add(m); });
   // frecce a terra davanti al salottino
   const freccia = (txt, col, rot) => canvasTex(512, 256, (g) => { g.fillStyle = col; g.font = '800 120px Archivo'; g.fillText(txt, 20, 170); });
-  [['01 ←', '#ff5b1f', -5.4, 5.9], ['02 ↑', '#c45cff', -.9, 6.4], ['03 →', '#2fe3c0', 3.6, 5.9]].forEach(([t, c, x, z]) => {
+  [['01 ←', '#ff5b1f', -5.4, 5.9], ['02 ↑', '#c45cff', -.9, 6.4], ['03 →', '#ff4d6a', 3.6, 5.9]].forEach(([t, c, x, z]) => {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.1), new THREE.MeshStandardMaterial({ map: freccia(t, c), transparent: true, roughness: .9 })); m.rotation.x = -Math.PI / 2; m.position.set(x, .006, z); m.receiveShadow = true; scene.add(m);
   });
 
@@ -482,7 +482,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   parete('caricatore-radio.glb', 7.8, 1.25, 'radio');
   add(SM + 'armadietti.glb', [11.0, 0, Z1 - .4], 180, { punto: 'vvf' }).then(o => { o.traverse(m => {   // armadietti in lamiera grigia: il ruolo lo dice la targhetta colorata
     if (!m.isMesh) return; const k = m.name.match(/targa_(\d)/);
-    if (k) { uvPiano(m); m.material = new THREE.MeshStandardMaterial({ map: targaTex(...[['OSS', '#2fe3c0'], ['SOCCORSO 118', '#ff6a13'], ['VIGILI DEL FUOCO', '#d2322b']][+k[1]]), roughness: .6 }); return; }
+    if (k) { uvPiano(m); m.material = new THREE.MeshStandardMaterial({ map: targaTex(...[['OSS', '#ff4d6a'], ['SOCCORSO 118', '#ff6a13'], ['VIGILI DEL FUOCO', '#d2322b']][+k[1]]), roughness: .6 }); return; }
     (Array.isArray(m.material) ? m.material : [m.material]).forEach(x => { if (['oss_blu', 'rosso', 'vvf'].includes(x.name)) { x.color.set(0x5d6266); x.metalness = .55; x.roughness = .48; } });
   }); });
   add(SM + 'casco-vvf.glb', [10.38, 1.95, Z1 - .4], 180, { punto: 'vvf' });   // sopra l'armadietto dei vigili del fuoco

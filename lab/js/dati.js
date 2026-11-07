@@ -11,7 +11,7 @@ export const CONTATTI = {
   linkedin: 'https://www.linkedin.com/in/mattia-crapanzano/', instagram: 'https://www.instagram.com/crapanzano.work/',
 };
 
-export const COLORI = { quota: '#ff5b1f', luce: '#c45cff', cura: '#2fe3c0', base: '#ece8e1', live: '#3fe07c' };
+export const COLORI = { quota: '#ff5b1f', luce: '#c45cff', cura: '#ff4d6a', base: '#ece8e1', live: '#3fe07c' };
 
 // Inquadrature, in metri reali (x -17..17, z -13.6 fondo .. 13.6 portone): pos = dove sta la camera, look = dove guarda, fov = moltiplicatore dell'angolo
 // la panoramica sta al centro, sopra il salottino: da lì si gira tutto attorno

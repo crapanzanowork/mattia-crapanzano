@@ -1,6 +1,6 @@
 /* ink-2 e ink-3 schiariti: i testi piccoli devono leggersi anche sopra la scena chiara */
 :root{--bg:#0a0b0d;--ink:#ece8e1;--ink-2:#c3c5ca;--ink-3:#9a9ca3;--line:rgba(236,232,225,.14);
-  --quota:#ff5b1f;--luce:#c45cff;--luce-2:#ff4fd8;--luce-deep:#8f5bff;--cura:#2fe3c0;--live:#3fe07c}
+  --quota:#ff5b1f;--luce:#c45cff;--luce-2:#ff4fd8;--luce-deep:#8f5bff;--cura:#ff4d6a;--live:#3fe07c}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg);color:var(--ink);font-family:Archivo,system-ui,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
 canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
@@ -227,7 +227,7 @@ button{font:inherit;color:inherit}
 .t-piede{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px}
 
 /* porta d'ingresso della home: sito classico o laboratorio, poi link rapidi e domande frequenti */
-.porta{position:fixed;inset:0;z-index:60;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:radial-gradient(60% 45% at 18% 0%,rgba(196,92,255,.2),transparent 70%),radial-gradient(45% 40% at 100% 100%,rgba(47,227,192,.1),transparent 70%),radial-gradient(40% 35% at 0% 100%,rgba(255,91,31,.1),transparent 70%),var(--bg);transition:opacity .7s,visibility .7s}
+.porta{position:fixed;inset:0;z-index:60;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:radial-gradient(60% 45% at 18% 0%,rgba(196,92,255,.2),transparent 70%),radial-gradient(45% 40% at 100% 100%,rgba(255, 77, 106,.1),transparent 70%),radial-gradient(40% 35% at 0% 100%,rgba(255,91,31,.1),transparent 70%),var(--bg);transition:opacity .7s,visibility .7s}
 .porta.via{opacity:0;visibility:hidden;pointer-events:none}
 .senza-porta .porta{display:none}
 .p-in{max-width:1320px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 36px}
