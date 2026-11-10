@@ -11,7 +11,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { ombreContatto, aggiungiGrana, PellicolaShader } from './realismo.js';
 import { costruisci } from './costruisci.js';
-import { VISTE, PUNTI, ZONA_DI, PANNELLI, T, COLORI, VIDEO_YT, VIDEO_QUOTA, VIDEO_QUOTA_NOMI, SITI, ATTESTATI, CV, K, PERCORSO, CHIAVI, FAQ } from './dati.js';
+import { ALA, ALA_DI, STAMPA, VISTE, PUNTI, ZONA_DI, PANNELLI, T, COLORI, VIDEO_YT, VIDEO_QUOTA, VIDEO_QUOTA_NOMI, SITI, ATTESTATI, CV, K, PERCORSO, CHIAVI, FAQ } from './dati.js';
 import { testoHTML } from './testo.js';
 
 const $ = s => document.querySelector(s);
@@ -47,7 +47,8 @@ function applyLang() {
   document.title = L ? 'Mattia Crapanzano · IRATA rope access, photographer, care worker' : TITOLO_IT;
 }
 $('#lang').onclick = () => { L = 1 - L; store.set('lab-lang', L ? 'en' : 'it'); sfx.click(); applyLang(); };
-const labelOf = id => { const p = PANNELLI[id]; if (!p) return id; const lab = tr(p.lab); return lab.replace(/^0\d · /, ''); };
+const PORTE = { luce: ['Entra · In luce', 'Enter · In focus'], soccorso: ['Entra · In soccorso', 'Enter · In rescue'], atrio: ['Atrio', 'Lobby'] };
+const labelOf = id => { if (/^porta-/.test(id)) return tr(PORTE[id.slice(6)] || [id, id]); const p = PANNELLI[id]; if (!p) return id; const lab = tr(p.lab); return lab.replace(/^0\d · /, ''); };
 
 // ------------------------------------------------------------ statistiche (Umami, senza cookie): solo azioni utili, mai dati personali
 const traccia = (nome, dati) => { try { window.umami?.track(nome, dati); } catch (e) {} };
@@ -77,7 +78,7 @@ renderer.setSize(innerWidth, innerHeight);
 renderer.toneMapping = Q.get('tm') === 'aces' ? THREE.ACESFilmicToneMapping : THREE.AgXToneMapping; renderer.toneMappingExposure = 1;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.shadowMap.enabled = !MOBILE; renderer.shadowMap.type = THREE.PCFSoftShadowMap;   // sui telefoni bastano le ombre morbide a terra (calcolate una volta)
-const scene = new THREE.Scene(); scene.fog = new THREE.FogExp2(0x0e1014, .011);
+const scene = new THREE.Scene(); scene.fog = new THREE.FogExp2(0x0e1014, 0)   /* nebbia spenta: aria limpida, luce uniforme */;
 const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, .05, 400);
 
 // post-produzione (occlusione, bagliore, pellicola) solo su computer: sui telefoni si disegna direttamente, senza memoria in più
@@ -92,7 +93,7 @@ if (composer) {
       gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 12 });
       composer.addPass(gtao); } catch (e) { gtao = null; }
   }
-  composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), .28, .5, .92));
+  composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), .28, .5, 1.6)   /* soglia alta: brillano solo LED e schermi, il bianco del limbo resta pulito */);
   composer.addPass(new OutputPass());
   if (Q.get('fx') !== '0') composer.addPass(pellicola);
 }
@@ -124,8 +125,8 @@ Object.assign(sun.shadow.camera, { left: -26, right: 26, top: 22, bottom: -22, n
 scene.add(sun, sun.target);
 const hemi = new THREE.HemisphereLight(0xdbe6ff, 0x3a3631, .2); scene.add(hemi);
 const deskSpot = new THREE.SpotLight(0xfff4e6, 0, 9, .6, .8, 1.2); deskSpot.position.set(1.3, 2.6, -11.3); deskSpot.target.position.set(-.6, .8, -10.2); if (!MOBILE) scene.add(deskSpot, deskSpot.target);
-const ringLight = new THREE.PointLight(0xfff3e2, 0, 10, 1.6); ringLight.position.set(0, 2.4, 1.5); scene.add(ringLight);
-const certLight = new THREE.RectAreaLight(0xfff0d8, 0, 6, .4); certLight.position.set(0, 3.8, 7.6); certLight.lookAt(0, 1.8, 9.0); if (!MOBILE) scene.add(certLight);
+const ringLight = new THREE.PointLight(0xfff3e2, 0, 10, 1.6); ringLight.position.set(0, 4.6, 7.6); scene.add(ringLight);
+const certLight = new THREE.RectAreaLight(0xfff0d8, 0, 6, .4); certLight.position.set(0, 3.8, 4.7); certLight.lookAt(0, 1.8, 3.2); if (!MOBILE) scene.add(certLight);
 const extLight = new THREE.HemisphereLight(0x9fb4d8, 0x1a1a1a, 0);
 
 let W = null;   // mondo costruito
@@ -173,8 +174,10 @@ function fit(k) {
   const v = VISTE[k], a = camera.aspect;
   if (a < 1 && v.portrait) return { p: new THREE.Vector3(...v.portrait.pos), l: new THREE.Vector3(...v.portrait.look), f: v.portrait.fov || 1 };
   const p = new THREE.Vector3(...v.pos), l = new THREE.Vector3(...v.look);
-  if (a < 1) p.add(p.clone().sub(l).multiplyScalar((1 - a) * .55));
-  return { p, l, f: v.fov || 1 };
+  // schermi verticali: le stanze sono strette, quindi la camera arretra poco (non deve finire oltre il muro) e allarga un po' l'angolo
+  let f = v.fov || 1;
+  if (a < 1) { const d = p.clone().sub(l), lim = k === 'casa' || /^passo-/.test(k) ? .4 : 1.4; p.add(d.setLength(Math.min(d.length() * (1 - a) * .55, lim))); f *= 1 + (1 - a) * .4; }
+  return { p, l, f };
 }
 const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 function flyTo(k, dur = 1.9, arco = true, via = null) {
@@ -216,12 +219,12 @@ function openPanel(k) {
   // avanti e indietro nel giro guidato
   const i = PERCORSO.indexOf(k);
   if (i >= 0) { const n = PERCORSO.length, pv = PERCORSO[(i + n - 1) % n], nx = PERCORSO[(i + 1) % n];
-    passi = `<nav class="passi"><button class="pv" data-goto="${pv}" aria-label="${tr(T.prima)}: ${esc(labelOf(pv))}">←</button><span class="mono">${i + 1} / ${n}</span><button class="nx" data-goto="${nx}"><small class="mono">${tr(T.poi)}</small><b>${esc(labelOf(nx))}</b><i>→</i></button></nav>`; }
+    passi = `<nav class="passi"><button class="pv" data-goto="${pv}" aria-label="${tr(T.prima)}">←</button><span class="mono">${i + 1} / ${n}</span><button class="nx" data-goto="${nx}"><small class="mono">${tr(T.poi)}</small><b>${esc(labelOf(nx))}</b><i>→</i></button></nav>`; }
   panel.innerHTML = `<button class="maniglia" aria-label="${tr(T.espandi)}"><i></i></button><button class="x" aria-label="${tr(T.chiudi)}">×</button><div class="corpo">${h}</div>${passi}`;
   panel.classList.remove('esteso');
   panel.querySelector('.maniglia').onclick = () => panel.classList.toggle('esteso');
   panel.querySelector('.x').onclick = () => go('casa');
-  panel.querySelectorAll('[data-goto]').forEach(b => b.onclick = () => go(b.dataset.goto));
+  panel.querySelectorAll('[data-goto]').forEach(b => b.onclick = () => b.classList.contains('pv') ? indietro() : go(b.dataset.goto));   // la freccia a sinistra riporta dove si era prima, non al punto precedente del giro
   panel.querySelectorAll('[data-azione="testo"]').forEach(b => b.onclick = apriTesto);
   panel.querySelectorAll('.faq details').forEach((x, i) => x.addEventListener('toggle', () => { if (x.open) traccia('faq', { domanda: FAQ[i][0][0] }); }));
   traccia('pannello', { punto: k });
@@ -263,12 +266,27 @@ function stampa([it, en, s, f, fe]) {
 // ------------------------------------------------------------ navigazione
 let current = 'fuori', started = false;
 const storia = [];   // punti visitati, per il tasto indietro
+// In soccorso ha tre stanze: 1 = In quota (in fondo), 2 = fuori orario (dove si arriva), 3 = In cura. Gli altri ambienti sono una stanza sola
+const stanza = (x, z) => ALA !== 'soccorso' ? 0 : x > 5.8 ? 3 : z < -.2 ? 1 : 2;
+// da dove si è passati, tra un ambiente e l'altro: serve alla freccia "indietro" (resta finché la scheda è aperta)
+const VIA = { get: () => { try { return JSON.parse(sessionStorage.getItem('lab-via') || '[]'); } catch (e) { return []; } }, set: v => { try { sessionStorage.setItem('lab-via', JSON.stringify(v.slice(-12))); } catch (e) {} } };
+const vai = (ala, k, indietro = false) => { if (!indietro) VIA.set([...VIA.get(), [ALA, current && current !== 'casa' && current !== 'libera' ? current : '']]);
+  document.body.classList.add('cambia'); setTimeout(() => { location.href = location.pathname + '?ala=' + ala + '&in=1' + (L ? '&lang=en' : '') + (k ? '#' + k : ''); }, 450); };
+// la freccia indietro fa sempre qualcosa: punto precedente, poi la vista d'insieme della stanza, poi l'ambiente da cui si è arrivati
+const puoIndietro = () => storia.length || (current && current !== 'casa') || VIA.get().length || ALA !== 'atrio';
+const aggiornaIndietro = () => $('#indietro').classList.toggle('vuoto', !puoIndietro());
+// dalle ali si torna all'atrio con un pulsante sempre visibile, in basso a sinistra
+if (ALA !== 'atrio' && ALA !== 'tutti') { const b = document.createElement('button'); b.id = 'tornaAtrio'; b.className = 'glass mono'; b.textContent = L ? '← Lobby' : '← Atrio'; b.setAttribute('aria-label', L ? 'Back to the lobby' : "Torna all'atrio");
+  b.style.cssText = 'position:fixed;left:16px;z-index:30;padding:10px 14px;border-radius:999px;color:#ece8e1;font-size:12px;letter-spacing:.06em;cursor:pointer;border:1px solid rgba(255,255,255,.18)';
+  b.onclick = () => { sfx.click(); vai('atrio'); }; document.body.appendChild(b); }
 function go(k, indietro = false) {
+  if (/^porta-/.test(k)) { if (started) { sfx.click(); vai(k.slice(6)); } return; }   // le porte e le serrande portano in un'altra ala
+  if (started && ALA_DI(k) && ALA_DI(k) !== ALA) { sfx.click(); vai(ALA_DI(k), k); return; }
   if (!started) { if (!$('#entra').classList.contains('gone')) entra(k); return; }   // da fuori (es. dalla ricerca): si entra e si va lì
   if (k === 'interruttore') { $('#luce').click(); return; }
   sfx.click(); if (k === current && k !== 'casa') return;
   if (!indietro && current && current !== k && current !== 'fuori') { storia.push(current); if (storia.length > 40) storia.shift(); }
-  current = k; closePanel(); $('#indietro').classList.toggle('vuoto', !storia.length);
+  current = k; closePanel(); aggiornaIndietro();
   if (k === 'telefono') stopRing(true);
   flyTo(k);
   setTimeout(() => { if (current === k && k !== 'casa') openPanel(k); }, 1000);
@@ -279,7 +297,9 @@ function go(k, indietro = false) {
   look.ty = look.tp = 0; zoomT = 0;
 }
 document.querySelectorAll('#bar [data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
-$('#indietro').onclick = () => { if (storia.length) go(storia.pop(), true); };
+const indietro = () => { if (storia.length) return go(storia.pop(), true); if (current && current !== 'casa') return go('casa', true);
+  const v = VIA.get(), p = v.pop(); if (p) { VIA.set(v); sfx.click(); vai(p[0], p[1], true); } else if (ALA !== 'atrio') { sfx.click(); vai('atrio', '', true); } };
+$('#indietro').onclick = indietro;
 addEventListener('keydown', e => {
   if (e.key === 'Escape') { if (!testo.classList.contains('chiuso')) chiudiTesto(); else if (!$('#video').classList.contains('gone')) chiudiVideo(); else if (started) go('casa'); }
   if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && started && $('#video').classList.contains('gone') && testo.classList.contains('chiuso') && document.activeElement !== qIn) {
@@ -400,6 +420,10 @@ canvas.addEventListener('pointermove', e => {
     const yl = current === 'casa' ? Infinity : camera.aspect < 1 ? .9 : .6; look.ty = THREE.MathUtils.clamp(down.yaw - dx * .0042, -yl, yl); look.tp = THREE.MathUtils.clamp(down.pitch + dy * .0024, current === 'casa' ? -.5 : -.25, current === 'casa' ? .55 : .25); }
   else hover(e);
 });
+// fuori dalla finestra (o finestra non attiva) la panoramica smette di girare da sola
+const fermaSguardo = () => { look.px = 0; look.py = 0; };
+document.documentElement.addEventListener('mouseleave', fermaSguardo); window.addEventListener('blur', fermaSguardo);
+document.addEventListener('visibilitychange', fermaSguardo);
 const fineDito = e => { dita.delete(e.pointerId); if (dita.size < 2) pinch0 = 0; };
 canvas.addEventListener('pointerup', e => { fineDito(e); canvas.classList.remove('drag'); if (down && down.moved < 6) pick(e); down = null; });
 canvas.addEventListener('pointercancel', e => { fineDito(e); down = null; canvas.classList.remove('drag'); });
@@ -527,7 +551,7 @@ function quotaVideo(on) {
 function schermi() {
   const s = W.schermi; const B = o => Object.assign(new THREE.MeshBasicMaterial(o), { fog: false, toneMapped: false });
   if (s.monitor) s.monitor.material = B({ map: SITI_TEX[0] });
-  if (s.tv) { s.tv.material = new THREE.MeshStandardMaterial({ color: 0x2e2e2d, roughness: .95, emissive: 0xffffff, emissiveMap: texTV, emissiveIntensity: 1 }); disegnaTV(0); }
+  if (s.tv) { s.tv.material = new THREE.MeshStandardMaterial({ color: 0x2e2e2d, roughness: .95, emissive: 0xffffff, emissiveMap: texTV, emissiveIntensity: 1.5 }); disegnaTV(0); }
   if (s.stampante) { s.stampante.material = B({ map: texSt }); disegnaStampante(); }
   if (s.telefono) { s.telefono.material = B({ map: texTel }); disegnaTel(false); }
   if (s.video) s.video.material = new THREE.MeshBasicMaterial({ color: 0x111111 });
@@ -539,7 +563,7 @@ addEventListener('pointerdown', () => { if (AC && AC.state === 'suspended') AC.r
 function entra(meta) {
   sfx.init(); $('#entra').classList.add('gone'); started = true; sfx.whoosh(3.5);
   apri = { t: 0 };
-  setTimeout(() => { current = 'casa'; flyTo('casa', 4.6, false, [new THREE.Vector3(0, 2.6, 18), new THREE.Vector3(0, 5.9, 10.5)]); }, 900);   // passa sopra la parete della formazione
+  setTimeout(() => { current = 'casa'; flyTo('casa', 4.2, false, [new THREE.Vector3(0, 1.8, 21), new THREE.Vector3(0, 1.7, 15.5)]); }, 900);   // dal portone, camminando
   setTimeout(() => $('#hint').classList.remove('gone'), 4400); setTimeout(() => $('#hint').classList.add('gone'), 11000);
   const h = typeof meta === 'string' ? meta : location.hash.slice(1); if (PANNELLI[h] || VISTE[h]) setTimeout(() => go(h), RIDUCI ? 1200 : 4800);
   ring.timer = setTimeout(startRing, 12000); quotaVideo(true);
@@ -552,7 +576,7 @@ $('#btnEntra').onclick = entra;
 // ------------------------------------------------------------ avvio
 buildHots(); applyLang();
 $('#bar').classList.add('gone');
-const mondo = costruisci({ scene, tl, gltf, mobile: MOBILE, fonts, lingua: L });
+const mondo = costruisci({ scene, tl, gltf, mobile: MOBILE, fonts, lingua: L, ala: ALA === 'tutti' ? 'atrio' : ALA });
 let caricato = false;
 manager.onLoad = () => fine();
 async function fine() {
@@ -565,7 +589,9 @@ async function fine() {
   if (Q.get('fx') !== '0') { if (!MOBILE) aggiungiGrana(scene); W.ombre = ombreContatto(renderer, scene, { w: 40 * K, d: 32 * K, res: MOBILE ? 1024 : 2048, salta: o => o.userData.senzaOmbra || /fronde|foglie/.test(o.name) }); }
   if (!MOBILE) scene.add(extLight);
   const meta = location.hash.slice(1);
-  if (Q.has('auto')) { $('#loader').style.transition = 'none'; $('#loader').classList.add('gone'); autoEnter(); }
+  // dentro il capannone si passa da un ambiente all'altro senza rifare l'ingresso dal portone; anche un link diretto a un'ala entra subito
+  if (Q.has('auto') || Q.has('in') || ALA === 'luce' || ALA === 'soccorso') { $('#loader').style.transition = 'none'; $('#loader').classList.add('gone'); autoEnter(); aggiornaIndietro();
+    if (!Q.has('auto') && meta !== 'casa' && (PANNELLI[meta] || VISTE[meta])) setTimeout(() => go(meta), 700); }
   else if (PANNELLI[meta] || VISTE[meta]) setTimeout(() => { $('#loader').classList.add('gone'); entra(); }, 500);   // link diretto a una sezione: niente porta da aprire
   else setTimeout(() => { $('#loader').classList.add('gone'); $('#entra').classList.remove('gone'); }, 500);
 }
@@ -658,15 +684,18 @@ function frame() {
     if (W.schermi.monitor) W.schermi.monitor.material.map = SITI_TEX[siteI]; }
   // foglio che esce dalla stampante
   if (stampaAnim) { stampaAnim.t += dt; if (!stampaAnim.m) { const m = new THREE.Mesh(new THREE.PlaneGeometry(.21, .297), new THREE.MeshBasicMaterial({ color: 0xd2d0cb, map: stampaAnim.tex, side: THREE.DoubleSide })); m.rotation.x = -Math.PI / 2 + .25; scene.add(m); stampaAnim.m = m; }
-    const k = Math.min(1, stampaAnim.t / 1.5), d = .1 + k * .26; stampaAnim.m.rotation.order = 'YXZ'; stampaAnim.m.rotation.set(-Math.PI / 2 + .25, -.314, 0); stampaAnim.m.position.set(2.46 - .309 * d, .98, -9.48 + .951 * d); if (stampaAnim.t > 20) { scene.remove(stampaAnim.m); stampaAnim.tex.dispose(); stampaAnim = null; } }   // il foglio resta sul vassoio per un po'
+    const k = Math.min(1, stampaAnim.t / 1.5), d = .1 + k * .26; stampaAnim.m.rotation.order = 'YXZ'; const sa = STAMPA.ry * Math.PI / 180; stampaAnim.m.rotation.set(-Math.PI / 2 + .25, sa, 0); stampaAnim.m.position.set(STAMPA.p[0] + Math.sin(sa) * d, .98, STAMPA.p[1] + Math.cos(sa) * d); if (stampaAnim.t > 20) { scene.remove(stampaAnim.m); stampaAnim.tex.dispose(); stampaAnim = null; } }   // il foglio resta sul vassoio per un po'
   // pallini
+  const pano = current === 'casa' || /^passo-/.test(current);
   const zona = ZONA_DI[current] || (['quota', 'luce', 'cura'].includes(current) ? current : '');
   // area libera per i pallini: niente sotto la testata, la barra in basso o il pannello aperto
   const bx0 = 34, by0 = 84, bx1 = innerWidth - 34 - (open && !SMALL() ? PANEL_W + 40 : 0), by1 = innerHeight - (current === 'casa' ? 160 : 110) - (open && SMALL() ? panel.offsetHeight : 0);   // in panoramica resta posto per "Fai il giro"
   for (const h of hots) {
     proj.copy(h.v).project(camera);
     let ok = started && !fly;
-    if (h.p.livello === 1) ok = ok && (current === 'casa' || (['quota', 'luce', 'cura'].includes(h.p.id) && h.p.id !== zona));
+    // dalla vista d'insieme e dai punti a terra si vedono tutti i pallini della stanza in cui ci si trova
+    if (pano && ALA !== 'tutti' && !/^porta-/.test(h.p.id) && !['quota', 'luce', 'cura'].includes(h.p.id)) ok = ok && stanza(h.v.x, h.v.z) === stanza(cam.pos.x, cam.pos.z);
+    else if (h.p.livello === 1) ok = ok && (current === 'casa' || (['quota', 'luce', 'cura'].includes(h.p.id) && h.p.id !== zona) || /^porta-/.test(h.p.id));
     else ok = ok && h.p.zona === zona && !(open && h.p.id === current);
     if (h.p.id === 'telefono' && ring.on && started && !fly) ok = true;
     const dietro = proj.z > 1;

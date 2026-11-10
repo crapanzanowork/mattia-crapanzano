@@ -18,46 +18,44 @@ export const COLORI = { quota: '#ff5b1f', luce: '#c45cff', cura: '#ff4d6a', base
 export const VISTE = {
   fuori:     { pos: [0, 2.0, 34], look: [0, 4.6, 13.6] },
   casa:      { pos: [0, 5.6, 1.6], look: [0, 1.3, -9], fov: 1.25, portrait: { pos: [0, 5.4, 2.4], look: [0, 1.1, -8], fov: 1.3 } },
-  salottino: { pos: [0, 2.3, 6.2], look: [0, .5, 1.6] },
-  faq:       { pos: [.25, 1.25, 3.05], look: [-.05, .4, 2.05] },
-  attestati: { pos: [0, 2.3, 4.9], look: [0, 2.15, 9.0] },
-  bacheca:   { pos: [-3.7, 1.7, 8.2], look: [-5.0, 1.35, 10.4] },
+  salottino: { pos: [0, 1.7, 12.4], look: [0, .8, 7.7] },
+  faq:       { pos: [.25, 1.25, 9.15], look: [-.05, .4, 8.15] },
+  attestati: { pos: [0, 1.7, 8.9], look: [0, 2.0, 3.1] },
+  bacheca:   { pos: [4.25, 1.7, 10.2], look: [6.3, 1.35, 8.8] },
   sup:       { pos: [-12.9, 1.9, 7.0], look: [-16.6, 1.6, 8.6] },
   boulder:   { pos: [-10.4, 2.5, 8.4], look: [-16.5, 2.1, 2.9] },
-  quota:     { pos: [-2.0, 4.3, .6], look: [-12.0, 2.0, -4.6], fov: 1.25 },
-  struttura: { pos: [-7.0, 3.8, -3.4], look: [-10.4, 3.4, -11.5] },
+  quota:     { pos: [-9.2, 1.7, -1.5], look: [-10.2, 2.8, -10.5], fov: 1.25 },
+  struttura: { pos: [-5.6, 1.7, -4.6], look: [-10.2, 4.4, -10.9], fov: 1.1 },
   tripode:   { pos: [-6.6, 2.0, -2.2], look: [-9.4, 1.0, -5.0] },
-  polaroid:  { pos: [-11.7, 2.0, -.6], look: [-12.8, .75, -2.5] },
+  polaroid:  { pos: [-11.2, 1.6, -.2], look: [-12.8, .9, -2.5] },
   videoquota:{ pos: [-5.1, 1.65, -1.9], look: [-6.3, 1.55, -3.4] },
-  luce:      { pos: [4.4, 3.4, -1.4], look: [1.2, 1.4, -11.5] },
+  luce:      { pos: [3.8, 1.7, -2.2], look: [-.4, 2.3, -12.5], fov: 1.2 },
   macchina:  { pos: [-2.3, 1.42, -8.2], look: [-3.0, 1.12, -9.25] },
-  scrivania: { pos: [-.6, 1.75, -7.2], look: [-.6, 1.05, -10.4] },
+  scrivania: { pos: [-.5, 1.25, -9.05], look: [.2, 1.0, -10.9], fov: 1.15 },   // seduto alla scrivania: a destra si vede la stampante
   telefono:  { pos: [.06, 1.04, -9.6], look: [-.05, .76, -9.93] },
-  tv:        { pos: [5.6, 2.2, -6.9], look: [6.6, 2.35, -13.5] },
-  consulenza:{ pos: [2.8, 2.25, -1.5], look: [2.8, .8, -4.8] },
-  stampante: { pos: [2.09, 1.5, -8.34], look: [2.46, .98, -9.48] },
-  foglio: { pos: [2.25, 1.40, -8.83], look: [2.36, .97, -9.17] },   // primo piano sul CV appena stampato (lo usa la stampa, non è un punto da cliccare)
-  set:       { pos: [8.8, 2.0, -10.2], look: [14.6, 1.3, -10.2] },
-  cura:      { pos: [1.6, 3.9, 0.4], look: [12.0, 1.6, 9.0], fov: 1.15 },
-  divise:    { pos: [9.6, 1.9, -.2], look: [9.6, 1.4, 3.0] },
-  finestra:  { pos: [10.6, 2.3, 6.8], look: [21.0, 1.4, 6.8] },
+  tv:        { pos: [4.2, 1.15, -8.5], look: [5.0, 2.1, -13.5], fov: 1.0 },   // seduto in poltrona davanti al telo
+  consulenza:{ pos: [2.2, 1.2, -3.5], look: [2.9, .85, -4.8], fov: 1.1 },   // seduto al tavolo
+  set:       { pos: [8.0, 1.7, -5.2], look: [12.2, 1.35, -10.8], fov: 1.15 },
+  cura:      { pos: [6.5, 1.7, 6.0], look: [15.0, 1.6, 7.2], fov: 1.25 },
+  divise:    { pos: [9.6, 1.6, .75], look: [9.6, 1.45, 3.0], fov: 1.3 },
+  finestra:  { pos: [10.8, 1.7, 5.0], look: [21.0, 1.5, 3.4], fov: 1.1 },
   barella:   { pos: [8.9, 2.1, 5.2], look: [12.0, .8, 8.4] },
-  radio:     { pos: [6.9, 1.7, 8.6], look: [7.0, 1.15, 13.4] },
+  radio:     { pos: [8.4, 1.7, 9.6], look: [7.3, 1.2, 13.4] },
   borsone:   { pos: [13.4, 1.5, 11.0], look: [13.4, .7, 13.3] },
   vvf:       { pos: [10.2, 1.85, 9.2], look: [10.2, 1.3, 13.4], portrait: { pos: [10.3, 2.2, 6.6], look: [10.3, 1.15, 13.4], fov: 1.15 } },
 };
 
 // Punti cliccabili. zona = a quale zona appartiene ('' = sempre visibile dalla panoramica)
 // at = posizione del pallino. livello 1 = si vede dalla panoramica, 2 = solo dentro la sua zona
-export const PUNTI = [
+const PUNTI_TUTTI = [
   { id: 'quota', zona: '', livello: 1, colore: 'quota', at: [-10.2, 6.9, -10.9] },
   { id: 'luce', zona: '', livello: 1, colore: 'luce', at: [-.5, 3.6, -12.6] },
   { id: 'cura', zona: '', livello: 1, colore: 'cura', at: [9.0, 3.4, 9.6] },
-  { id: 'salottino', zona: '', livello: 1, colore: 'base', at: [0, 1.3, 1.5] },
-  { id: 'bacheca', zona: '', livello: 1, colore: 'base', at: [-5.0, 2.3, 10.4] },
+  { id: 'salottino', zona: '', livello: 1, colore: 'base', at: [0, 1.3, 7.6] },
+  { id: 'bacheca', zona: '', livello: 1, colore: 'base', at: [6.3, 2.3, 8.8] },
   { id: 'sup', zona: '', livello: 1, colore: 'base', at: [-16.0, 2.6, 8.4] },
-  { id: 'attestati', zona: '', livello: 1, colore: 'base', at: [0, 3.9, 8.7] },
-  { id: 'faq', zona: '', livello: 1, colore: 'base', at: [-.05, .75, 2.09] },
+  { id: 'attestati', zona: '', livello: 1, colore: 'base', at: [0, 3.2, 3.2] },
+  { id: 'faq', zona: '', livello: 1, colore: 'base', at: [-.05, .75, 8.19] },
 
   { id: 'boulder', zona: 'quota', livello: 2, colore: 'quota', at: [-14.6, 3.4, 3.4] },
   { id: 'struttura', zona: 'quota', livello: 2, colore: 'quota', at: [-8.2, 4.6, -8.6] },
@@ -68,9 +66,9 @@ export const PUNTI = [
   { id: 'macchina', zona: 'luce', livello: 2, colore: 'luce', at: [-3.0, 1.45, -9.2] },
   { id: 'scrivania', zona: 'luce', livello: 2, colore: 'luce', at: [-.6, 1.45, -10.4] },
   { id: 'telefono', zona: 'luce', livello: 2, colore: 'live', at: [-.05, .92, -9.93] },
-  { id: 'tv', zona: 'luce', livello: 2, colore: 'luce', at: [6.6, 4.3, -13.4] },
-  { id: 'stampante', zona: 'luce', livello: 2, colore: 'luce', at: [2.46, 1.4, -9.48] },
-  { id: 'set', zona: 'luce', livello: 2, colore: 'luce', at: [14.2, 2.6, -10.2] },
+  { id: 'tv', zona: 'luce', livello: 2, colore: 'luce', at: [5.0, 3.6, -13.4] },
+  { id: 'stampante', zona: 'luce', livello: 2, colore: 'luce', at: [.96, 1.4, -10.98] },
+  { id: 'set', zona: 'luce', livello: 2, colore: 'luce', at: [13.6, 2.4, -12.4] },
   { id: 'consulenza', zona: 'luce', livello: 2, colore: 'luce', at: [2.8, 1.35, -4.7] },
 
   { id: 'divise', zona: 'cura', livello: 2, colore: 'cura', at: [9.6, 2.5, 3.0] },
@@ -81,7 +79,64 @@ export const PUNTI = [
   { id: 'vvf', zona: 'cura', livello: 2, colore: 'cura', at: [10.38, 2.45, 13.2] },
 ];
 // a quale zona porta ogni punto (per la barra in basso e per mostrare i pallini interni)
-export const ZONA_DI = Object.fromEntries(PUNTI.map(p => [p.id, p.zona || (['quota', 'luce', 'cura'].includes(p.id) ? p.id : '')]));
+export const ZONA_DI = Object.fromEntries(PUNTI_TUTTI.map(p => [p.id, p.zona || (['quota', 'luce', 'cura'].includes(p.id) ? p.id : '')]));
+
+// Il laboratorio si carica a pezzi: l'atrio con le due porte, l'ala In luce e l'ala In soccorso. Quale, lo dicono ?ala= o il punto nell'indirizzo (#punto).
+let QUI = '';   // l'ala caricata: la stampante c'è nell'atrio e in In luce
+export const ALA_DI = id => {
+  if (id === 'stampante') return QUI === 'luce' ? 'luce' : 'atrio';
+  if (/^porta-/.test(id)) return '';
+  if (['salottino', 'faq', 'attestati', 'bacheca'].includes(id)) return 'atrio';
+  const p = PUNTI_TUTTI.find(x => x.id === id); if (!p) return '';
+  if (id === 'luce' || p.zona === 'luce') return 'luce';
+  if (['quota', 'cura', 'sup'].includes(id) || ['quota', 'cura'].includes(p.zona)) return 'soccorso';
+  return 'atrio';
+};
+export const ALA = (() => {
+  if (typeof location === 'undefined') return 'tutti';   // gli script di pubblicazione leggono tutto
+  const q = new URLSearchParams(location.search).get('ala'); if (['atrio', 'luce', 'soccorso'].includes(q)) return q;
+  const h = location.hash.slice(1); return (h && ALA_DI(h)) || 'atrio';
+})();
+QUI = ALA;
+// In soccorso tutto il blocco di sinistra (In quota e fuori orario) è accostato a In cura: le sue inquadrature e i suoi pallini si spostano di DXS metri
+export const DXS = 10;
+for (const k of ['quota', 'struttura', 'tripode', 'polaroid', 'videoquota', 'boulder', 'sup']) {
+  for (const v of [VISTE[k], VISTE[k] && VISTE[k].portrait]) if (v) { v.pos[0] += DXS; v.look[0] += DXS; }
+  const p = PUNTI_TUTTI.find(p => p.id === k); if (p) p.at[0] += DXS; }
+PUNTI_TUTTI.find(p => p.id === 'quota').at = [.25, 2.9, -.2];   // i pallini delle due stanze stanno sui passaggi
+PUNTI_TUTTI.find(p => p.id === 'cura').at = [5.8, 2.9, 6.0];
+// La stampante: in In luce accanto alla scrivania, in In soccorso nella base operativa. p = dove sta (x, z), ry = verso cui è girata (gradi)
+export const STAMPA = ALA === 'luce' ? { p: [.96, -10.98], ry: -18 } : { p: [-7.527, 7.838], ry: 72 };
+{ const [sx, sz] = STAMPA.p, a = STAMPA.ry * Math.PI / 180, fx = Math.sin(a), fz = Math.cos(a);
+  VISTE.stampante = { pos: [sx + 1.2 * fx, 1.5, sz + 1.2 * fz], look: [sx, .98, sz] };
+  VISTE.foglio = { pos: [sx + .683 * fx, 1.4, sz + .683 * fz], look: [sx + .326 * fx, .97, sz + .326 * fz] };   // primo piano sul CV appena stampato
+  const ps = PUNTI_TUTTI.find(p => p.id === 'stampante'); ps.at = [sx, 1.4, sz]; if (ALA !== 'luce') { ps.zona = ''; ps.livello = 1; ps.colore = 'base'; } }   // nell'atrio il pallino si vede subito
+export const PUNTI = ALA === 'tutti' ? PUNTI_TUTTI : PUNTI_TUTTI.filter(p => ALA_DI(p.id) === ALA);
+// Le porte: un pallino con l'etichetta su ogni passaggio verso un altro ambiente (id 'porta-<ambiente>')
+for (const [id, colore, at] of ({ atrio: [['porta-luce', 'luce', [-5.4, 2.4, 3.3]], ['porta-soccorso', 'quota', [5.4, 2.4, 3.3]]], luce: [['porta-soccorso', 'quota', [-6.0, 2.6, -5.2]]], soccorso: [['porta-luce', 'luce', [5.5, 2.6, 1.9]]] }[ALA] || []))
+  PUNTI.push({ id, zona: '', livello: 1, colore, at });
+// Inquadrature di partenza di ogni ambiente: all'altezza degli occhi, come se ci si camminasse dentro
+export const CASA = {
+  atrio:    { pos: [0, 1.7, 13.0], look: [0, 1.9, 3.0], fov: 1.3 },
+  luce:     { pos: [-4.6, 1.7, -2.0], look: [6.5, 1.5, -10.5], fov: 1.1 },
+  soccorso: { pos: [2.6, 1.7, 12.4], look: [.8, 1.7, 0], fov: 1.25 },   // si arriva nel fuori orario: di fronte il passaggio per In quota, a destra quello per In cura
+};
+if (CASA[ALA]) VISTE.casa = CASA[ALA];
+// Punti sul pavimento: ci si "cammina" cliccandoli, e ognuno è un'inquadratura ad altezza d'occhio
+export const PASSI = {
+  luce: [
+    { pos: [-4.6, -2.0], look: [6.5, 1.5, -10.5] }, { pos: [-1.6, -6.4], look: [-.6, 1.3, -11.0] }, { pos: [2.8, -2.2], look: [2.8, 1.0, -5.0] },
+    { pos: [5.0, -5.2], look: [5.0, 2.2, -13.2] }, { pos: [8.4, -5.0], look: [12.0, 1.4, -9.0] }, { pos: [-2.2, -5.2], look: [-6.2, 1.9, -5.2] },
+  ],
+  soccorso: [
+    { pos: [2.6, 12.4], look: [.8, 1.7, 0] }, { pos: [-1.2, 6.4], look: [-7.0, 2.0, 3.4] }, { pos: [2.6, 9.6], look: [-.4, 1.5, 13.4] },
+    { pos: [.4, -2.4], look: [-.2, 2.8, -10.9] }, { pos: [-2.4, -4.6], look: [-2.8, .9, -2.4] }, { pos: [7.4, 6.0], look: [17.0, 1.6, 6.8] }, { pos: [10.0, 10.0], look: [10.6, 1.4, 13.4] },
+  ],
+  atrio: [
+    { pos: [-6.0, 9.34], look: [-7.8, 1.0, 8.6], h: 1.25 },   // seduti alla scrivania: di fronte la stampante
+  ],
+};
+for (const [a2, l] of Object.entries(PASSI)) l.forEach((p, i) => { p.id = `passo-${a2}-${i + 1}`; VISTE[p.id] = { pos: [p.pos[0], p.h || 1.7, p.pos[1]], look: p.look, fov: 1.15 }; });
 
 // Video su YouTube (TV di In luce)
 export const VIDEO_YT = [  // [id, titolo, sottotitolo, sottotitolo in inglese]
@@ -144,8 +199,10 @@ export const T = {
 };
 
 // Giro guidato: l'ordine in cui si visitano i punti con Avanti / Indietro (finisce sui contatti)
-export const PERCORSO = ['bacheca', 'attestati', 'quota', 'struttura', 'tripode', 'polaroid', 'videoquota', 'boulder', 'sup', 'luce', 'macchina', 'scrivania', 'consulenza', 'tv', 'set', 'stampante',
-  'cura', 'finestra', 'barella', 'radio', 'divise', 'borsone', 'vvf', 'salottino', 'faq', 'telefono'];
+// il giro guidato, ambiente per ambiente: parte da quello che si vede appena arrivati
+const PERCORSO_TUTTO = ['salottino', 'faq', 'attestati', 'bacheca', 'boulder', 'sup', 'quota', 'struttura', 'tripode', 'polaroid', 'videoquota', 'cura', 'divise', 'finestra', 'barella', 'radio', 'borsone', 'vvf',
+  'luce', 'macchina', 'scrivania', 'telefono', 'stampante', 'consulenza', 'tv', 'set'];
+export const PERCORSO = ALA === 'tutti' ? PERCORSO_TUTTO : PERCORSO_TUTTO.filter(k => ALA_DI(k) === ALA);
 
 const cvBtn = (it, en, f, fEn) => ({ t: [it, en], u: [CV(f), CV(fEn)], dl: 1 });
 
@@ -211,11 +268,11 @@ export const PANNELLI = {
     btn: [{ t: ['Chiama', 'Call'], u: ['tel:' + CONTATTI.tel, 'tel:' + CONTATTI.tel], cl: 'c' },
           { t: ['Scrivimi', 'Message me'], u: [CONTATTI.wa('Ciao Mattia, ti scrivo dal tuo sito.'), CONTATTI.wa('Hi Mattia, I\'m writing from your website.')], cl: 'ink' },
           { t: ['Email', 'Email'], u: ['mailto:' + CONTATTI.mail, 'mailto:' + CONTATTI.mail] }] },
-  consulenza: { c: 'luce', lab: ['Consulenza', 'Consulting'], h: ['Prima di girare, <em>si decide cosa dire.</em>', 'Before shooting, <em>we decide what to say.</em>'],
+  consulenza: { c: 'luce', lab: ['Consulenza', 'Consulting'], h: ['Siediti: <em>prima di girare si decide cosa dire.</em>', 'Take a seat: <em>before shooting, we decide what to say.</em>'],
     p: ['A questo tavolo partono i progetti: cosa raccontare, a chi e su quali canali. Poi foto, video, sito e social seguono la stessa idea, invece di andare ognuno per conto suo.',
         'Projects start at this table: what to say, to whom and on which channels. Then photos, video, website and social media follow the same idea instead of going their own way.'],
     btn: [{ t: ['Parliamone', 'Let\'s talk'], go: 'telefono', cl: 'c' }] },
-  tv: { c: 'luce', lab: ['Video di lavoro', 'Video work'], h: ['Qualche lavoro <em>recente.</em>', 'Some <em>recent work.</em>'],
+  tv: { c: 'luce', lab: ['Video di lavoro', 'Video work'], h: ['Siediti <em>e goditi lo spettacolo.</em>', 'Sit back <em>and enjoy the show.</em>'],
     p: ['Spot, videoclip ed eventi per aziende, scuole e associazioni: riprese, montaggio e colore.', 'Commercials, music videos and events for companies, schools and associations: shooting, editing and grading.'], video: 'yt' },
   stampante: { c: 'base', lab: ['Curriculum', 'Résumé'], h: ['Quale CV <em>ti stampo?</em>', 'Which résumé <em>shall I print?</em>'],
     p: ['Ne ho uno per ogni mestiere, aggiornato. Prendi quello che ti serve.', 'I keep one for each job, up to date. Take the one you need.'],
@@ -240,7 +297,7 @@ export const PANNELLI = {
   radio: { c: 'cura', lab: ['DAE e radio', 'AED and radios'], h: ['Sempre <em>in carica.</em>', 'Always <em>charged.</em>'],
     p: ['La teca del defibrillatore, le radio in carica e il manichino per ripassare il massaggio cardiaco. Ho il BLSD adulto e pediatrico, il PTC base e il corso di primo soccorso da 16 ore.',
         'The defibrillator cabinet, the radios charging and the manikin for practising chest compressions. I hold adult and paediatric BLSD, basic PTC and a 16-hour first aid course.'] },
-  set: { c: 'luce', lab: ['Set fotografico', 'Photo set'], h: ['Ritratti <em>senza imbarazzo.</em>', 'Portraits <em>without the awkwardness.</em>'],
+  set: { c: 'luce', lab: ['Set fotografico', 'Photo set'], h: ['Mettiti in posa: <em>ritratti senza imbarazzo.</em>', 'Strike a pose: <em>portraits without the awkwardness.</em>'],
     p: ['Fondale bianco, due luci e uno sgabello: ritratti aziendali, foto profilo per LinkedIn, prodotti e contenuti per i social. Ti metto a tuo agio, al resto pensa la luce.',
         'White backdrop, two lights and a stool: corporate portraits, LinkedIn headshots, products and social content. I put you at ease, the light does the rest.'],
     btn: [{ t: ['Prenota uno shooting', 'Book a shoot'], go: 'telefono', cl: 'c' }] },

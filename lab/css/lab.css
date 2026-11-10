@@ -277,3 +277,9 @@ button{font:inherit;color:inherit}
 @media (max-width:860px){.p-scelte{grid-template-columns:1fr}.p-link{grid-template-columns:1fr 1fr}}
 @media (max-width:520px){.p-link{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.p-scelta,.p-img img,.porta{transition:none}}
+body.cambia canvas#c, body.cambia .top, body.cambia #bar, body.cambia #panel { opacity: 0; transition: opacity .4s; }
+
+/* pulsante per tornare all'atrio: in basso a sinistra, sopra la barra sui telefoni */
+#tornaAtrio{bottom:16px}
+@media (max-width:760px){#tornaAtrio{bottom:calc(92px + env(safe-area-inset-bottom))}}
+body.cambia #tornaAtrio{opacity:0;transition:opacity .4s}

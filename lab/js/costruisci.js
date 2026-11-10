@@ -1,19 +1,28 @@
 // Costruisce il capannone, posiziona gli arredi e prepara luci, schermi e oggetti cliccabili.
 import * as THREE from 'three';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
-import { ATTESTATI, SITI, VIDEO_YT, BASE, SCRITTE } from './dati.js';
+import { ATTESTATI, SITI, VIDEO_YT, BASE, SCRITTE, PASSI, DXS } from './dati.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const deg = d => d * Math.PI / 180;
 
-export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 }) {
+export async function costruisci({ scene: sceneR, tl, gltf, mobile, fonts, lingua = 0, ala = 'atrio' }) {
   RectAreaLightUniformsLib.init();
+  // il laboratorio si carica a pezzi: l'atrio con le due porte, poi un'ala alla volta (luce o soccorso).
+  // `zona` dice a quale ambiente appartiene quello che si sta costruendo: fuori dall'ambiente scelto non si carica niente
+  const VISIBILI = { atrio: ['', 'atrio'], luce: ['', 'luce'], soccorso: ['', 'soccorso'] }[ala] || ['', 'atrio'];
+  let zona = '';
+  const on = () => VISIBILI.includes(zona);
+  // `lato` = 1 mentre si costruisce il blocco di sinistra di In soccorso (In quota e fuori orario): finisce in un gruppo spostato di DXS metri, accostato a In cura
+  let lato = 0; const spostati = new THREE.Group(); spostati.position.x = ala === 'soccorso' ? DXS : 0; sceneR.add(spostati);
+  const dove = () => lato ? spostati : sceneR;
+  const scene = { add: (...o) => { if (on()) dove().add(...o); }, remove: o => sceneR.remove(o), traverse: f => sceneR.traverse(f), updateMatrixWorld: a => sceneR.updateMatrixWorld(a) };
   const out = { cliccabili: [], luci: {}, schermi: {}, anim: {}, mat: {} };
   // testi disegnati sugli oggetti: si ridisegnano quando cambia la lingua (out.lingua)
   const testi = [];
   const testo = (mesh, make) => { mesh.material.map = make(lingua); mesh.material.needsUpdate = true; testi.push({ mesh, make }); return mesh; };
   out.lingua = L => { lingua = L; for (const t of testi) { const old = t.mesh.material.map; t.mesh.material.map = t.make(L); t.mesh.material.needsUpdate = true; if (old) old.dispose(); } };
-  const tag = (obj, punto) => { obj.traverse(o => { if (o.isMesh) { o.userData.punto = punto; out.cliccabili.push(o); } }); };
+  const tag = (obj, punto) => { if (!on()) return; obj.traverse(o => { if (o.isMesh) { o.userData.punto = punto; out.cliccabili.push(o); } }); };
 
   // ------------------------------------------------------------ texture
   // sui telefoni la memoria grafica è poca: immagini più piccole (tex-mobile), niente rilievo/ruvidità, tele a metà risoluzione
@@ -79,8 +88,9 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   // destra: due portoni da garage (nelle due campate verso il portone, il pilastro in mezzo) e finestre alte
   const GD = 9.5, GH = 6.0, PH = 4.5, PW = 5.4;                  // garage: profondità e altezza; portoni: altezza e larghezza
   const porte = [Z1 - 3 * D / 8, Z1 - D / 8];                     // centri delle due campate verso il portone: 0 = vigili del fuoco, 1 = ambulanza
-  const tagli = porte.map(c => [c - PW / 2, c + PW / 2]);
-  const pieni = [[Z0, tagli[0][0]], [tagli[0][1], tagli[1][0]], [tagli[1][1], Z1]];
+  const garage = ala === 'soccorso';                              // i portoni del garage ci sono solo nell'ala In soccorso
+  const tagli = garage ? porte.map(c => [c - PW / 2, c + PW / 2]) : [];
+  const pieni = garage ? [[Z0, tagli[0][0]], [tagli[0][1], tagli[1][0]], [tagli[1][1], Z1]] : [[Z0, Z1]];
   for (const [a, b] of pieni) wall(b - a, 6.6, X1 + .125, 3.3, (a + b) / 2, -Math.PI / 2);
   for (const [a, b] of tagli) wall(b - a, 6.6 - PH, X1 + .125, (PH + 6.6) / 2, (a + b) / 2, -Math.PI / 2);
   wall(D + .5, H - 8.2, X1 + .125, 8.2 + (H - 8.2) / 2, 0, -Math.PI / 2);
@@ -100,6 +110,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   zoc(W, 0, Z0 + .03, 0); zoc(D, X0 + .03, 0, Math.PI / 2); for (const [a, b] of pieni) zoc(b - a, X1 - .03, (a + b) / 2, Math.PI / 2);
   zoc((W - DW) / 2, -(DW / 2 + (W - DW) / 4), Z1 - .03, 0); zoc((W - DW) / 2, (DW / 2 + (W - DW) / 4), Z1 - .03, 0);
 
+  zona = 'soccorso';
   // ------------------------------------------------------------ garage dei mezzi di soccorso, dietro i portoni
   { const GZ0 = 0, GZ1 = Z1, gl = GZ1 - GZ0, gc = (GZ0 + GZ1) / 2, gx = X1 + GD / 2;
     const cemento = pbr('hangar_concrete_floor', [GD / 3, gl / 3], { color: 0x8a8884, roughness: .9 });
@@ -149,6 +160,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   const sfuma = canvasTex(4, 256, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#8fb4e6'); gr.addColorStop(.46, '#d6e6f6'); gr.addColorStop(.5, '#f2f4f2'); gr.addColorStop(1, '#9aa3ab'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
   const sky = new THREE.Mesh(new THREE.SphereGeometry(120, 32, 16), new THREE.MeshBasicMaterial({ map: sfuma, color: 0x0b0f18, side: THREE.BackSide, toneMapped: false, fog: false })); scene.add(sky); out.mat.sfondo = sky.material;
 
+  zona = '';
   // ------------------------------------------------------------ luci LED lineari
   out.luci.rect = []; const rows = (mobile ? [-8, 8] : [-12, -4, 4, 12]).map(x => x * K);
   for (const x of rows) {
@@ -180,8 +192,11 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
     g.fillStyle = '#ece8e1'; g.fillText(txt, 10, 905);
   });
   // le scritte stanno tutte sotto la fascia delle finestre alte (6.6 m)
-  testo(muro(6.2, 3.1, X0 + .03, 4.95, campata(1), Math.PI / 2), L => scrittaDoppia(SCRITTE.quota[L], '#ff5b1f'));
+  zona = 'soccorso';
+  lato = 1; testo(muro(6.2, 3.1, X0 + .03, 4.95, campata(1), Math.PI / 2), L => scrittaDoppia(SCRITTE.quota[L], '#ff5b1f')); lato = 0;
+  zona = 'luce';
   testo(muro(7, 1.75, -.5, 5.75, Z0 + .03, 0), L => scritta(SCRITTE.luce[L], '#c45cff'));   // sopra le foto della parete attrezzatura
+  zona = 'soccorso';
   testo(muro(6.2, 3.1, 10.6, 4.95, Z1 - .03, Math.PI), L => scrittaDoppia(SCRITTE.cura[L], '#ff4d6a'));   // sulla parete del portone, sopra la zona In cura
   // altre scritte su più righe: la tela si adatta al numero di righe, così niente resta tagliato.
   // stili = per ogni riga [colore, peso/corsivo]; le righe arrivano da SCRITTE in base alla lingua
@@ -194,9 +209,13 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
         g.fillText(s, 10, size * (i + 1) * 1.04 - size * .1); });
     }));
   };
-  frase('motto', [0, 0, ['#c45cff']], 6.6, 200, -9.8, 4.9, Z1 - .03, Math.PI);   // sulla parete del portone, a sinistra (sopra l'angolo caffè)
+  zona = 'soccorso';
+  lato = 1; frase('motto', [0, 0, ['#c45cff']], 6.6, 200, -9.8, 4.9, Z1 - .03, Math.PI); lato = 0;   // sulla parete del portone, a sinistra (sopra l'angolo caffè)
+  zona = 'luce';
   frase('studio', [0, ['#c45cff', 'italic 400']], 5.2, 300, X1 - .03, 4.7, campata(0), -Math.PI / 2);   // parete destra, sopra la sala posa
-  frase('formazione', [0, ['#d9d2c5', 'italic 400']], 6.4, 300, 0, 5.3, 8.9, Math.PI);   // sopra la parete della formazione, al centro: vale per tutti e tre i mestieri
+  zona = 'atrio';
+  frase('formazione', [0, ['#d9d2c5', 'italic 400']], 6.4, 300, 0, 5.3, 3.16, 0);   // sopra la parete della formazione, al centro: vale per tutti e tre i mestieri
+  zona = 'soccorso';
   // scritte del garage: sopra i portoni (lato capannone) e sulla parete di fondo
   const insegnaPorta = (num, txt, col) => canvasTex(1024, 300, (g, w, h) => { g.fillStyle = '#16171a'; g.fillRect(0, 0, w, h); g.fillStyle = col; g.fillRect(0, 0, w, 16);
     g.font = '800 170px Archivo'; g.fillText(num, 40, 210); g.fillStyle = '#ece8e1'; g.font = '600 52px "JetBrains Mono"'; g.fillText(txt, 430, 182); });
@@ -204,20 +223,23 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
     testo(muro(2.4, .7, X1 - .2, PH + .75, c, -Math.PI / 2), L => insegnaPorta(num, txt[L], col));
     testo(muro(4.6, 1.15, X1 + GD - .01, 4.4, c, -Math.PI / 2), L => canvasTex(2048, 512, g => { g.fillStyle = col; g.font = '800 300px Archivo'; g.fillText(num, 20, 360); g.fillStyle = '#2a2b2e'; g.font = '800 120px Archivo'; g.fillText(txt[L], 720, 340); }));
   });
+  zona = '';
   // numeri grandi dipinti a terra, uno per zona
   const numero = (n, col) => canvasTex(1024, 1024, g => { g.fillStyle = col; g.globalAlpha = .9; g.font = '800 700px Archivo'; g.textAlign = 'center'; g.fillText(n, 512, 760); });
-  [['01', '#ff5b1f', -9.5, -2.0, .35], ['02', '#c45cff', -1.6, -6.9, 0], ['03', '#ff4d6a', 8.6, 4.6, -.35]].forEach(([n, c, x, z, r]) => {
+  [['01', '#ff5b1f', -9.5, -2.0, .35, 'soccorso'], ['02', '#c45cff', -1.6, -6.9, 0, 'luce'], ['03', '#ff4d6a', 8.6, 4.6, -.35, 'soccorso']].forEach(([n, c, x, z, r, zz]) => { zona = zz; lato = x < -4.2 && zz === 'soccorso' ? 1 : 0;
     const m = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 2.4), new THREE.MeshStandardMaterial({ map: numero(n, c), transparent: true, opacity: .55, roughness: .7, depthWrite: false }));
     m.rotation.set(-Math.PI / 2, 0, r); m.position.set(x, .007, z); m.receiveShadow = true; scene.add(m);
   });
+  zona = 'soccorso'; lato = 1;
   // cartelli di sicurezza sulla struttura (blu, come in palestra)
   const cartello = (righe) => canvasTex(512, 720, (g, w, h) => { g.fillStyle = '#ffffff'; g.fillRect(0, 0, w, h); g.fillStyle = '#1757a8'; g.beginPath(); g.arc(w / 2, 220, 170, 0, 7); g.fill();
     g.strokeStyle = '#fff'; g.lineWidth = 18; g.beginPath(); g.arc(w / 2, 240, 80, Math.PI, 0); g.stroke(); g.fillStyle = '#fff'; g.fillRect(w / 2 - 110, 236, 220, 22);
     g.fillStyle = '#1757a8'; g.fillRect(0, 440, w, h - 440); g.fillStyle = '#fff'; g.font = '800 52px Archivo'; g.textAlign = 'center'; righe.forEach((r, i) => g.fillText(r, w / 2, 530 + i * 64)); });
   [[['OBBLIGO', 'CASCO'], -13.5], [['OBBLIGO', 'IMBRAGATURA'], -6.9]].forEach(([r, x]) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.5, .7), new THREE.MeshStandardMaterial({ map: cartello(r), roughness: .6 })); m.position.set(x, 1.7, -8.54); scene.add(m); });
+  zona = 'atrio'; lato = 0;
   // frecce a terra davanti al salottino
   const freccia = (txt, col, rot) => canvasTex(512, 256, (g) => { g.fillStyle = col; g.font = '800 120px Archivo'; g.fillText(txt, 20, 170); });
-  [['01 ←', '#ff5b1f', -5.4, 5.9], ['02 ↑', '#c45cff', -.9, 6.4], ['03 →', '#ff4d6a', 3.6, 5.9]].forEach(([t, c, x, z]) => {
+  [['← LUCE', '#c45cff', -4.4, 10.9], ['SOCCORSO →', '#ff5b1f', 4.0, 10.9]].forEach(([t, c, x, z]) => {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.1), new THREE.MeshStandardMaterial({ map: freccia(t, c), transparent: true, roughness: .9 })); m.rotation.x = -Math.PI / 2; m.position.set(x, .006, z); m.receiveShadow = true; scene.add(m);
   });
 
@@ -265,6 +287,8 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   // ------------------------------------------------------------ arredi (coordinate reali in metri: x -17..17, z -13.6 fondo .. 13.6 portone)
   const R = { c: (m, hex) => { m.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); o.material.color.multiply(new THREE.Color(hex)); } }); } };
   async function put(file, pos, ry = 0, opt = {}) {
+    if (!on()) return new THREE.Group();   // oggetto di un altro ambiente: non si scarica nemmeno
+    const dest = opt.in || dove();          // deciso subito: mentre il modello si scarica `lato` può cambiare
     // se un modello non si carica, il laboratorio si apre lo stesso (senza quell'oggetto)
     const g = await gltf(file).catch(e => { console.warn('Modello non caricato:', file, e); return { scene: new THREE.Group() }; });
     const o = g.scene;
@@ -272,7 +296,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
     o.traverse(m => { if (m.isMesh) { m.castShadow = opt.cast !== false; m.receiveShadow = true; if (m.material && m.material.map) m.material.map.anisotropy = 8; } });
     if (opt.tint) R.c(o, opt.tint);
     if (opt.punto) tag(o, opt.punto);
-    (opt.in || scene).add(o); return o;
+    dest.add(o); return o;   // l'ambiente è già stato controllato all'inizio: qui si aggiunge sempre
   }
   const SM = 'modelli/su-misura/', DL = 'modelli/';
   const jobs = [];
@@ -283,8 +307,9 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
     if (/foglia|fronde|secche|leaf|leaves/i.test(x.name + m.name)) x.side = THREE.DoubleSide;
     if (x.name === 'tronco_palma') { x.color.set(0x3b2c20); x.roughness = .95; } }); }); return o; });
 
+  zona = 'atrio';
   // ===== CENTRO: salottino, con la camera della panoramica sopra
-  const LX = 0, LZ = 1.5;
+  const LX = 0, LZ = 7.6;   // il salottino sta al centro dell'atrio compatto (z 3..13.6)
   add(SM + 'tappeto-tondo.glb', [LX, 0, LZ], 0, { cast: false, punto: 'salottino' });
   add(SM + 'divano-curvo.glb', [LX, 0, LZ], 180, { punto: 'salottino' });
   add(SM + 'tavolino-tondo.glb', [LX, 0, LZ + .17], 0, { punto: 'salottino' });
@@ -295,7 +320,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
     o.traverse(m => { if (m.isMesh) { const b = new THREE.Box3().setFromObject(m), s = b.getSize(new THREE.Vector3()); if (s.y < .06 && Math.max(s.x, s.z) > 1.2) m.visible = false; } });
   });
   add(DL + 'vasi.glb', [LX + .26, .385, LZ + .21], 20, { s: .7 });
-  const RY = 2.6, RS = .58;   // anello luminoso sospeso sopra il salottino
+  const RY = 5.5, RS = .58;   // anello luminoso sospeso sopra il salottino: alto, così dall'ingresso non copre la parete della formazione
   add(SM + 'lampada-cerchio.glb', [LX, RY, LZ], 0, { cast: false, s: RS }).then(o => {
     o.traverse(m => { if (m.isMesh && m.material.emissive && m.material.emissiveIntensity > 0) out.mat.cerchio = m.material; });
     // i cavi del modello arrivano a 3.2: li sostituisco con linee sottili fino al soffitto (da vicino non diventano barre nere)
@@ -307,8 +332,9 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   });
   pianta(SM + 'kentia.glb', [LX - 3.9, 0, LZ - 1.5], 20); pianta(SM + 'ficus.glb', [LX + 3.9, 0, LZ - 1.4], 70, 1.1);
 
+  zona = 'atrio';
   // ===== CENTRO, verso l'ingresso: formazione continua (comune ai tre mestieri)
-  const fc = gruppo(0, 9.0, 180);
+  const fc = ala === 'atrio' ? gruppo(0, 3.14, 0) : gruppo(0, 9.0, 180);   // nell'atrio sta sulla parete delle due porte, rivolta all'ingresso
   add(SM + 'parete-attestati.glb', [0, 0, 0], 0, { punto: 'attestati', in: fc }).then(o => {
     o.traverse(m => {
       if (!m.isMesh) return;
@@ -324,6 +350,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
     for (const x of [-1.9, 1.9]) { const a = new THREE.Mesh(new THREE.CylinderGeometry(.012, .012, .5, 8), M.acciaio); a.position.set(x, 4.38, .0); fc.add(a); }   // aste del cartello
   }
 
+  zona = 'soccorso'; lato = 1;
   // ===== FUORI ORARIO (sinistra, verso il portone): boulder e SUP
   add(SM + 'boulder.glb', [-16.87, 0, 3.4], 90, { punto: 'boulder' }).then(o => {
     // prese colorate a blocchi, come nelle palestre
@@ -372,10 +399,13 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   add(SM + 'tavolo-alto.glb', [-10.2, 0, 10.6], 0);
   add(DL + 'sgabello.glb', [-10.9, 0, 10.0], 30); add(DL + 'sgabello.glb', [-9.5, 0, 11.1], -20);
   add(DL + 'poltrona-eames.glb', [-13.6, 0, 9.4], 200); add(SM + 'tavolino-laterale.glb', [-12.7, 0, 8.6], 0);
-  add(SM + 'bacheca.glb', [-5.0, 0, 10.4], 150, { punto: 'bacheca' }).then(o => { o.traverse(m => { if (m.isMesh && m.name.includes('bacheca_fronte')) { out.anim.bacheca = uvPiano(m); m.material = new THREE.MeshStandardMaterial({ roughness: .9 }); testo(m, L => bachecaTex(L)); } }); });
-  pianta(SM + 'kentia.glb', [-15.9, 0, 12.7], 40, 1.2); pianta(DL + 'monstera.glb', [-7.2, 0, 12.8], 10, 1.7); pianta(SM + 'ficus.glb', [-3.7, 0, 12.8], 200, 1.15);
-  pianta(SM + 'kentia.glb', [-8.2, 0, 7.6], 120, 1.05);   // fuori dalla vista del boulder
+  lato = 0; zona = 'atrio';   // la bacheca sta nell'atrio, a destra
+  add(SM + 'bacheca.glb', [6.3, 0, 8.8], -55, { punto: 'bacheca' }).then(o => { o.traverse(m => { if (m.isMesh && m.name.includes('bacheca_fronte')) { out.anim.bacheca = uvPiano(m); m.material = new THREE.MeshStandardMaterial({ roughness: .9 }); testo(m, L => bachecaTex(L)); } }); });
+  zona = 'soccorso'; lato = 1;
+  pianta(SM + 'kentia.glb', [-15.9, 0, 12.7], 40, 1.2); pianta(DL + 'monstera.glb', [-13.4, 0, 12.6], 10, 1.7); pianta(SM + 'ficus.glb', [-5.3, 0, 12.8], 200, 1.15);
+  pianta(SM + 'kentia.glb', [-5.0, 0, 9.8], 120, 1.05);   // fuori dalla vista del boulder
 
+  zona = 'soccorso';
   // ===== 01 IN QUOTA (sinistra, verso il fondo)
   add(SM + 'struttura.glb', [-10.2, 0, -10.9], 0, { punto: 'struttura' });
   add(SM + 'tripode.glb', [-9.4, 0, -5.0], 20, { punto: 'tripode' });
@@ -387,8 +417,9 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   add(SM + 'caschi-imbraghi.glb', [-16.87, 0, -4.8], 90);
   add(DL + 'carrello-attrezzi.glb', [-15.9, 0, -11.6], 80, { tint: 0x3a3c40 });
   add(DL + 'cassetta.glb', [-6.9, 0, -.9], 20, { tint: 0x2a2a2c }); add(DL + 'cassetta.glb', [-6.85, .26, -.95], 35, { tint: 0x2a2a2c });
-  pianta(SM + 'kentia.glb', [-16.1, 0, -7.6], 0); pianta(DL + 'monstera.glb', [-4.6, 0, -.6], 60, 1.3);
+  pianta(SM + 'kentia.glb', [-16.1, 0, -7.6], 0); pianta(DL + 'monstera.glb', [-5.2, 0, -1.0], 60, 1.3);
 
+  zona = 'luce'; lato = 0;
   // ===== 02 IN LUCE (fondo, al centro e a destra)
   add(SM + 'parete-attrezzatura.glb', [-.5, 0, -13.45], 0, { punto: 'macchina' }).then(o => {
     // pannello forato a fessure, con un LED viola dietro che si vede attraverso i fori
@@ -420,7 +451,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   add(DL + 'pianta-piccola.glb', [X0d + .77, .76, Z0d - .27], 0);
   add(DL + 'cartellina.glb', [X0d - .51, .762, Z0d + .21], -18);
   add(DL + 'sedia-ufficio.glb', [X0d + .04, 0, Z0d + .81], 172);
-  add(SM + 'softbox-tondo.glb', [X0d + 2.1, 0, Z0d - 1.0], -66).then(o => { o.traverse(m => { if (m.isMesh && m.name.includes('softbox_luce')) out.mat.softbox = m.material; }); });
+  add(SM + 'softbox-tondo.glb', [-2.5, 0, -12.2], 60).then(o => { o.traverse(m => { if (m.isMesh && m.name.includes('softbox_luce')) out.mat.softbox = m.material; }); });
   add(DL + 'softbox.glb', [-4.4, 0, -11.0], 55);
   // la macchina fotografica in vetrina: piedistallo in pietra chiara con luce dall'alto
   const plinto = new THREE.Group(); plinto.position.set(-3.0, 0, -9.2); scene.add(plinto);
@@ -432,13 +463,25 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   tag(plinto, 'macchina');
   add(DL + 'macchina-foto.glb', [-3.0, 1.05, -9.2], 32, { punto: 'macchina', s: 1.35 });
   // stampante su una madia, girata verso il centro
-  const md = gruppo(2.7, -9.4, -18);
+  const md = gruppo(1.2, -10.9, -18);
   add(SM + 'mobile-stampante.glb', [0, 0, 0], 0, { punto: 'stampante', in: md });
   add(DL + 'pianta-piccola.glb', [.36, .72, -.07], 0, { in: md });
   add(SM + 'stampante.glb', [-.25, .72, 0], 0, { punto: 'stampante', in: md }).then(o => { out.anim.stampante = o; o.traverse(m => { if (m.isMesh && (m.name.includes('stampante_display') || (m.material && m.material.name === 'schermo'))) out.schermi.stampante = uvPiano(m); }); });
-  pianta(SM + 'kentia.glb', [3.75, 0, -12.95], 120, .95);
+  pianta(SM + 'kentia.glb', [3.2, 0, -12.8], 120, .95);
   // tavolo della consulenza: comunicazione, social e progetti dei siti
-  add(SM + 'tappeto.glb', [2.8, 0, -4.7], 0, { cast: false, s: .95 });
+  { // tappeto tessuto (texture disegnata): fondo lana chiaro, trama, cornice e bordo a frange
+    const tx = canvasTex(1024, 840, g => {
+      g.fillStyle = '#d9d2c4'; g.fillRect(0, 0, 1024, 840);
+      for (let i = 0; i < 9000; i++) { g.fillStyle = `rgba(${90 + Math.random() * 60|0},${80 + Math.random() * 50|0},${65 + Math.random() * 40|0},.10)`; g.fillRect(Math.random() * 1024, Math.random() * 840, 2 + Math.random() * 10, 1.5); }
+      for (let y = 0; y < 840; y += 6) { g.fillStyle = 'rgba(60,45,30,.05)'; g.fillRect(0, y, 1024, 2); }
+      g.strokeStyle = '#2c2d31'; g.lineWidth = 26; g.strokeRect(60, 60, 904, 720);
+      g.strokeStyle = '#ff5b1f'; g.lineWidth = 6; g.strokeRect(100, 100, 824, 640);
+      g.strokeStyle = 'rgba(44,45,49,.35)'; g.lineWidth = 3; for (let i = 0; i < 6; i++) g.strokeRect(140 + i * 12, 140 + i * 12, 744 - i * 24, 560 - i * 24);
+      g.fillStyle = 'rgba(0,0,0,.55)'; for (let x = 0; x < 1024; x += 14) { g.fillRect(x, 0, 3, 22); g.fillRect(x, 818, 3, 22); }
+    });
+    const tap = new THREE.Mesh(new THREE.PlaneGeometry(3.9, 3.2), new THREE.MeshStandardMaterial({ map: tx, roughness: 1 }));
+    tap.rotation.x = -Math.PI / 2; tap.position.set(2.8, .012, -4.7); tap.receiveShadow = true; scene.add(tap); tag(tap, 'consulenza');
+  }
   add(SM + 'tavolo-polaroid.glb', [2.8, 0, -4.7], 0, { punto: 'consulenza', s: 1.12 }).then(o => o.traverse(m => { if (m.isMesh && /corda|alluminio|arancio|quaderno|carta/.test(m.material.name)) m.visible = false; }));
   add(DL + 'sedia-eames.glb', [2.2, 0, -5.55], 0, { punto: 'consulenza' }); add(DL + 'sedia-eames.glb', [3.4, 0, -5.55], 10, { punto: 'consulenza' });
   add(DL + 'sedia-eames.glb', [2.2, 0, -3.85], 180, { punto: 'consulenza' }); add(DL + 'sedia-eames.glb', [3.4, 0, -3.85], 170, { punto: 'consulenza' });
@@ -449,19 +492,27 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
     for (const [x, z, r] of [[3.3, -4.6, .3], [3.15, -4.45, -.2], [2.1, -4.5, .1]]) { const f = new THREE.Mesh(new THREE.BoxGeometry(.21, .003, .297), carta); f.position.set(x, .862, z); f.rotation.y = r; scene.add(f); }
     tag(pc, 'consulenza'); }
   // il cinema: telo grande, proiettore appeso e due poltrone
-  add(SM + 'proiettore.glb', [6.6, 0, -13.53], 0, { punto: 'tv', s: 1.15 }).then(o => {
+  add(SM + 'proiettore.glb', [5.0, 0, -13.53], 0, { punto: 'tv', s: .85 }).then(o => {
     o.traverse(m => { if (m.isMesh && m.name.includes('proiettore_schermo')) out.schermi.tv = uvPiano(m); });
   });
-  add(SM + 'videoproiettore.glb', [6.6, 3.35, -9.6], 180, { punto: 'tv' }).then(o => { out.anim.proiettore = o; });
-  add(DL + 'poltrona-barcelona.glb', [5.6, 0, -8.4], 180, { punto: 'tv' }); add(DL + 'poltrona-barcelona.glb', [7.6, 0, -8.4], 180, { punto: 'tv' });
+  add(SM + 'videoproiettore.glb', [5.0, 3.2, -9.6], 180, { punto: 'tv' }).then(o => { out.anim.proiettore = o; });
+  add(DL + 'poltrona-barcelona.glb', [4.2, 0, -8.4], 180, { punto: 'tv' }); add(DL + 'poltrona-barcelona.glb', [5.8, 0, -8.4], 180, { punto: 'tv' });
   // la sala posa: fondale grande contro la parete destra, due luci, sgabello e carrello
-  add(SM + 'fondale.glb', [14.6, 0, -10.2], -90, { punto: 'set' });
-  add(DL + 'softbox.glb', [11.4, 0, -12.5], 36, { punto: 'set' });
-  add(SM + 'softbox-tondo.glb', [11.4, 0, -7.9], 144, { punto: 'set' });
-  add(DL + 'sgabello.glb', [13.0, 0, -10.2], 0, { punto: 'set' });
-  add(DL + 'carrello-set.glb', [15.6, 0, -4.4], -70, { tint: 0x3a3c40 });
-  pianta(SM + 'kentia.glb', [16.1, 0, -6.1], 200, 1.15); pianta(SM + 'ficus.glb', [16.1, 0, -1.3], 20, 1.1); pianta(DL + 'monstera.glb', [12.4, 0, -1.0], 40, 1.5);
+  // limbo fotografico: ciclorama d'angolo costruito in Blender (blender/limbo.py), un solo pezzo; il bianco è "cotto" nei vertici
+  add(SM + 'limbo.glb', [13.98, .03, Z0 + .22], 0, { punto: 'set', cast: false }).then(o => o.traverse(m => {
+    if (m.isMesh && !m.name.startsWith('limbo_bianco')) m.castShadow = false;   // rotoli e barra: niente ombre a trattini sulla parete
+    if (m.isMesh && m.name.startsWith('limbo_bianco')) { m.geometry.deleteAttribute('color'); m.material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, fog: false }); m.material.color.setScalar(1.5); m.receiveShadow = false; m.castShadow = false; m.userData.senzaOmbra = true; }   // bianco pieno e uguale su pavimento e pareti (sotto la soglia del bagliore): è questo che fa sparire lo spigolo
+  }));
+  // le due softbox illuminano davvero il fondo: luci ad area puntate verso l'angolo
+  for (const [x, z, w, h] of [[8.9, -8.3, 2.6, 1.8], [12.5, -6.6, 2.6, 2.6]]) { const l = new THREE.RectAreaLight(0xfff6ea, 6, w, h); l.position.set(x, 1.9, z); l.lookAt(13.4, 1.2, -13.0); scene.add(l); }
+  add(DL + 'softbox.glb', [8.6, 0, -8.4], 40, { punto: 'set' });
+  add(SM + 'softbox-tondo.glb', [12.6, 0, -6.2], 215, { punto: 'set' });
+  add(DL + 'sgabello.glb', [11.4, 0, -9.8], 0, { punto: 'set' });
+  add(SM + 'cavalletto.glb', [9.5, 0, -7.4], 142, { punto: 'set' });                      // la macchina sul cavalletto, puntata sullo sgabello
+  add(DL + 'carrello-set.glb', [11.4, 0, -1.3], 180, { tint: 0x3a3c40 });   // fuori dal limbo, contro la parete d'ingresso
+  pianta(SM + 'kentia.glb', [13.2, 0, -2.4], 200, 1.15); pianta(DL + 'monstera.glb', [9.6, 0, -1.6], 40, 1.5);
 
+  zona = 'soccorso';
   // ===== 03 IN CURA (davanti a destra): portoni del garage sulla parete destra, attrezzatura sulla parete del portone
   add(SM + 'barella-118.glb', [11.9, 0, 8.7], 0, { punto: 'barella' });
   add(SM + 'bombole.glb', [11.0, 0, 7.3], 0, { punto: 'barella' });
@@ -508,6 +559,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   add(SM + 'divise-stoffa.glb', [9.6, 0, 3.0], 180, { punto: 'divise' }).then(o => { for (const x of [-2, 2]) { const c = new THREE.Mesh(new THREE.BoxGeometry(.008, H - 3.4, .008), M.acciaio); c.position.set(x, 3.4 + (H - 3.4) / 2, 0); o.add(c); } });
   pianta(SM + 'kentia.glb', [3.9, 0, 12.75], 300, 1.1); pianta(DL + 'monstera.glb', [16.2, 0, 12.6], 0, 1.4);
 
+  zona = '';
   // ===== FUORI: palme vere davanti alla facciata e kentia nelle fioriere
   for (const [x, ry] of [[-14.6, 10], [-9.3, 120], [9.3, 200], [14.6, 300]]) {
     pianta(SM + 'palma.glb', [x, 0, Z1 + 2.9], ry, 1.05);
@@ -515,6 +567,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   }
   for (const x of [-4.7, 4.7]) pianta(SM + 'kentia.glb', [x, .7, Z1 + 1.17], x > 0 ? 30 : 200, 1.1);
 
+  zona = 'soccorso';
   // mezzi parcheggiati nel garage, muso verso il capannone; lampeggianti blu che illuminano il capannone dai portoni
   const blu = new THREE.MeshStandardMaterial({ color: 0x0b2cff, emissive: 0x2050ff, emissiveIntensity: 0, roughness: .3 }); out.mat.lampeggiante = blu;
   const blu2 = blu.clone(); out.mat.lampeggiante2 = blu2;
@@ -544,12 +597,14 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
   for (const l of [ambL, vvfL]) { if (!mobile) { l.castShadow = true; l.shadow.mapSize.set(1024, 1024); l.shadow.bias = -.0006; scene.add(l, l.target); } }   // sui telefoni lampeggiano solo le luci dei mezzi
   out.luci.ambulanza = ambL; out.luci.vvf = vvfL;
 
+  zona = 'soccorso'; lato = 1;
   // nastro giallo e nero a terra attorno a In quota
   const haz = canvasTex(512, 64, (g, w, h) => { g.fillStyle = '#f2c200'; g.fillRect(0, 0, w, h); g.fillStyle = '#141414'; for (let x = -h; x < w + h; x += 64) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 32, 0); g.lineTo(x + 32 + h, h); g.lineTo(x + h, h); g.fill(); } });
   haz.wrapS = THREE.RepeatWrapping;
   const tape = (len, x, z, ry) => { const t = haz.clone(); t.wrapS = THREE.RepeatWrapping; t.repeat.set(len / 1.2, 1); t.needsUpdate = true; const m = new THREE.Mesh(new THREE.PlaneGeometry(len, .12), new THREE.MeshStandardMaterial({ map: t, roughness: .7 })); m.rotation.set(-Math.PI / 2, 0, ry); m.position.set(x, .005, z); m.receiveShadow = true; scene.add(m); };
   tape(12.2, -10.7, -.3, 0); tape(13.3, -4.6, -6.95, Math.PI / 2);
 
+  zona = 'atrio'; lato = 0;
   // riviste sul tavolino: LinkedIn, Instagram, Curriculum (porta alla stampante), Blog
   [['#0a66c2', -.38, -.04, .25, 'salottino'], ['#c13584', -.04, .17, -.2, 'salottino'], ['#16171a', .26, -.17, .1, 'stampante'], ['#ff5b1f', -.26, -.38, -.5, 'salottino']].forEach(([col, x, z, r, punto], i) => {
     const cop = new THREE.MeshStandardMaterial({ roughness: .4 }), carta = new THREE.MeshStandardMaterial({ color: 0xf2f2ee });
@@ -579,6 +634,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
     penna.rotation.z = Math.PI / 2; penna.rotation.y = .5; penna.position.set(.15, .006, .02); g.add(penna);
     g.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } }); tag(g, 'faq'); }
 
+  zona = 'soccorso'; lato = 1;
   // foto stampate sul tavolo (formato polaroid, abbastanza grandi da riconoscerle)
   const fotoQ = ['foto/irata-allenamento-sicurlive.jpg', 'foto/irata-imbrago.jpg', 'foto/quota-capannone.jpg', 'foto/quota-attrezzatura.jpg', 'foto/irata-palestra-sicurlive.jpg'];
   const polM = new THREE.MeshStandardMaterial({ color: 0xeeebe4, roughness: .75 });
@@ -591,7 +647,9 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
     scene.add(g); tag(g, 'polaroid');
   });
 
+  lato = 0;
   await Promise.all(jobs);
+  zona = 'soccorso';
   // corde: trama intrecciata (anima e calza) al posto del colore pieno, così si capisce che sono corde
   { const trame = {};
     const trama = (col) => trame[col] ||= (() => { const c = new THREE.Color(col), hex = '#' + c.getHexString(); const chiaro = '#' + c.clone().lerp(new THREE.Color(1, 1, 1), .45).getHexString(), scuro = '#' + c.clone().multiplyScalar(.45).getHexString();
@@ -601,6 +659,7 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
       t.wrapS = t.wrapT = THREE.RepeatWrapping; t.magFilter = THREE.LinearFilter; return t; })();
     scene.traverse(m => { if (!m.isMesh || !m.geometry.attributes.uv) return;
       (Array.isArray(m.material) ? m.material : [m.material]).forEach(x => { if (x && /^corda/.test(x.name) && !x.map) { x.map = trama(x.color.getHex()); x.color.set(0xffffff); x.roughness = .92; x.bumpMap = x.map; x.bumpScale = 1.5; x.needsUpdate = true; } }); }); }
+  zona = 'luce';
   // fascio di luce dall'ottica del proiettore all'immagine sullo schermo (piramide trasparente che sfuma verso lo schermo)
   if (out.anim.proiettore && out.schermi.tv) {
     scene.updateMatrixWorld(true);
@@ -617,6 +676,99 @@ export async function costruisci({ scene, tl, gltf, mobile, fonts, lingua = 0 })
     // il fascio è solo luce: niente ombre a terra e niente occlusione ambientale (il GTAO salta le linee, quindi lo segno come tale; resta disegnato come mesh)
     fascio.userData.senzaOmbra = true; fascio.isLine = true;
   }
+
+  // ===== PARETI DIVISORIE: l'atrio con le due porte; ogni ala è chiusa dal resto, con la serranda di passaggio all'altra
+  zona = '';
+  const ACC = { luce: '#c45cff', soccorso: '#ff5b1f' };
+  const NOMI = { luce: ['luce', 'focus'], soccorso: ['soccorso', 'rescue'] };
+  // insegna "In luce" / "In soccorso", nella lingua scelta
+  const insegnaAla = k => testo(new THREE.Mesh(new THREE.PlaneGeometry(2.8, 1.05), new THREE.MeshStandardMaterial({ roughness: .6 })), L => canvasTex(1024, 384, g => {
+    g.fillStyle = '#15161a'; g.fillRect(0, 0, 1024, 384); g.fillStyle = ACC[k]; g.fillRect(0, 0, 1024, 20);
+    g.textBaseline = 'alphabetic'; g.fillStyle = ACC[k]; g.font = 'italic 400 190px "Instrument Serif"'; g.fillText('In', 50, 270);
+    const w = g.measureText('In ').width; g.fillStyle = '#ece8e1'; let fs = 170; g.font = `800 ${fs}px Archivo`; while (g.measureText(NOMI[k][L]).width > 1024 - 50 - w - 30 - 40) { fs -= 6; g.font = `800 ${fs}px Archivo`; } g.fillText(NOMI[k][L], 50 + w + 30, 262); }));
+  // serranda a stecche con il nome dell'altra ala: è un punto cliccabile che porta di là
+  const serrandaAla = (k, x, z, ry) => {
+    const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry;
+    const stecche = canvasTex(256, 512, c => { c.fillStyle = '#9a9ca2'; c.fillRect(0, 0, 256, 512); for (let i = 0; i < 28; i++) { c.fillStyle = i % 2 ? '#8b8d93' : '#a7a9af'; c.fillRect(0, i * 18.3, 256, 9); } });
+    const tela = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 3.6), new THREE.MeshStandardMaterial({ map: stecche, roughness: .55, metalness: .5 })); tela.position.set(0, 1.8, .06); g.add(tela);
+    for (const [w, h, px, py] of [[3.9, .22, 0, 3.7], [.2, 3.7, -1.9, 1.85], [.2, 3.7, 1.9, 1.85]]) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, .24), M.acciaio); b.position.set(px, py, .08); b.castShadow = true; g.add(b); }
+    const t = insegnaAla(k); t.position.set(0, 2.0, .09); g.add(t);
+    const go = new THREE.Mesh(new THREE.PlaneGeometry(1.7, .5), new THREE.MeshStandardMaterial({ roughness: .8 }));
+    testo(go, L => canvasTex(512, 150, c => { c.fillStyle = '#15161a'; c.fillRect(0, 0, 512, 150); c.fillStyle = ACC[k]; c.font = '600 44px "JetBrains Mono"'; c.fillText(L ? 'GO THROUGH →' : 'PASSA DI QUI →', 22, 92); })); go.position.set(0, 1.0, .09); g.add(go);
+    sceneR.add(g); tag(g, 'porta-' + k); return g;
+  };
+  // pareti rivestite: doghe di legno chiaro e una striscia LED in alto, al posto del grigio spoglio
+  const doghe = canvasTex(256, 256, g => { g.fillStyle = '#a07c55'; g.fillRect(0, 0, 256, 256); for (let i = 0; i < 32; i++) { g.fillStyle = i % 3 ? '#9a7550' : '#aa855d'; g.fillRect(i * 8, 0, 6, 256); g.fillStyle = 'rgba(40,24,10,.45)'; g.fillRect(i * 8 + 6, 0, 2, 256); } });
+  doghe.wrapS = doghe.wrapT = THREE.RepeatWrapping;
+  const pannelli = lista => lista.forEach(([x, z, len, ry]) => {
+    const t = doghe.clone(); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(len / 1.1, 1); t.needsUpdate = true;
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(len, 3.3), new THREE.MeshStandardMaterial({ map: t, roughness: .75 })); m.position.set(x, 1.65, z); m.rotation.y = ry; m.receiveShadow = true; sceneR.add(m);
+    const led = new THREE.Mesh(new THREE.BoxGeometry(len, .05, .05), M.led); led.position.set(x, 3.4, z); led.rotation.y = ry; sceneR.add(led);
+    const zoc2 = new THREE.Mesh(new THREE.BoxGeometry(len, .1, .06), M.acciaio); zoc2.position.set(x, .05, z); zoc2.rotation.y = ry; sceneR.add(zoc2);
+  });
+  // punti sul pavimento: ci si cammina cliccandoli
+  if (PASSI[ala]) PASSI[ala].forEach(p => {
+    const g = new THREE.Group(); g.position.set(p.pos[0], .02, p.pos[1]);
+    const anello = new THREE.Mesh(new THREE.RingGeometry(.26, .34, 40), new THREE.MeshBasicMaterial({ color: ala === 'luce' ? 0xc45cff : ala === 'atrio' ? 0xece8e1 : 0xff5b1f, transparent: true, opacity: .85, depthWrite: false }));
+    const disco = new THREE.Mesh(new THREE.CircleGeometry(.26, 40), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .16, depthWrite: false }));
+    anello.rotation.x = disco.rotation.x = -Math.PI / 2; g.add(anello, disco); g.userData.pulsa = true; sceneR.add(g); tag(g, p.id);
+  });
+  if (ala === 'atrio') {                                   // parete con due porte: a sinistra In luce, a destra In soccorso
+    zona = 'atrio';
+    const ZP = 3.0, DWd = 2.6, DHd = 3.4, XD = 5.4, XA = 8;   // atrio compatto: 16 x 10,6 m, chiuso ai lati
+    const seg = (a, b) => wall(b - a, H, (a + b) / 2, H / 2, ZP, 0);
+    seg(X0, -XD - DWd / 2); seg(-XD + DWd / 2, XD - DWd / 2); seg(XD + DWd / 2, X1);
+    for (const sx of [-1, 1]) wall(DWd, H - DHd, sx * XD, DHd + (H - DHd) / 2, ZP, 0);
+    for (const sx of [-1, 1]) wall(Z1 - ZP, H, sx * XA, H / 2, (ZP + Z1) / 2, Math.PI / 2);
+    pannelli([[-XA + .14, (ZP + Z1) / 2, Z1 - ZP - .4, Math.PI / 2], [XA - .14, (ZP + Z1) / 2, Z1 - ZP - .4, -Math.PI / 2]]);
+    for (const [k, x] of [['luce', -XD], ['soccorso', XD]]) {
+      const g = new THREE.Group(); g.position.set(x, 0, ZP + .16);
+      const anta = new THREE.Mesh(new THREE.BoxGeometry(DWd - .12, DHd - .06, .08), new THREE.MeshStandardMaterial({ color: k === 'luce' ? 0x2a2433 : 0x33261f, roughness: .45, metalness: .35 })); anta.position.y = DHd / 2; anta.castShadow = true; g.add(anta);
+      const maniglia = new THREE.Mesh(new THREE.BoxGeometry(.05, .5, .06), M.acciaio); maniglia.position.set(x < 0 ? .9 : -.9, 1.1, .08); g.add(maniglia);
+      for (const sx of [-1, 1]) { const f = new THREE.Mesh(new THREE.BoxGeometry(.14, DHd + .1, .2), M.acciaio); f.position.set(sx * (DWd / 2), (DHd + .1) / 2, -.04); g.add(f); }
+      const t = insegnaAla(k); t.position.set(0, DHd + .75, 0); g.add(t);
+      sceneR.add(g); tag(g, 'porta-' + k);
+    }
+  }
+  if (ala === 'atrio') {                                   // scrivania e stampante contro la parete sinistra: da seduti si vede la stampante
+    zona = 'atrio';
+    const dg = gruppo(-7.1, 9.4, 90);
+    add(SM + 'scrivania.glb', [0, 0, 0], 0, { in: dg }); add(SM + 'monitor.glb', [0, .76, -.19], 0, { in: dg }); add(SM + 'tastiera.glb', [-.05, .76, .15], 0, { in: dg });
+    add(DL + 'lampada-scrivania.glb', [-.72, .76, -.21], 35, { in: dg }); add(DL + 'cartellina.glb', [-.51, .762, .21], -18, { in: dg }); add(DL + 'sedia-ufficio.glb', [.04, 0, .81], 172, { in: dg });
+    const md = gruppo(-7.45, 7.6, 72);
+    add(SM + 'mobile-stampante.glb', [0, 0, 0], 0, { punto: 'stampante', in: md }); add(DL + 'pianta-piccola.glb', [.36, .72, -.07], 0, { in: md });
+    add(SM + 'stampante.glb', [-.25, .72, 0], 0, { punto: 'stampante', in: md }).then(o => { out.anim.stampante = o; o.traverse(m => { if (m.isMesh && (m.name.includes('stampante_display') || (m.material && m.material.name === 'schermo'))) out.schermi.stampante = uvPiano(m); }); });
+    zona = '';
+  }
+  if (ala === 'luce') {                                    // ala In luce: chiusa a sinistra e davanti, la serranda porta a In soccorso
+    const XL = -6.2, XR = 14.2, ZF2 = -.4;
+    wall(ZF2 - Z0, H, XL, H / 2, (Z0 + ZF2) / 2, Math.PI / 2); wall(ZF2 - Z0, H, XR, H / 2, (Z0 + ZF2) / 2, Math.PI / 2); wall(XR - XL, H, (XR + XL) / 2, H / 2, ZF2, 0);
+    pannelli([[XL + .14, (Z0 + ZF2) / 2, ZF2 - Z0 - .4, Math.PI / 2], [XR - .14, (-5 + ZF2) / 2, ZF2 + 5 - .4, -Math.PI / 2], [(XR + XL) / 2, ZF2 - .14, XR - XL - .4, Math.PI]]);
+    serrandaAla('soccorso', XL + .14, -5.2, Math.PI / 2);
+  }
+  if (ala === 'soccorso') {                                // In soccorso: tre stanze affiancate. In quota (in fondo) e fuori orario (davanti) a sinistra, In cura a destra
+    const XS = X0 + DXS, XL = -4.2 + DXS, ZB = -1.6, ZC = .2, P0 = 4.0, P1 = 8.0;   // XS = nuova parete sinistra, XL = parete tra le stanze di sinistra e In cura
+    wall(D + .5, H, XS - .16, H / 2, 0, Math.PI / 2);                                   // parete sinistra (il resto del capannone, dietro, non si vede)
+    wall(DW, DH, 0, DH / 2, Z1 + .125, Math.PI);                                        // qui il portone è chiuso
+    wall(P0 - Z0, H, XL, H / 2, (Z0 + P0) / 2, Math.PI / 2); wall(Z1 - P1, H, XL, H / 2, (P1 + Z1) / 2, Math.PI / 2);
+    wall(P1 - P0, H - 3.6, XL, 3.6 + (H - 3.6) / 2, (P0 + P1) / 2, Math.PI / 2);
+    wall(X1 - XL, H, (X1 + XL) / 2, H / 2, ZC, 0);                                      // fondo di In cura
+    pannelli([[XL - .14, (Z0 + P0) / 2, P0 - Z0 - .4, -Math.PI / 2], [XL - .14, (P1 + Z1) / 2, Z1 - P1 - .4, -Math.PI / 2], [XL + .14, (ZC + P0) / 2, P0 - ZC - .4, Math.PI / 2], [XL + .14, (P1 + Z1) / 2, Z1 - P1 - .4, Math.PI / 2], [(X1 + XL) / 2, ZC + .14, X1 - XL - .4, 0]]);
+    serrandaAla('luce', XL - .2, 1.9, -Math.PI / 2);   // la porta per In luce sta nella stanza d'arrivo, accanto al passaggio per In cura
+    const pal = (x, z) => { const p = new THREE.Mesh(new THREE.BoxGeometry(.22, 3.6, .22), M.acciaio); p.position.set(x, 1.8, z); sceneR.add(p); };
+    const trave = (w, d, x, z, col) => { const t = new THREE.Mesh(new THREE.BoxGeometry(w, .2, d), new THREE.MeshStandardMaterial({ color: col, roughness: .5 })); t.position.set(x, 3.62, z); sceneR.add(t); };
+    pal(XL, P0); pal(XL, P1); trave(.3, P1 - P0 + .2, XL, (P0 + P1) / 2, 0xff4d6a);
+    // tramezzo tra In quota (in fondo) e il fuori orario (davanti), con un'apertura larga
+    const ZT = -.2, A0 = -12 + DXS, A1 = -7.5 + DXS;
+    wall(A0 - XS, H, (XS + A0) / 2, H / 2, ZT, 0); wall(XL - A1, H, (A1 + XL) / 2, H / 2, ZT, 0); wall(A1 - A0, H - 3.6, (A0 + A1) / 2, 3.6 + (H - 3.6) / 2, ZT, 0);
+    pal(A0, ZT); pal(A1, ZT); trave(A1 - A0 + .2, .3, (A0 + A1) / 2, ZT, 0xff5b1f);
+    // targhe sopra i due passaggi, viste da dove si arriva
+    const targa = (num, it, en, col, x, z, ry) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(3.2, .8), new THREE.MeshStandardMaterial({ roughness: .6 }));
+      testo(m, L => canvasTex(1024, 256, g => { g.fillStyle = '#15161a'; g.fillRect(0, 0, 1024, 256); g.fillStyle = col; g.fillRect(0, 0, 1024, 14); g.font = '600 64px "JetBrains Mono"'; g.fillText(num, 44, 160); g.fillStyle = '#ece8e1'; g.font = '800 120px Archivo'; g.fillText(L ? en : it, 170, 172); }));
+      m.position.set(x, 4.25, z); m.rotation.y = ry; sceneR.add(m); tag(m, num === '01' ? 'quota' : 'cura'); };
+    targa('01', 'In quota', 'At height', '#ff5b1f', (A0 + A1) / 2, ZT + .15, 0); targa('03', 'In cura', 'In care', '#ff4d6a', XL - .15, (P0 + P1) / 2, -Math.PI / 2);
+  }
+  await Promise.all(jobs);   // anche gli arredi aggiunti qui sopra (scrivania e stampante dell'atrio) devono essere pronti prima di accendere gli schermi
   return out;
 
   // ------------------------------------------------------------ texture disegnate
