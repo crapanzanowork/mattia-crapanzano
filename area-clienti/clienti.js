@@ -140,10 +140,17 @@ function mostra(s, key) {
     return c;
   }, 'Qui compariranno i progetti che facciamo insieme.'));
 
+  // preventivi: quelli in attesa e quelli passati (accettati, rifiutati o scaduti)
+  const prev = s.file.filter(f => f.preventivo), nuoviP = prev.filter(f => !f.passato), passatiP = prev.filter(f => f.passato);
+  a.append(titolo('I nostri', 'preventivi.'));
+  a.append(schede(['Nuovi preventivi · ' + nuoviP.length, 'Preventivi passati · ' + passatiP.length], i => i === 0
+    ? lista(recenti(nuoviP), f => rigaFile(f, key), 'Nessun preventivo in attesa.')
+    : lista(recenti(passatiP), f => rigaFile(f, key), 'Qui restano i preventivi già chiusi.')));
+
   // file
   a.append(titolo('I nostri', 'file.'));
   const mie = s.file.filter(f => f.da !== 'te'), tue = s.file.filter(f => f.da === 'te');
-  if (mie.length) recenti(mie)[0].nuovo = true;   // l'ultimo file che ho mandato porta l'etichetta "Nuovo"
+  const novitaMie = mie.filter(f => !f.passato); if (novitaMie.length) recenti(novitaMie)[0].nuovo = true;   // l'ultimo file che ho mandato porta l'etichetta "Nuovo"
   a.append(schede(['Recenti', 'Inviati da me · ' + mie.length, 'Inviati da te · ' + tue.length, 'Archivio · ' + s.file.length], i => {
     const r = f => rigaFile(f, key);
     if (i === 0) return lista(recenti(s.file).slice(0, 5), r, 'Ancora nessun file.');

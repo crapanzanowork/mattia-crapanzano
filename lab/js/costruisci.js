@@ -337,8 +337,10 @@ export async function costruisci({ scene: sceneR, tl, gltf, mobile, fonts, lingu
   const fc = ala === 'atrio' ? gruppo(0, 3.14, 0) : gruppo(0, 9.0, 180);   // nell'atrio sta sulla parete delle due porte, rivolta all'ingresso
   add(SM + 'parete-attestati.glb', [0, 0, 0], 0, { punto: 'attestati', in: fc }).then(o => {
     o.traverse(m => {
+      const c = m.name.match(/^cornice_(\d\d)/); if (c && !ATTESTATI[+c[1]]) m.visible = false;   // cornici libere per i corsi che verranno
       if (!m.isMesh) return;
       const k = m.name.match(/foglio_(\d\d)/);
+      if (k && !ATTESTATI[+k[1]]) m.visible = false;
       if (k) { const a = ATTESTATI[+k[1]]; if (a) { uvPiano(m); m.material = new THREE.MeshStandardMaterial({ roughness: .85 }); testo(m, L => attestatoTex(a[L], SCRITTE.attestato[L])); } }
       if (m.name.includes('attestati_led')) out.mat.ledAttestati = m.material;
     });
