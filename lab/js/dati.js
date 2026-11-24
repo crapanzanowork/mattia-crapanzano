@@ -212,8 +212,8 @@ const cvBtn = (it, en, f, fEn) => ({ t: [it, en], u: [CV(f), CV(fEn)], dl: 1 });
 export const PANNELLI = {
   quota: { c: 'quota', lab: ['01 · In quota', '01 · At height'],
     h: ['Su fune, <em>con la testa del soccorritore.</em>', 'On the rope, <em>with a rescuer\'s mind.</em>'],
-    p: ['Sono tecnico IRATA di livello 1 con il Modulo A, quindi posso lavorare su fune anche in Italia. Vengo dal soccorso: lavoro in ambulanza con la Croce Rossa e sono vigile del fuoco volontario. Disponibile per trasferte e turnazioni, in Italia e all\'estero.',
-        'I am an IRATA Level 1 rope access technician with the Italian Module A, so I can work on ropes in Italy too. I come from rescue work: I work on ambulances with the Red Cross and I am a volunteer firefighter. Available for travel and rotations, in Italy and abroad.'],
+    p: ['Sono tecnico su fune IRATA di livello 1 e tecnico di soccorso con corde ITRA di livello 2, con il Modulo A per lavorare su fune anche in Italia. Vengo dal soccorso: lavoro in ambulanza con la Croce Rossa e sono vigile del fuoco volontario. Disponibile per trasferte e turnazioni, in Italia e all\'estero.',
+        'I am an IRATA Level 1 rope access technician and an ITRA Level 2 rope rescue technician, with the Italian Module A to work on ropes in Italy too. I come from rescue work: I work on ambulances with the Red Cross and I am a volunteer firefighter. Available for travel and rotations, in Italy and abroad.'],
     li: [[['IRATA', 'livello 1'], ['Modulo A', 'valido in Italia'], ['ITRA', 'livello 2, soccorso con corde'], ['Trasferte', 'Italia, estero, turnazioni']],
          [['IRATA', 'level 1'], ['Module A', 'valid in Italy'], ['ITRA', 'level 2, rope rescue'], ['Travel', 'Italy, abroad, rotations']]],
     btn: [{ t: ['Guarda i video', 'Watch the videos'], go: 'videoquota', cl: 'c' }, cvBtn('Scarica il CV', 'Download CV', 'Mattia-Crapanzano-CV-Lavori-in-quota.pdf', 'Mattia-Crapanzano-CV-Rope-access-EN.pdf')] },
@@ -277,7 +277,7 @@ export const PANNELLI = {
     p: ['Spot, videoclip ed eventi per aziende, scuole e associazioni: riprese, montaggio e colore.', 'Commercials, music videos and events for companies, schools and associations: shooting, editing and grading.'], video: 'yt' },
   stampante: { c: 'base', lab: ['Curriculum', 'Résumé'], h: ['Quale CV <em>ti stampo?</em>', 'Which résumé <em>shall I print?</em>'],
     p: ['Ne ho uno per ogni mestiere, aggiornato. Prendi quello che ti serve.', 'I keep one for each job, up to date. Take the one you need.'],
-    cv: [['In quota', 'At height', ['Lavori su fune · IRATA L1', 'Rope access · IRATA L1'], 'Mattia-Crapanzano-CV-Lavori-in-quota.pdf', 'Mattia-Crapanzano-CV-Rope-access-EN.pdf', 'quota'],
+    cv: [['In quota', 'At height', ['Lavori su fune · IRATA L1 · ITRA L2', 'Rope access · IRATA L1 · ITRA L2'], 'Mattia-Crapanzano-CV-Lavori-in-quota.pdf', 'Mattia-Crapanzano-CV-Rope-access-EN.pdf', 'quota'],
          ['In luce', 'In focus', ['Foto, video e siti web', 'Photo, video and websites'], 'Mattia-Crapanzano-CV-Foto-e-video.pdf', 'Mattia-Crapanzano-CV-Photo-video-EN.pdf', 'luce'],
          ['In cura', 'In care', ['Soccorso e OSS', 'Rescue and care'], 'Mattia-Crapanzano-CV-OSS.pdf', 'Mattia-Crapanzano-CV-Care-worker-EN.pdf', 'cura']] },
 
