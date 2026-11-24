@@ -277,7 +277,7 @@ export const PANNELLI = {
     p: ['Spot, videoclip ed eventi per aziende, scuole e associazioni: riprese, montaggio e colore.', 'Commercials, music videos and events for companies, schools and associations: shooting, editing and grading.'], video: 'yt' },
   stampante: { c: 'base', lab: ['Curriculum', 'Résumé'], h: ['Quale CV <em>ti stampo?</em>', 'Which résumé <em>shall I print?</em>'],
     p: ['Ne ho uno per ogni mestiere, aggiornato. Prendi quello che ti serve.', 'I keep one for each job, up to date. Take the one you need.'],
-    cv: [['In quota', 'At height', ['Lavori su fune · IRATA L1 · ITRA L2', 'Rope access · IRATA L1 · ITRA L2'], 'Mattia-Crapanzano-CV-Lavori-in-quota.pdf', 'Mattia-Crapanzano-CV-Rope-access-EN.pdf', 'quota'],
+    cv: [['In soccorso', 'In rescue', ['Soccorso industriale · IRATA L1 · ITRA L2', 'Industrial rescue · IRATA L1 · ITRA L2'], 'Mattia-Crapanzano-CV-Lavori-in-quota.pdf', 'Mattia-Crapanzano-CV-Rope-access-EN.pdf', 'quota'],
          ['In luce', 'In focus', ['Foto, video e siti web', 'Photo, video and websites'], 'Mattia-Crapanzano-CV-Foto-e-video.pdf', 'Mattia-Crapanzano-CV-Photo-video-EN.pdf', 'luce'],
          ['In cura', 'In care', ['Soccorso e OSS', 'Rescue and care'], 'Mattia-Crapanzano-CV-OSS.pdf', 'Mattia-Crapanzano-CV-Care-worker-EN.pdf', 'cura']] },
 

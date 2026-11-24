@@ -571,8 +571,8 @@
   const TOPICS = T.topics;
   const TOPIC_C = { quota: '#ff5b1f', luce: '#c45cff', cura: '#ff4d6a', altro: '#ece8e1' };
   const CV = EN
-    ? { quota: ['Mattia-Crapanzano-CV-Rope-access-EN.pdf', 'Rope access'], luce: ['Mattia-Crapanzano-CV-Photo-video-EN.pdf', 'Photo & video'], cura: ['Mattia-Crapanzano-CV-Care-worker-EN.pdf', 'Care worker'] }
-    : { quota: ['Mattia-Crapanzano-CV-Lavori-in-quota.pdf', 'Lavori in quota'], luce: ['Mattia-Crapanzano-CV-Foto-e-video.pdf', 'Foto e video'], cura: ['Mattia-Crapanzano-CV-OSS.pdf', 'OSS'] };
+    ? { quota: ['Mattia-Crapanzano-CV-Rope-access-EN.pdf', 'Industrial rescue'], luce: ['Mattia-Crapanzano-CV-Photo-video-EN.pdf', 'Photo & video'], cura: ['Mattia-Crapanzano-CV-Care-worker-EN.pdf', 'Care worker'] }
+    : { quota: ['Mattia-Crapanzano-CV-Lavori-in-quota.pdf', 'Soccorso industriale'], luce: ['Mattia-Crapanzano-CV-Foto-e-video.pdf', 'Foto e video'], cura: ['Mattia-Crapanzano-CV-OSS.pdf', 'OSS'] };
   const CV_WORDS = /(^|[^a-zà-ú])(cv|c\.v\.|curricul\w*|resume|résumé)([^a-zà-ú]|$)/i;
 
   const chatWrap = d.createElement('div');
