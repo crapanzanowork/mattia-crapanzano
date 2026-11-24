@@ -104,7 +104,7 @@ function costruisci() {
 
   // download principali
   const dl = el('div', 'scarichi');
-  if (I.cv) { const b = el('button', 'pill pieno', 'Scarica il CV · Soccorso industriale'); b.type = 'button'; b.onclick = () => scarica(I.cv, b); dl.append(b); }
+  for (const c of I.cv || []) { const b = el('button', 'pill pieno', 'CV ' + c.titolo); b.type = 'button'; b.onclick = () => scarica(c, b); dl.append(b); }
   const bz = el('button', 'pill', 'Scarica tutti gli attestati · ZIP ' + Math.round(I.zip.kb / 1024) + ' MB'); bz.type = 'button'; bz.onclick = () => scarica(I.zip, bz); dl.append(bz);
   if (I.learnn) { const a = el('a', 'pill', 'Profilo Learnn ↗'); a.href = I.learnn; a.target = '_blank'; a.rel = 'noopener noreferrer'; dl.append(a); }
   testa.append(dl);
