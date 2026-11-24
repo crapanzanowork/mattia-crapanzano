@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Attestati · Mattia Crapanzano</title>
+<meta name="description" content="Pagina riservata.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="theme-color" content="#0a0b0d">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/css/font.css">
+<link rel="stylesheet" href="/assets/css/pagine.css">
+<link rel="stylesheet" href="/attestati/attestati.css">
+<script src="/attestati/attestati.js" defer></script>
+</head>
+<body>
+<header class="capo">
+  <a class="marchio" href="/"><svg viewBox="240 270 1450 1390" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="270" x2="0" y2="1660" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#c85cff"/><stop offset="1" stop-color="#6f80ff"/></linearGradient></defs><g fill="url(#g)"><path d="M448 393L735 367V705Q735 735 710 752L562 850Q522 878 528 915L715 1340Q735 1390 735 1440V1650H450V1480Q450 1430 428 1380L262 1010Q245 955 290 920L430 826Q448 812 448 790Z"/><path d="M920 350L1207 325V595Q1207 625 1182 640L1035 735Q1005 760 1015 800L1185 1190Q1207 1240 1207 1290V1650H920V1330Q920 1280 898 1225L752 890Q735 830 790 790L897 712Q920 695 920 675Z"/><path d="M1392 307L1680 280V480Q1680 505 1652 523L1520 608Q1488 632 1497 675L1655 1025Q1680 1080 1680 1135V1650H1392V1145Q1392 1095 1368 1045L1235 745Q1222 690 1262 655L1370 585Q1392 568 1392 545Z"/></g></svg><span>Mattia Crapanzano</span></a>
+  <nav aria-label="Attestati"><button class="pill" id="tutti" type="button" hidden>Scarica tutto</button></nav>
+</header>
+<main id="contenuto">
+  <section id="accesso">
+    <p class="k">Attestati</p>
+    <h1>Pagina <em>riservata.</em></h1>
+    <p>Si apre con il link personale o con il codice.</p>
+    <form id="modulo" class="entra" novalidate>
+      <label class="k" for="codice">Codice</label>
+      <div class="riga">
+        <input id="codice" name="codice" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX">
+        <button class="pill pieno" id="vai" type="submit">Apri</button>
+      </div>
+      <p class="msg" id="msg" role="status" aria-live="polite"></p>
+    </form>
+    <noscript><p class="msg">Per aprire la pagina serve JavaScript attivo nel browser.</p></noscript>
+  </section>
+  <div id="pagina" hidden></div>
+</main>
+<dialog id="vista" aria-label="Attestato">
+  <div class="vista-barra">
+    <div class="vista-testo"><b id="v-titolo"></b><span id="v-meta"></span></div>
+    <div class="vista-azioni">
+      <a class="pill" id="v-verifica" target="_blank" rel="noopener noreferrer">Verifica</a>
+      <button class="pill pieno" id="v-scarica" type="button">Scarica</button>
+      <button class="pill tondo" id="v-chiudi" type="button" aria-label="Chiudi">✕</button>
+    </div>
+  </div>
+  <div class="vista-foto"><button class="frec" id="v-prima" type="button" aria-label="Attestato precedente">‹</button><img id="v-img" alt=""><button class="frec" id="v-dopo" type="button" aria-label="Attestato successivo">›</button></div>
+</dialog>
+<footer class="piede">
+  <span>© 2026 Mattia Crapanzano</span><span>P.IVA 05209460236</span>
+  <a href="/privacy/">Privacy</a>
+</footer>
+</body>
+</html>
