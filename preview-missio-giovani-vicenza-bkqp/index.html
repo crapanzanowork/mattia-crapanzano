@@ -245,6 +245,20 @@ fieldset { border:0; padding:0; margin:0; display:grid; gap:.5em; }
   .firma { display:none; }
   .campi { grid-template-columns:1fr; }
 }
+/* telefono: il finestrino è troppo piccolo per leggerci dentro. I box occupano tutto lo schermo sopra la cabina
+   (le misure di mettiIn() sono inline, da qui l'!important) e il vetro scuro e poco sfocato lascia vedere cabina e paesaggio */
+@media (max-width:760px) {
+  .fermata:not(#fermata-1) .finestrino { --fr:22px !important; left:12px !important; top:calc(env(safe-area-inset-top) + 52px) !important;
+    width:calc(100% - 24px) !important; height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 100px) !important;
+    border-radius:var(--fr) !important; padding:0; z-index:4; }
+  .fermata:not(#fermata-1) .pannello { font-size:clamp(14px, 4.1cqw, 17px); background:rgba(10,14,22,.6);
+    -webkit-backdrop-filter:blur(6px) saturate(1.2); backdrop-filter:blur(6px) saturate(1.2); }
+  .scena { background:rgba(10,14,22,.6); border-radius:var(--fr); padding:20px 0 12px; font-size:clamp(13px, 3.8cqw, 16px);
+    -webkit-backdrop-filter:blur(6px) saturate(1.2); backdrop-filter:blur(6px) saturate(1.2); }
+  .reel .pista { --cw:min(15em, 50cqw); }
+  .titolo-vetro { background:none; border:0; -webkit-backdrop-filter:none; backdrop-filter:none; padding:0 20px; }
+  .display { left:50% !important; top:calc(env(safe-area-inset-top) + 14px) !important; }
+}
 @media (prefers-reduced-motion:reduce) {
   .paesaggio i, .cabine, .pali b, .biglietto { animation:none; }
   .pali { display:none; }
