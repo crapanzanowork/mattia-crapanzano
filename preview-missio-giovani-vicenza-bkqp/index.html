@@ -80,7 +80,7 @@ a { color:inherit; }
 .pannello::-webkit-scrollbar { display:none; }
 .finestrino.attivo { visibility:visible; }
 
-.pannello { display:grid; font-size:clamp(12px, min(2.9cqh, 1.9cqw), 19px); width:100%; height:100%; align-content:safe center; overflow:auto; scrollbar-width:none; overscroll-behavior:auto; background:var(--vetro); border:1px solid var(--bordo);
+.pannello { display:grid; font-size:clamp(12px, min(2.9cqh, 1.9cqw), 19px); width:100%; height:100%; align-content:safe center; overflow:auto; scrollbar-width:none; overscroll-behavior:auto; background:var(--vetro); border:0;
   border-radius:var(--fr);   /* stessi angoli dell'oblò */
   -webkit-backdrop-filter:blur(22px) saturate(1.4); backdrop-filter:blur(22px) saturate(1.4);
   padding:max(clamp(16px, 4cqmin, 40px), calc(var(--fr) * .42));   /* il margine supera la curva dell'angolo: niente testo tagliato */
@@ -150,7 +150,7 @@ p { margin:0 0 .8em; text-wrap:pretty; }
 .titolo-vetro h2 { font-size:1.7em; margin:0 0 .25em; }
 .titolo-vetro p { margin:0; color:var(--tenue); font-size:.9em; }
 .giostra { position:relative; min-height:0; display:grid; outline:none; }
-.pista { list-style:none; margin:0; padding:0 calc(50% - var(--cw) / 2); --cw:min(15em, 46cqw); height:100%;
+.pista { position:relative; list-style:none; margin:0; padding:0 calc(50% - var(--cw) / 2); --cw:min(15em, 46cqw); height:100%;
   display:flex; gap:.4em; align-items:center; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; scrollbar-width:none; overscroll-behavior-x:contain;
   perspective:1100px; transform-style:preserve-3d; }
 .pista::-webkit-scrollbar { display:none; }
@@ -164,7 +164,7 @@ p { margin:0 0 .8em; text-wrap:pretty; }
 .continente b { font-size:1.6em; font-weight:600; line-height:1.1; }
 .continente span { color:var(--tenue); font-size:.9em; }
 .continente.citazione b { font-size:1.1em; font-weight:500; }
-.storia { background:linear-gradient(transparent 20%, rgba(10,12,16,.85)), var(--foto, url(risorse/img/foto-estate.jpg)) center/cover; align-content:end; position:relative; overflow:hidden; }
+.storia { background:linear-gradient(transparent 20%, rgba(10,12,16,.85)), var(--foto, url(risorse/img/foto-estate.jpg)) center/cover; align-content:end; position:relative; overflow:hidden; -webkit-backdrop-filter:none; backdrop-filter:none; }   /* la foto copre già: niente sfocatura da ricalcolare a ogni fotogramma */
 .storia b { font-size:1.15em; font-weight:500; }
 .storia .etichetta-carta { font-size:.75em; color:var(--tenue); }
 .storia .guarda { font:inherit; font-weight:600; background:var(--magenta); color:#fff; border:0; border-radius:99px; padding:.5em 1.2em; cursor:pointer; transition:background-color .2s ease; }
@@ -183,11 +183,11 @@ p { margin:0 0 .8em; text-wrap:pretty; }
 .videoteca header h2 { font-size:1.9em; margin:0 0 .2em; }
 .videoteca header p { margin:0; }
 .griglia-video { list-style:none; margin:0 auto; padding:0; display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:.7em; align-items:start; }   /* la larghezza la calcola adattaVideo() */
-.video { width:100%; align-content:start; padding:0; border:1px solid var(--bordo); border-radius:12px; overflow:hidden; background:rgba(20,22,26,.55); color:inherit; font:inherit; text-align:left; cursor:pointer; display:grid; transition:border-color .2s ease, background-color .2s ease; }
+.video { width:100%; align-content:start; padding:0; border:1px solid var(--bordo); border-radius:12px; overflow:hidden; background:rgba(20,22,26,.55); color:inherit; font:inherit; text-align:left; cursor:pointer; display:block; position:relative; aspect-ratio:16/9; transition:border-color .2s ease, background-color .2s ease; }
 .video:hover { border-color:var(--magenta); background:rgba(224,40,125,.14); }
-.video img { width:100%; height:auto; aspect-ratio:16/9; object-fit:cover; display:block; }   /* sempre orizzontali, come su YouTube */
+.video img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }   /* sempre orizzontali, come su YouTube */
 .video b { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.video span { padding:.45em .6em .55em; display:grid; gap:.2em; min-height:2.9em; }
+.video span { position:absolute; inset:auto 0 0; padding:1.6em .6em .5em; display:grid; gap:.2em; background:linear-gradient(transparent, rgba(10,12,16,.88)); text-shadow:0 1px 2px rgba(0,0,0,.5); }
 .video b { font-weight:500; font-size:.88em; line-height:1.25; }
 .video small { display:none; }
 .lettore { display:grid; gap:.8em; justify-items:start; }
@@ -653,18 +653,21 @@ function scriviDisplay(extra) {
 // col trackpad, con le frecce o con i tasti ← → quando il carosello ha il fuoco.
 document.querySelectorAll('.giostra').forEach(g => {
   const pista = g.querySelector('.pista'), carte = [...pista.children];
-  const passo = () => carte[0].getBoundingClientRect().width + parseFloat(getComputedStyle(pista).columnGap || 0);
+  const passo = () => carte[0].offsetWidth + parseFloat(getComputedStyle(pista).columnGap || 0);
   function gira() {
-    const c = pista.getBoundingClientRect(), mezzo = c.left + c.width / 2;
+    in_coda = false;
+    const mezzo = pista.scrollLeft + pista.clientWidth / 2;
     carte.forEach(el => {
-      const r = el.getBoundingClientRect(), d = (r.left + r.width / 2 - mezzo) / r.width;
-      const a = Math.max(-1.6, Math.min(1.6, d));
-      el.style.transform = fermo ? '' : `rotateY(${-a * 32}deg) translateZ(${-Math.abs(a) * 70}px) scale(${1 - Math.abs(a) * .06})`;
-      el.style.opacity = 1 - Math.min(.55, Math.abs(d) * .3);
+      // posizione dal layout, non dal rettangolo a schermo: quello include già la rotazione e faceva saltare le carte
+      const d = (el.offsetLeft + el.offsetWidth / 2 - mezzo) / el.offsetWidth;
+      const a = Math.max(-1, Math.min(1, d));
+      el.style.transform = fermo ? '' : `rotateY(${-a * 28}deg) translateZ(${-Math.abs(a) * 60}px) scale(${1 - Math.abs(a) * .06})`;
+      el.style.opacity = Math.max(0, 1 - Math.max(0, Math.abs(d) - .6) * .7);   // dalla seconda carta in là sfumano invece di ammucchiarsi
       el.style.zIndex = 10 - Math.round(Math.abs(d) * 2);
     });
   }
-  pista.addEventListener('scroll', () => requestAnimationFrame(gira), { passive: true });
+  let in_coda = false;
+  pista.addEventListener('scroll', () => { if (!in_coda) { in_coda = true; requestAnimationFrame(gira); } }, { passive: true });
   addEventListener('resize', gira);
   const vai = s => pista.scrollBy({ left: s * passo(), behavior: fermo ? 'auto' : 'smooth' });
   g.querySelector('.indietro-giostra').addEventListener('click', () => vai(-1));
@@ -701,8 +704,7 @@ function adattaVideo() {
   const altri = [...videoteca.children].filter(e => e !== griglia && !e.hidden);
   const occupato = altri.reduce((s, e) => s + e.getBoundingClientRect().height, 0) + parseFloat(cs.rowGap || 0) * altri.length;
   const libero = videoteca.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - occupato;
-  const testo = griglia.querySelector('.video span').getBoundingClientRect().height + 2;
-  const immagine = (libero - parseFloat(gs.rowGap) - 2 * testo) / 2;
+  const immagine = (libero - parseFloat(gs.rowGap)) / 2;   // due righe di carte 16:9, il titolo sta sopra l'immagine
   const massimo = videoteca.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
   griglia.style.width = Math.max(180, Math.min(massimo, immagine * 16 / 9 * 3 + 2 * parseFloat(gs.columnGap))) + 'px';
 }
