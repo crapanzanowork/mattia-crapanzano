@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Missio Giovani Vicenza · Partire non è mai solo un viaggio</title>
+<meta name="description" content="Missio Giovani Vicenza: un percorso di formazione missionaria per giovani tra i 20 e i 35 anni, sette incontri da novembre a maggio e un'estate nelle missioni di Africa, Asia e America Latina.">
+<!-- Anteprima riservata: non deve comparire sui motori di ricerca -->
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="theme-color" content="#0e1a1a">
+<link rel="preload" href="risorse/font/archivo-normal-100-900-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Nessun file da terzi al caricamento: Instagram e YouTube si caricano solo dopo un clic. */
+@font-face { font-family:Archivo; font-weight:100 900; font-display:swap; src:url(risorse/font/archivo-normal-100-900-latin.woff2) format("woff2"); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:Archivo; font-weight:100 900; font-display:swap; src:url(risorse/font/archivo-normal-100-900-latin-ext.woff2) format("woff2"); unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family:Display; font-weight:500; font-display:swap; src:url(risorse/font/jetbrains-mono-normal-500-latin.woff2) format("woff2"); }
+
+:root {
+  --blu:#1f2a5c;        /* il blu di "GIOVANI" nel logo */
+  --rosso:#c7203a;      /* il rosso di "MISSIO" */
+  --magenta:#e0287d;    /* il fucsia dei post Instagram */
+  --cielo:#7fd3f2;
+  --carta:#f5f0e4;
+  --vetro:rgba(12,18,30,.46);
+  --bordo:rgba(255,255,255,.22);
+  --testo:#f7f5f0;
+  --tenue:rgba(247,245,240,.74);
+  /* apertura del finestrino centrale sullo schermo: la calcola lo script, questi sono i valori a 16:9 */
+  --fx:25.5vw; --fy:19vh; --fw:49vw; --fh:57vh; --fr:14px;
+}
+* { box-sizing:border-box; }
+html { scroll-snap-type:y mandatory; background:#0b1212; }
+body { margin:0; color:var(--testo); font:400 clamp(15px, .55vw + 9px, 18px)/1.5 Archivo, system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+a { color:inherit; }
+:focus-visible { outline:2px solid var(--cielo); outline-offset:3px; border-radius:6px; }
+.salta { position:fixed; left:12px; top:-60px; z-index:50; background:#fff; color:var(--blu); padding:10px 14px; border-radius:8px; }
+.salta:focus { top:12px; }
+
+/* ---------- il palco: paesaggio, pali, carrozza, contenuti nel finestrino ---------- */
+.palco { position:fixed; inset:0; overflow:hidden; }
+.paesaggi, .cabine { position:absolute; inset:0; isolation:isolate; }   /* ogni pila tiene il suo ordine: un paesaggio non sale mai sopra la parete */
+.paesaggi { transform-origin:50% 45%; }
+.paesaggio, .cabina { position:absolute; inset:0; opacity:0; }
+.paesaggio i { position:absolute; inset:-4% -12%; background:center/cover no-repeat; animation:corsa 70s linear infinite alternate; }
+@keyframes corsa { to { transform:translateX(-7%); } }
+.cabine { animation:dondolo 4.3s ease-in-out infinite; }
+/* ogni strato porta la sua maschera (i finestrini trasparenti): nella carrellata cambia a ogni fotogramma */
+.cabina { background:center/cover no-repeat; -webkit-mask:var(--m) center/cover no-repeat; mask:var(--m) center/cover no-repeat; }
+@keyframes dondolo { 0%,100% { transform:translateY(0); } 23% { transform:translateY(1.2px); } 51% { transform:translateY(-.4px); } 77% { transform:translateY(.8px); } }
+
+/* i pali della linea che passano tra il treno e il paesaggio */
+.pali { position:absolute; inset:0; pointer-events:none; }
+.pali b { position:absolute; top:-5%; bottom:-5%; width:1.6vw; left:0; background:linear-gradient(90deg, #0b0d0d, #2a2e2c 45%, #0b0d0d); filter:blur(5px); opacity:.85; transform:translateX(110vw); animation:palo 7.5s linear infinite; }
+.pali b:nth-child(2) { animation-delay:-3.1s; width:.9vw; opacity:.6; animation-duration:9.2s; }
+@keyframes palo { 0%,92% { transform:translateX(110vw); } 100% { transform:translateX(-12vw); } }
+
+/* riflessi sul vetro: stanno nell'apertura, sopra il paesaggio */
+.vetro-riflesso { position:absolute; left:var(--fx); top:var(--fy); width:var(--fw); height:var(--fh); border-radius:var(--fr); pointer-events:none;
+  background:linear-gradient(115deg, rgba(255,255,255,.10) 0 18%, transparent 18.5% 42%, rgba(255,255,255,.05) 42.5% 48%, transparent 48.5%),
+             radial-gradient(120% 90% at 50% 120%, rgba(0,0,0,.28), transparent 60%); }
+
+/* display a LED sopra il finestrino */
+.display { position:absolute; left:calc(var(--fx) + var(--fw) / 2); top:calc(var(--fy) - 3.1em); transform:translateX(-50%); z-index:3;
+  font:500 clamp(10px, .55vw + 5px, 14px)/1 Display, ui-monospace, monospace; letter-spacing:.06em; text-transform:uppercase; color:#ffb547;
+  background:#090806; padding:.75em 1.1em; border-radius:4px; box-shadow:inset 0 0 0 1px #2b2620, 0 2px 10px rgba(0,0,0,.45); white-space:nowrap;
+  text-shadow:0 0 6px rgba(255,170,60,.75); }
+.display::after { content:""; position:absolute; inset:0; border-radius:4px; background:radial-gradient(circle, transparent 55%, rgba(0,0,0,.55) 56%) 0 0/3px 3px; pointer-events:none; }
+.display span { opacity:.55; }
+
+/* ---------- le fermate ---------- */
+.fermate { position:relative; z-index:2; }
+.fermata { height:100vh; height:100svh; scroll-snap-align:start; }
+.finestrino { position:fixed; left:var(--fx); top:var(--fy); width:var(--fw); height:var(--fh); border-radius:var(--fr); z-index:2;
+  --pad:max(14px, calc(min(var(--fw), var(--fh)) * .075));   /* stacco ampio e uguale su tutti i lati: il vetro resta più piccolo dell'oblò */
+  display:grid; place-items:center; padding:var(--pad); overflow:hidden; container-type:size;
+  opacity:0; visibility:hidden; }
+.pannello::-webkit-scrollbar { display:none; }
+.finestrino.attivo { visibility:visible; }
+
+.pannello { display:grid; font-size:clamp(12px, min(2.9cqh, 1.9cqw), 19px); width:100%; height:100%; align-content:safe center; overflow:auto; scrollbar-width:none; overscroll-behavior:auto; background:var(--vetro); border:1px solid var(--bordo);
+  border-radius:var(--fr);   /* stessi angoli dell'oblò */
+  -webkit-backdrop-filter:blur(22px) saturate(1.4); backdrop-filter:blur(22px) saturate(1.4); padding:clamp(16px, 4cqmin, 40px);
+  box-shadow:0 18px 50px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.18); }
+h1, h2 { font-weight:600; letter-spacing:-.02em; line-height:1.02; margin:0 0 .45em; font-size:2.3em; text-wrap:balance; }
+h3 { font-size:1em; margin:0 0 .2em; font-weight:600; }
+p { margin:0 0 .8em; text-wrap:pretty; }
+.tenue { color:var(--tenue); }
+.etichetta { justify-self:start; display:inline-block; font-size:.8em; font-weight:500; background:var(--magenta); color:#fff; padding:.28em .8em; border-radius:99px; margin-bottom:1em; }
+.bottone { display:inline-flex; align-items:center; gap:.5em; background:var(--magenta); color:#fff; text-decoration:none; padding:.8em 1.3em; border-radius:99px; border:0; font:inherit; font-weight:600; cursor:pointer; transition:background-color .2s ease; }
+.bottone:hover { background:#c81c6c; }
+.bottone.chiaro { background:rgba(255,255,255,.14); box-shadow:inset 0 0 0 1px var(--bordo); }
+.bottone.chiaro:hover { background:rgba(255,255,255,.24); }
+.due { display:grid; grid-template-columns:1.25fr 1fr; gap:clamp(16px, 2.4vw, 40px); align-items:start; }
+
+/* 1 · il biglietto, appoggiato al vetro della porta: orizzontale se c'è spazio, in verticale con la cedola sotto se il vetro è alto */
+.finestrino:has(.biglietto) { place-items:center; }
+.biglietto { --carta:#f6ecd9; --inchiostro:#1f2a5c; --rosso:#c7203a; --azzurro:#b9c6f2;
+  font-size:clamp(9px, min(2.4cqw, 2.1cqh), 16px); width:100%; max-height:100%; color:var(--inchiostro); background:var(--carta);
+  display:grid; grid-template-columns:1fr 13em; border-radius:.9em; box-shadow:0 1.4em 3em rgba(0,0,0,.4); position:relative; overflow:hidden;
+  -webkit-mask:radial-gradient(circle at calc(100% - 13em) 0, transparent .9em, #000 calc(.9em + .5px)) top/100% 51% no-repeat,
+               radial-gradient(circle at calc(100% - 13em) 100%, transparent .9em, #000 calc(.9em + .5px)) bottom/100% 51% no-repeat;
+          mask:radial-gradient(circle at calc(100% - 13em) 0, transparent .9em, #000 calc(.9em + .5px)) top/100% 51% no-repeat,
+               radial-gradient(circle at calc(100% - 13em) 100%, transparent .9em, #000 calc(.9em + .5px)) bottom/100% 51% no-repeat; }
+.biglietto::before { content:""; position:absolute; left:1.4em; top:0; bottom:0; width:1.1em; background:#24272e; }
+.biglietto::after { content:""; position:absolute; left:2.9em; top:0; bottom:0; width:.9em; background:repeating-linear-gradient(135deg, var(--azzurro) 0 .18em, transparent .18em .45em); }
+.biglietto .corpo { padding:1.6em 1.8em 1.6em 5.4em; display:grid; gap:.9em; align-content:start; }
+.biglietto .intestazione { display:flex; gap:1em; align-items:center; }
+.biglietto .treno { width:4.2em; flex:none; color:#5d6fc4; }
+.biglietto .intestazione div { display:grid; gap:.3em; }
+.biglietto .codice, .biglietto .tratta-codice, .biglietto dt, .biglietto .cedola span { font-family:Display, ui-monospace, monospace; text-transform:uppercase; letter-spacing:.04em; }
+.biglietto .codice { font-size:.78em; }
+.biglietto img { width:11em; height:auto; mix-blend-mode:multiply; }
+.biglietto h1 { font-size:2.2em; line-height:1.02; margin:0; color:var(--inchiostro); }
+.biglietto .tratta-codice { color:var(--rosso); font-size:.95em; margin:0; }
+.biglietto dl { display:grid; grid-template-columns:repeat(4, auto); border:1.5px solid var(--inchiostro); margin:0; }
+.biglietto dl div { padding:.45em .7em; border-left:1.5px solid var(--inchiostro); }
+.biglietto dl div:first-child { border-left:0; }
+.biglietto dt { font-size:.7em; opacity:.75; }
+.biglietto dd { margin:0; font-size:1.35em; font-weight:600; font-variant-numeric:tabular-nums; }
+.biglietto .destinazione { background:var(--azzurro); margin:0; padding:.45em .8em; font-weight:600; display:flex; gap:.8em; align-items:baseline; flex-wrap:wrap; }
+.biglietto .destinazione span { font-family:Display, ui-monospace, monospace; font-size:.75em; text-transform:uppercase; font-weight:500; }
+.biglietto .cedola { border-left:2px dashed rgba(31,42,92,.35); padding:1.6em 1.4em; display:grid; gap:.8em; align-content:start; }
+.biglietto .cedola p { margin:0; }
+.biglietto .registro { background:var(--azzurro); padding:.5em .7em; font-family:Display, ui-monospace, monospace; font-size:1.1em; }
+.biglietto .cedola span { display:block; font-size:.68em; opacity:.75; }
+.biglietto .sigla { font:500 4.6em/1 Display, ui-monospace, monospace; letter-spacing:.02em; }
+.biglietto .partenza { font-weight:600; }
+@container (max-aspect-ratio: 1/1) {
+  .biglietto { font-size:clamp(9px, min(3.4cqw, 1.7cqh), 15px); grid-template-columns:1fr; -webkit-mask:none; mask:none; }
+  .biglietto .corpo { padding:1.4em 1.4em 1.4em 5em; }
+  .biglietto dl { grid-template-columns:repeat(2, auto); }
+  .biglietto dl div:nth-child(3) { border-left:0; }
+  .biglietto dl div:nth-child(n+3) { border-top:1.5px solid var(--inchiostro); }
+  .biglietto .cedola { border-left:0; border-top:2px dashed rgba(31,42,92,.35); grid-template-columns:1fr auto; align-items:end; padding:1.2em 1.4em 1.2em 5em; }
+  .biglietto .sigla { grid-row:span 3; grid-column:2; }
+}
+/* 2 · cos'è */
+.cuore { list-style:none; padding:0; margin:0; display:grid; gap:.7em; }
+.cuore li { border-top:1px solid var(--bordo); padding-top:.7em; }
+.cuore b { font-size:1.25em; font-weight:600; display:block; }
+.motto { font-weight:500; color:var(--cielo); }
+
+/* 3, 5, 6 · titolo su un vetrino e carte di vetro in carosello, ruotate in prospettiva come intorno a un cilindro */
+.scena { width:100%; height:100%; display:grid; grid-template-rows:auto minmax(0, 1fr); gap:clamp(6px, 2.4cqh, 24px); font-size:clamp(11px, min(2.5cqh, 2.6cqw), 18px); }
+.titolo-vetro { justify-self:center; text-align:center; max-width:42em; background:var(--vetro); border:1px solid var(--bordo); border-radius:var(--fr);
+  -webkit-backdrop-filter:blur(18px) saturate(1.3); backdrop-filter:blur(18px) saturate(1.3); padding:.8em 1.4em; }
+.titolo-vetro h2 { font-size:1.7em; margin:0 0 .25em; }
+.titolo-vetro p { margin:0; color:var(--tenue); font-size:.9em; }
+.giostra { position:relative; min-height:0; display:grid; outline:none; }
+.pista { list-style:none; margin:0; padding:0 calc(50% - var(--cw) / 2); --cw:min(15em, 46cqw); height:100%;
+  display:flex; gap:.4em; align-items:center; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; scrollbar-width:none; overscroll-behavior-x:contain;
+  perspective:1100px; transform-style:preserve-3d; }
+.pista::-webkit-scrollbar { display:none; }
+.carta { flex:0 0 var(--cw); height:min(100%, 16em); overflow:hidden; scroll-snap-align:center; display:grid; align-content:center; justify-items:center; gap:.5em; text-align:center; padding:1.2em;
+  background:rgba(20,22,26,.58); border:1px solid var(--bordo); border-radius:min(18px, calc(var(--fr) * .5));
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); box-shadow:0 1em 2.4em rgba(0,0,0,.3); transform-origin:50% 50%; will-change:transform; }
+.carta .numero { font:500 .8em Display, ui-monospace, monospace; color:var(--tenue); }
+.carta .giorno { font-size:3.4em; line-height:1; font-weight:600; color:var(--magenta); font-variant-numeric:tabular-nums; }
+.carta .quando { color:var(--tenue); font-size:.85em; }
+.carta .tema { font-size:1.15em; font-weight:500; }
+.continente b { font-size:1.6em; font-weight:600; line-height:1.1; }
+.continente span { color:var(--tenue); font-size:.9em; }
+.continente.citazione b { font-size:1.1em; font-weight:500; }
+.storia { background:linear-gradient(transparent 20%, rgba(10,12,16,.85)), var(--foto, url(risorse/img/foto-estate.jpg)) center/cover; align-content:end; position:relative; overflow:hidden; }
+.storia b { font-size:1.15em; font-weight:500; }
+.storia .etichetta-carta { font-size:.75em; color:var(--tenue); }
+.storia .guarda { font:inherit; font-weight:600; background:var(--magenta); color:#fff; border:0; border-radius:99px; padding:.5em 1.2em; cursor:pointer; transition:background-color .2s ease; }
+.storia .guarda:hover { background:#c81c6c; }
+.storia iframe { position:absolute; inset:0; width:100%; height:100%; border:0; background:#fff; }
+.frecce { position:absolute; inset:auto 0 -.2em; display:flex; justify-content:center; gap:.6em; pointer-events:none; }
+.frecce button { pointer-events:auto; width:2.4em; height:2.4em; border-radius:50%; border:1px solid var(--bordo); background:rgba(20,22,26,.6); color:#fff; font:inherit; cursor:pointer; transition:background-color .2s ease; }
+.frecce button:hover { background:rgba(255,255,255,.18); }
+.giostra { padding-bottom:3em; }
+
+/* 4 · chi può partire */
+.punti { list-style:none; margin:0; padding:0; display:grid; gap:.9em; }
+.punti li { padding-left:1.3em; position:relative; }
+.punti li::before { content:""; position:absolute; left:0; top:.5em; width:.55em; height:.55em; border-radius:50%; background:var(--magenta); }
+.info { display:grid; gap:.8em; }
+.info div { background:rgba(255,255,255,.08); border-radius:12px; padding:.8em 1em; }
+.info b { display:block; font-size:1.4em; font-weight:600; line-height:1.1; }
+
+/* 7 · si parte, e il modulo di iscrizione in cinque tappe */
+.modulo[hidden], .invito[hidden] { display:none; }
+.finestrino.compilando .pannello { overscroll-behavior:contain; align-content:start; }
+.tappe-modulo { display:flex; gap:.4em; margin:0 0 1.2em; padding:0; list-style:none; }
+.tappe-modulo li { flex:1; height:4px; border-radius:2px; background:rgba(255,255,255,.18); }
+.tappe-modulo li.fatta { background:var(--magenta); }
+.passo[hidden] { display:none; }
+.passo h2 { font-size:1.9em; }
+.campi { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:1em 1.2em; }
+.campi .largo { grid-column:1 / -1; }
+.campo { display:grid; gap:.35em; }
+.campo > span, fieldset legend { font-weight:500; }
+.campo small, fieldset small { color:var(--tenue); font-weight:400; }
+input, textarea { font:inherit; color:var(--testo); background:rgba(255,255,255,.08); border:1px solid var(--bordo); border-radius:10px; padding:.65em .8em; width:100%; transition:border-color .2s ease, background-color .2s ease; }
+textarea { min-height:5.5em; resize:vertical; }
+input:focus, textarea:focus { outline:none; border-color:var(--cielo); background:rgba(255,255,255,.12); }
+input[type=date] { color-scheme:dark; }
+fieldset { border:0; padding:0; margin:0; display:grid; gap:.5em; }
+.scelta { display:flex; gap:.6em; align-items:flex-start; cursor:pointer; }
+.scelta input { width:1.15em; height:1.15em; margin:.2em 0 0; accent-color:var(--magenta); flex:none; }
+.curiosita { font-size:.9em; color:var(--tenue); border-left:2px solid var(--magenta); padding-left:.8em; margin:0 0 1.2em; }
+.comandi { display:flex; gap:.8em; align-items:center; margin-top:1.4em; flex-wrap:wrap; }
+.comandi .indietro { background:none; border:0; color:var(--tenue); font:inherit; cursor:pointer; padding:.6em 0; }
+.comandi .indietro:hover { color:var(--testo); }
+.errore { color:#ffb0c8; font-size:.9em; min-height:1.4em; margin:.6em 0 0; }
+.nascosto { position:absolute; left:-9999px; }
+.contatti { display:grid; gap:.55em; margin-top:1.2em; }
+.contatti a { transition:background-color .2s ease; display:flex; gap:.7em; align-items:baseline; text-decoration:none; padding:.55em .8em; border-radius:10px; background:rgba(255,255,255,.07); }
+.contatti a:hover { background:rgba(255,255,255,.14); }
+.contatti span { color:var(--tenue); font-size:.85em; min-width:5.5em; }
+.firma { font-size:.8em; color:var(--tenue); margin-top:1.2em; }
+
+.anteprima { position:fixed; right:10px; bottom:10px; z-index:5; font-size:11px; background:rgba(0,0,0,.55); color:#fff; padding:5px 10px; border-radius:99px; }
+
+/* finestrino stretto: tutto in colonna */
+@media (max-aspect-ratio:4/5), (max-width:760px) {
+  .due { grid-template-columns:1fr; }
+  .finestrino { place-items:start center; }
+  .firma { display:none; }
+  .campi { grid-template-columns:1fr; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .paesaggio i, .cabine, .pali b { animation:none; }
+  .pali { display:none; }
+}
+</style>
+</head>
+<body>
+<a class="salta" href="#fermata-7">Vai a iscrizioni e contatti</a>
+
+<div class="palco" aria-hidden="true">
+  <div class="paesaggi"></div>
+  <div class="pali"><b></b><b></b></div>
+  <div class="vetro-riflesso"></div>
+  <div class="cabine"></div>
+  <div class="display" id="display">Vicenza</div>
+</div>
+
+<main class="fermate">
+  <!-- 1 · davanti alla porta della cuccetta: il biglietto sul vetro -->
+  <section class="fermata" id="fermata-1" data-nome="Vicenza" aria-labelledby="t1">
+    <div class="finestrino">
+      <article class="biglietto">
+        <div class="corpo">
+          <div class="intestazione"><svg class="treno" viewBox="0 0 64 28" aria-hidden="true"><path d="M2 22h52c4 0 8-3 8-7 0-6-9-11-22-11H8c-3 0-6 3-6 6z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14 9h8v6h-8zM26 9h8v6h-8zM38 9h6l6 6H38z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M2 26h60" stroke="currentColor" stroke-width="1.6"/></svg><div><span class="codice">Biglietto · percorso missionario</span><img src="risorse/img/logo.jpg" width="300" height="100" alt="Missio Giovani Vicenza"></div></div>
+          <h1 id="t1">Partire non è mai solo un viaggio</h1>
+          <p class="tratta-codice">VIC → MONDO · 2026/27 · 7 TAPPE</p>
+          <dl class="campi-biglietto">
+            <div><dt>Incontri</dt><dd>7</dd></div>
+            <div><dt>Età</dt><dd>20–35</dd></div>
+            <div><dt>Dal</dt><dd>14 nov 2026</dd></div>
+            <div><dt>Al</dt><dd>23 mag 2027</dd></div>
+          </dl>
+          <p class="destinazione"><span>Destinazione</span>Africa · Asia · America Latina · Europa</p>
+        </div>
+        <div class="cedola">
+          <p class="registro"><span>Percorso</span>N° 2026/27</p>
+          <p class="sigla">VIC</p>
+          <p class="partenza"><span>Partenza</span>estate 2027</p>
+          <p class="partenza"><span>Durata</span>2–4 settimane</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 2 · cos'è -->
+  <section class="fermata" id="fermata-2" data-nome="Cos'è Missio Giovani" aria-labelledby="t2">
+    <div class="finestrino">
+      <div class="pannello due">
+        <div>
+                    <h2 id="t2">Un percorso di formazione missionaria</h2>
+          <p>Per giovani che desiderano vivere un'esperienza missionaria durante l'estate, preparando il cuore e la mente all'incontro con l'altro.</p>
+          <p class="tenue">Dietro c'è un'équipe di ragazzi già partiti, con l'Ufficio per la Pastorale Missionaria e i missionari con cui collaboriamo.</p>
+          <p class="motto">Wake up, I care, be testimony</p>
+        </div>
+        <ul class="cuore">
+          <li><b>Ascolto</b><span class="tenue">Fermarsi, lasciarsi arricchire da nuove esperienze.</span></li>
+          <li><b>Relazione</b><span class="tenue">Incontrare l'altro e camminare insieme, passo dopo passo.</span></li>
+          <li><b>Testimonianza</b><span class="tenue">Raccontare quello che il viaggio ha cambiato.</span></li>
+          <li class="tenue">In dialogo con Missio Giovani Italia</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · le tappe: carosello -->
+  <section class="fermata" id="fermata-3" data-nome="Le tappe" aria-labelledby="t3">
+    <div class="finestrino">
+      <div class="scena">
+        <header class="titolo-vetro"><h2 id="t3">Sette incontri, da novembre a maggio</h2><p>Dalle 15 alle 18/18.30, poi la cena etnica</p></header>
+        <div class="giostra" role="region" aria-label="Le sette tappe" tabindex="0">
+          <ol class="pista">
+            <li class="carta"><span class="numero">1</span><b class="giorno">14</b><span class="quando">novembre · sabato</span><span class="tema">Scoprire la missione</span></li>
+            <li class="carta"><span class="numero">2</span><b class="giorno">19</b><span class="quando">dicembre · sabato</span><span class="tema">Volti che cambiano</span></li>
+            <li class="carta"><span class="numero">3</span><b class="giorno">24</b><span class="quando">gennaio · domenica, giornata intera</span><span class="tema">Noi in relazione</span></li>
+            <li class="carta"><span class="numero">4</span><b class="giorno">27</b><span class="quando">febbraio · sabato</span><span class="tema">So stare nel mondo</span></li>
+            <li class="carta"><span class="numero">5</span><b class="giorno">20</b><span class="quando">marzo · sabato</span><span class="tema">Dove sto andando?</span></li>
+            <li class="carta"><span class="numero">6</span><b class="giorno">24</b><span class="quando">aprile · sabato</span><span class="tema">Tempo di cura</span></li>
+            <li class="carta"><span class="numero">7</span><b class="giorno">22–23</b><span class="quando">maggio · weekend</span><span class="tema">Un tempo per raccontare</span></li>
+          </ol>
+          <div class="frecce"><button type="button" class="indietro-giostra" aria-label="Tappa precedente">←</button><button type="button" class="avanti-giostra" aria-label="Tappa successiva">→</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · chi può partire -->
+  <section class="fermata" id="fermata-4" data-nome="Chi può partire" aria-labelledby="t4">
+    <div class="finestrino">
+      <div class="pannello due">
+        <div>
+                    <h2 id="t4">Serve solo la voglia di mettersi in gioco</h2>
+          <ul class="punti">
+            <li>Giovani tra i 20 e i 35 anni</li>
+            <li>Nessuna competenza particolare</li>
+            <li>Apertura e voglia di mettersi in gioco</li>
+          </ul>
+        </div>
+        <div class="info">
+          <div><span class="tenue">Quota di partecipazione</span><b>45 euro</b></div>
+          <div><span class="tenue">Dopo ogni incontro</span><b>Cena etnica</b>per conoscersi e condividere</div>
+          <div><span class="tenue">Da fare subito</span><b>Controlla il passaporto</b>servirà valido per l'esperienza estiva all'estero</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · l'estate: i continenti in carosello -->
+  <section class="fermata" id="fermata-5" data-nome="L'estate" aria-labelledby="t5">
+    <div class="finestrino">
+      <div class="scena">
+        <header class="titolo-vetro"><h2 id="t5">Luglio e agosto, da 2 a 4 settimane</h2><p>In piccoli gruppi, accanto a missionari e operatori locali. Nell'estate 2026 sono partiti in cinquanta</p></header>
+        <div class="giostra" role="region" aria-label="I continenti delle missioni" tabindex="0">
+          <ul class="pista">
+            <li class="carta continente"><b>America Latina</b><span>Brasile, Guatemala, Ecuador, Colombia e altri paesi</span></li>
+            <li class="carta continente"><b>Africa</b><span>Kenya, Sierra Leone, Camerun, Costa d'Avorio, Tanzania, Mozambico e altri</span></li>
+            <li class="carta continente"><b>Asia</b><span>Thailandia, Filippine, India e altri paesi</span></li>
+            <li class="carta continente"><b>Europa</b><span>Albania e altri paesi</span></li>
+            <li class="carta continente citazione"><b>«Mi aspetto di ritrovare quel tempo lento che avevo scoperto in Guatemala»</b><span>Anna, 21 anni, di Valdagno, partita per Loiyangalani, in Kenya</span></li>
+          </ul>
+          <div class="frecce"><button type="button" class="indietro-giostra" aria-label="Precedente">←</button><button type="button" class="avanti-giostra" aria-label="Successivo">→</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · storie: reel Instagram e video YouTube in carosello, caricati solo dopo il clic -->
+  <section class="fermata" id="fermata-6" data-nome="Storie dal viaggio" aria-labelledby="t6">
+    <div class="finestrino">
+      <div class="scena">
+        <header class="titolo-vetro"><h2 id="t6">Perché il viaggio finisce. Quello che ci lascia, no</h2><p>I reel si aprono da Instagram, il video da YouTube: solo quando premi Guarda</p></header>
+        <div class="giostra" role="region" aria-label="Reel e video" tabindex="0">
+          <ul class="pista">
+            <li class="carta storia" data-ig="DejnB8Mi33o"><span class="etichetta-carta">Reel</span><b>Il vero modo di viaggiare</b><button type="button" class="guarda">Guarda</button></li>
+            <li class="carta storia" data-ig="DegyHZnRF90"><span class="etichetta-carta">Reel · Kenya</span><b>Abbiamo portato la pizzica in missione</b><button type="button" class="guarda">Guarda</button></li>
+            <li class="carta storia" data-ig="DcjW0GYsffi"><span class="etichetta-carta">Reel · Nairobi</span><b>Così batte il cuore di Kibera</b><button type="button" class="guarda">Guarda</button></li>
+            <li class="carta storia" data-ig="DdRJGAfi2j8"><span class="etichetta-carta">Reel</span><b>Riavvolgiamo il nastro dei ricordi</b><button type="button" class="guarda">Guarda</button></li>
+            <li class="carta storia" data-yt="YXpMZoWIjG4" style="--foto:url(risorse/img/video-wamba.jpg)"><span class="etichetta-carta">Video · YouTube</span><b>Esperienza missionaria 2024 a Wamba</b><button type="button" class="guarda">Guarda</button></li>
+          </ul>
+          <div class="frecce"><button type="button" class="indietro-giostra" aria-label="Precedente">←</button><button type="button" class="avanti-giostra" aria-label="Successivo">→</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · si parte: invito e contatti, poi il modulo di iscrizione nello stesso oblò -->
+  <section class="fermata" id="fermata-7" data-nome="Si parte" aria-labelledby="t7">
+    <div class="finestrino">
+      <div class="pannello due invito">
+        <div>
+          <h2 id="t7">Vuoi partire con noi?</h2>
+          <p>Hai sentito parlare di Missio Giovani? Conosci qualcuno che è partito con noi? Forse è arrivato anche per te il momento di metterti in gioco.</p>
+          <p class="tenue">Compila il modulo: ti contattiamo per un breve colloquio con l'équipe.</p>
+          <button type="button" class="bottone" id="apri-modulo">Iscriviti</button>
+        </div>
+        <div>
+          <div class="contatti">
+            <a href="tel:+393400624572"><span>Telefono</span>340 06 24 572</a>
+            <a href="https://wa.me/393400624572" target="_blank" rel="noopener"><span>WhatsApp</span>Scrivici un messaggio</a>
+            <a href="mailto:missiogiovani.vi@gmail.com"><span>Email</span>missiogiovani.vi@gmail.com</a>
+            <a href="https://www.instagram.com/missiogiovanivicenza/" target="_blank" rel="noopener"><span>Instagram</span>@missiogiovanivicenza</a>
+            <a href="https://www.youtube.com/@missiogiovanivicenza" target="_blank" rel="noopener"><span>YouTube</span>@missiogiovanivicenza</a>
+            <a href="https://www.google.com/maps/search/?api=1&query=Viale+Trento+119+Vicenza" target="_blank" rel="noopener"><span>Dove</span>Viale Trento 119, Vicenza</a>
+          </div>
+          <p class="firma">Missio Giovani Vicenza · con l'Ufficio per la Pastorale Missionaria e la Pastorale Giovanile della Diocesi di Vicenza · <a href="privacy/">Privacy</a></p>
+        </div>
+      </div>
+
+      <form class="pannello modulo" id="modulo" hidden novalidate aria-labelledby="titolo-modulo">
+        <h2 id="titolo-modulo" class="nascosto">Iscriviti a Missio Giovani</h2>
+        <ol class="tappe-modulo" aria-hidden="true"><li></li><li></li><li></li><li></li><li></li></ol>
+        <input class="nascosto" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <section class="passo" data-passo="1">
+          <h2>Partiamo dalle basi</h2>
+          <div class="campi">
+            <label class="campo"><span>Il tuo nome</span><input name="nome" required autocomplete="given-name"></label>
+            <label class="campo"><span>Cognome</span><input name="cognome" required autocomplete="family-name"></label>
+            <label class="campo"><span>Quando sei nato/a? <small>(19–35 anni)</small></span><input type="date" name="nascita" required autocomplete="bday"></label>
+            <label class="campo"><span>Da dove ci scrivi? <small>città, paese, frazione</small></span><input name="provenienza" required autocomplete="address-level2"></label>
+            <label class="campo"><span>La tua email preferita <small>(quella che controlli davvero)</small></span><input type="email" name="email" required autocomplete="email"></label>
+            <label class="campo"><span>Il numero di telefono</span><input type="tel" name="telefono" autocomplete="tel"></label>
+          </div>
+        </section>
+
+        <section class="passo" data-passo="2" hidden>
+          <h2>Raccontaci un po' di te</h2>
+          <p class="curiosita">Negli ultimi anni siamo stati in Brasile, Guatemala, Kenya, Thailandia, Filippine, Albania, Sierra Leone, Colombia, Costa d'Avorio, Camerun, Ecuador e India… e nuove mete saranno annunciate.</p>
+          <div class="campi">
+            <fieldset class="largo" data-almeno-uno>
+              <legend>Hai mai fatto esperienze in missione o all'estero?</legend>
+              <label class="scelta"><input type="checkbox" name="esperienze" value="Sì, in missione">Sì, in missione</label>
+              <label class="scelta"><input type="checkbox" name="esperienze" value="Sì, altre esperienze all'estero">Sì, altre esperienze all'estero</label>
+              <label class="scelta"><input type="checkbox" name="esperienze" value="No, sarebbe la prima volta">No, sarebbe la prima volta</label>
+            </fieldset>
+            <label class="campo largo"><span>Se hai già fatto esperienze, dove e come?</span><input name="esperienze_dove"></label>
+          </div>
+        </section>
+
+        <section class="passo" data-passo="3" hidden>
+          <h2>Ancora qualcosa di te</h2>
+          <p class="curiosita">Crediamo che l'incontro con culture, popoli e fedi diverse possa trasformare profondamente il modo di guardare il mondo e se stessi. Per questo accompagniamo i giovani in un percorso che li prepara a vivere la missione non come semplice partenza, ma come un'opportunità di crescita.</p>
+          <div class="campi">
+            <label class="campo"><span>Fai parte di qualche gruppo, associazione o movimento? <small>Se sì, quale?</small></span><input name="gruppo" required></label>
+            <label class="campo"><span>Conosci qualcuno già partito con Missio Giovani? <small>Se sì, chi?</small></span><input name="conosci" required></label>
+            <label class="campo largo"><span>Raccontaci qualcosa di te <small>chi sei, cosa ti appassiona, cosa ti muove</small></span><textarea name="chi_sei" required></textarea></label>
+            <label class="campo largo"><span>Perché ti piacerebbe partecipare a questo viaggio? <small>Non c'è risposta giusta o sbagliata</small></span><textarea name="perche" required></textarea></label>
+            <label class="campo largo"><span>Quando pensi a un viaggio missionario… cosa ti immagini?</span><textarea name="immagini" required></textarea></label>
+            <p class="curiosita largo">I posti sono limitati: vogliamo vivere questo cammino creando un gruppo autentico, fatto di condivisione e relazioni vere. Prima dell'inizio degli incontri ci sarà un breve colloquio conoscitivo.</p>
+            <label class="campo largo"><span>Hai qualche domanda per noi? <small>Qualsiasi dubbio, curiosità o pensiero</small></span><textarea name="domande"></textarea></label>
+          </div>
+        </section>
+
+        <section class="passo" data-passo="4" hidden>
+          <h2>Privacy</h2>
+          <p class="tenue">I tuoi dati saranno trattati nel rispetto della normativa vigente (GDPR), esclusivamente per la gestione del percorso Missio Giovani Vicenza. Sarai ricontattato da un membro dell'équipe per iniziare il colloquio. <a href="privacy/" target="_blank" rel="noopener">Leggi l'informativa</a></p>
+          <div class="campi">
+            <fieldset class="largo">
+              <legend>Per completare l'iscrizione serve il tuo consenso</legend>
+              <label class="scelta"><input type="checkbox" name="consenso" value="sì" required><span>Confermo di aver letto l'<a href="privacy/" target="_blank" rel="noopener">informativa sulla privacy</a> e acconsento al trattamento dei miei dati personali ai fini della gestione del percorso Missio Giovani Vicenza.</span></label>
+            </fieldset>
+            <fieldset class="largo">
+              <legend>Vuoi rimanere aggiornato/a sulle iniziative future di Missio Giovani Vicenza? <small>newsletter, eventi, testimonianze</small></legend>
+              <label class="scelta"><input type="radio" name="aggiornamenti" value="Sì" required>Sì, acconsento a ricevere comunicazioni future</label>
+              <label class="scelta"><input type="radio" name="aggiornamenti" value="No">No, grazie</label>
+            </fieldset>
+          </div>
+        </section>
+
+        <section class="passo" data-passo="5" hidden>
+          <h2>Non si parte semplicemente per un viaggio. Si parte per vivere un percorso che cambia</h2>
+          <p class="tenue">Grazie di cuore. Quando invii, l'équipe riceve la tua iscrizione e ti ricontatta per il colloquio.</p>
+        </section>
+
+        <section class="passo" data-passo="fatto" hidden tabindex="-1">
+          <h2>Iscrizione inviata</h2>
+          <p>Grazie. Un membro dell'équipe ti scriverà per fissare il colloquio.</p>
+        </section>
+
+        <p class="errore" id="errore" role="alert"></p>
+        <div class="comandi">
+          <button type="button" class="bottone" id="avanti">Avanti</button>
+          <button type="button" class="indietro" id="indietro">Indietro</button>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<div class="anteprima">Anteprima del sito, non ancora pubblicato</div>
+
+<script>
+// La ripresa della cuccetta: per ogni fotogramma dove cadono l'apertura del finestrino e il vetro della porta.
+// La scrive strumenti/prepara.py da _render/*/ripresa.json.
+const RIPRESA = /*RIPRESA*/{"o":{"larghezza":1920,"altezza":1080,"fermate":[0,18,26,34,42,50,58],"fotogrammi":[{"finestra":{"x":0.39458,"y":0.33943,"w":0.21085,"h":0.29051,"raggio":0.02707},"vetro":{"x":0.31041,"y":-0.0303,"w":0.37918,"h":0.91267,"raggio":0.02275}},{"finestra":{"x":0.39458,"y":0.33943,"w":0.21085,"h":0.29051,"raggio":0.02707},"vetro":{"x":0.31057,"y":-0.0303,"w":0.37918,"h":0.91267,"raggio":0.02275}},{"finestra":{"x":0.39458,"y":0.33943,"w":0.21085,"h":0.29051,"raggio":0.02707},"vetro":{"x":0.32861,"y":-0.0303,"w":0.37918,"h":0.91267,"raggio":0.02275}},{"finestra":{"x":0.39458,"y":0.33943,"w":0.21085,"h":0.29051,"raggio":0.02707},"vetro":{"x":0.37193,"y":-0.0303,"w":0.37918,"h":0.91267,"raggio":0.02275}},{"finestra":{"x":0.39458,"y":0.33943,"w":0.21085,"h":0.29051,"raggio":0.02707},"vetro":{"x":0.43396,"y":-0.0303,"w":0.37918,"h":0.91267,"raggio":0.02275}},{"finestra":{"x":0.39441,"y":0.33917,"w":0.21118,"h":0.29096,"raggio":0.02711},"vetro":{"x":0.50761,"y":-0.03377,"w":0.38223,"h":0.91842,"raggio":0.02293}},{"finestra":{"x":0.39315,"y":0.33725,"w":0.2137,"h":0.29441,"raggio":0.02743},"vetro":null},{"finestra":{"x":0.39075,"y":0.33356,"w":0.21851,"h":0.30099,"raggio":0.02803},"vetro":null},{"finestra":{"x":0.38727,"y":0.32823,"w":0.22546,"h":0.31051,"raggio":0.02891},"vetro":null},{"finestra":{"x":0.38276,"y":0.32133,"w":0.23447,"h":0.32283,"raggio":0.03005},"vetro":null},{"finestra":{"x":0.37728,"y":0.31292,"w":0.24544,"h":0.33782,"raggio":0.03143},"vetro":null},{"finestra":{"x":0.37088,"y":0.30311,"w":0.25824,"h":0.3553,"raggio":0.03304},"vetro":null},{"finestra":{"x":0.3637,"y":0.29208,"w":0.2726,"h":0.37491,"raggio":0.03484},"vetro":null},{"finestra":{"x":0.35595,"y":0.28017,"w":0.2881,"h":0.39604,"raggio":0.03678},"vetro":null},{"finestra":{"x":0.348,"y":0.26795,"w":0.304,"h":0.41772,"raggio":0.03877},"vetro":null},{"finestra":{"x":0.34039,"y":0.25624,"w":0.31923,"h":0.43845,"raggio":0.04066},"vetro":null},{"finestra":{"x":0.33386,"y":0.24619,"w":0.33229,"h":0.45622,"raggio":0.04229},"vetro":null},{"finestra":{"x":0.32929,"y":0.23916,"w":0.34142,"h":0.46864,"raggio":0.04342},"vetro":null},{"finestra":{"x":0.32759,"y":0.23655,"w":0.34481,"h":0.47325,"raggio":0.04384},"vetro":null},{"finestra":{"x":0.32583,"y":0.23386,"w":0.34835,"h":0.4781,"raggio":0.04429},"vetro":null},{"finestra":{"x":0.32104,"y":0.2266,"w":0.35792,"h":0.49126,"raggio":0.04549},"vetro":null},{"finestra":{"x":0.31393,"y":0.21585,"w":0.37214,"h":0.51079,"raggio":0.04728},"vetro":null},{"finestra":{"x":0.30526,"y":0.20278,"w":0.38948,"h":0.53463,"raggio":0.04946},"vetro":null},{"finestra":{"x":0.29598,"y":0.18887,"w":0.40805,"h":0.56019,"raggio":0.05179},"vetro":null},{"finestra":{"x":0.28733,"y":0.17606,"w":0.42534,"h":0.58404,"raggio":0.05397},"vetro":null},{"finestra":{"x":0.28089,"y":0.16678,"w":0.43823,"h":0.60185,"raggio":0.05559},"vetro":null},{"finestra":{"x":0.2784,"y":0.16368,"w":0.4432,"h":0.6088,"raggio":0.05623},"vetro":null},{"finestra":{"x":0.27722,"y":0.16269,"w":0.44556,"h":0.61216,"raggio":0.05654},"vetro":null},{"finestra":{"x":0.27398,"y":0.15861,"w":0.45204,"h":0.62121,"raggio":0.05736},"vetro":null},{"finestra":{"x":0.26926,"y":0.15236,"w":0.46149,"h":0.6344,"raggio":0.05857},"vetro":null},{"finestra":{"x":0.26364,"y":0.14485,"w":0.47271,"h":0.65006,"raggio":0.05999},"vetro":null},{"finestra":{"x":0.25782,"y":0.13713,"w":0.48435,"h":0.66634,"raggio":0.06148},"vetro":null},{"finestra":{"x":0.25258,"y":0.13038,"w":0.49484,"h":0.68106,"raggio":0.06282},"vetro":null},{"finestra":{"x":0.2488,"y":0.12593,"w":0.50241,"h":0.69176,"raggio":0.0638},"vetro":null},{"finestra":{"x":0.24741,"y":0.12515,"w":0.50519,"h":0.69585,"raggio":0.06417},"vetro":null},{"finestra":{"x":0.2467,"y":0.12544,"w":0.5066,"h":0.69806,"raggio":0.06438},"vetro":null},{"finestra":{"x":0.24465,"y":0.12374,"w":0.51071,"h":0.70403,"raggio":0.06492},"vetro":null},{"finestra":{"x":0.24165,"y":0.12068,"w":0.5167,"h":0.71264,"raggio":0.06571},"vetro":null},{"finestra":{"x":0.23813,"y":0.11688,"w":0.52374,"h":0.72273,"raggio":0.06663},"vetro":null},{"finestra":{"x":0.23454,"y":0.11302,"w":0.53092,"h":0.73305,"raggio":0.06757},"vetro":null},{"finestra":{"x":0.23136,"y":0.1098,"w":0.53728,"h":0.74225,"raggio":0.06841},"vetro":null},{"finestra":{"x":0.22911,"y":0.10796,"w":0.54177,"h":0.74886,"raggio":0.06901},"vetro":null},{"finestra":{"x":0.22833,"y":0.10827,"w":0.54333,"h":0.75136,"raggio":0.06924},"vetro":null},{"finestra":{"x":0.2279,"y":0.10906,"w":0.5442,"h":0.7529,"raggio":0.06938},"vetro":null},{"finestra":{"x":0.22653,"y":0.10847,"w":0.54693,"h":0.75704,"raggio":0.06976},"vetro":null},{"finestra":{"x":0.22453,"y":0.10693,"w":0.55093,"h":0.76298,"raggio":0.0703},"vetro":null},{"finestra":{"x":0.22219,"y":0.10486,"w":0.55562,"h":0.7699,"raggio":0.07093},"vetro":null},{"finestra":{"x":0.21981,"y":0.10271,"w":0.56037,"h":0.77692,"raggio":0.07157},"vetro":null},{"finestra":{"x":0.21772,"y":0.10091,"w":0.56456,"h":0.78313,"raggio":0.07214},"vetro":null},{"finestra":{"x":0.21625,"y":0.09995,"w":0.5675,"h":0.78757,"raggio":0.07254},"vetro":null},{"finestra":{"x":0.21575,"y":0.10028,"w":0.5685,"h":0.78926,"raggio":0.07269},"vetro":null},{"finestra":{"x":0.21546,"y":0.10083,"w":0.56908,"h":0.79032,"raggio":0.07279},"vetro":null},{"finestra":{"x":0.21455,"y":0.10039,"w":0.57091,"h":0.79313,"raggio":0.07305},"vetro":null},{"finestra":{"x":0.2132,"y":0.09924,"w":0.57359,"h":0.79714,"raggio":0.07341},"vetro":null},{"finestra":{"x":0.21163,"y":0.09766,"w":0.57674,"h":0.80179,"raggio":0.07383},"vetro":null},{"finestra":{"x":0.21003,"y":0.09592,"w":0.57993,"h":0.80648,"raggio":0.07426},"vetro":null},{"finestra":{"x":0.20862,"y":0.09431,"w":0.58275,"h":0.8106,"raggio":0.07463},"vetro":null},{"finestra":{"x":0.20761,"y":0.09313,"w":0.58477,"h":0.81354,"raggio":0.0749},"vetro":null},{"finestra":{"x":0.20723,"y":0.09267,"w":0.58554,"h":0.81466,"raggio":0.075},"vetro":null}]},"v":{"larghezza":1080,"altezza":1920,"fermate":[0,18,26,34,42,50,58],"fotogrammi":[{"finestra":{"x":0.31258,"y":0.40968,"w":0.37484,"h":0.16341,"raggio":0.04812},"vetro":{"x":0.16295,"y":0.20171,"w":0.67411,"h":0.51338,"raggio":0.04045}},{"finestra":{"x":0.31258,"y":0.40968,"w":0.37484,"h":0.16341,"raggio":0.04812},"vetro":{"x":0.16323,"y":0.20171,"w":0.67411,"h":0.51338,"raggio":0.04045}},{"finestra":{"x":0.31258,"y":0.40968,"w":0.37484,"h":0.16341,"raggio":0.04812},"vetro":{"x":0.19531,"y":0.20171,"w":0.67411,"h":0.51338,"raggio":0.04045}},{"finestra":{"x":0.31258,"y":0.40968,"w":0.37484,"h":0.16341,"raggio":0.04812},"vetro":{"x":0.27232,"y":0.20171,"w":0.67411,"h":0.51338,"raggio":0.04045}},{"finestra":{"x":0.31258,"y":0.40968,"w":0.37484,"h":0.16341,"raggio":0.04812},"vetro":{"x":0.3826,"y":0.20171,"w":0.67411,"h":0.51338,"raggio":0.04045}},{"finestra":{"x":0.31229,"y":0.40954,"w":0.37543,"h":0.16367,"raggio":0.04819},"vetro":{"x":0.51352,"y":0.19975,"w":0.67953,"h":0.51661,"raggio":0.04077}},{"finestra":{"x":0.31005,"y":0.40845,"w":0.37991,"h":0.1656,"raggio":0.04876},"vetro":null},{"finestra":{"x":0.30577,"y":0.40638,"w":0.38846,"h":0.16931,"raggio":0.04984},"vetro":null},{"finestra":{"x":0.29959,"y":0.40338,"w":0.40082,"h":0.17466,"raggio":0.0514},"vetro":null},{"finestra":{"x":0.29158,"y":0.3995,"w":0.41684,"h":0.18159,"raggio":0.05342},"vetro":null},{"finestra":{"x":0.28183,"y":0.39477,"w":0.43634,"h":0.19003,"raggio":0.05587},"vetro":null},{"finestra":{"x":0.27046,"y":0.38925,"w":0.45909,"h":0.19986,"raggio":0.05873},"vetro":null},{"finestra":{"x":0.25769,"y":0.38304,"w":0.48463,"h":0.21089,"raggio":0.06194},"vetro":null},{"finestra":{"x":0.24391,"y":0.37635,"w":0.51218,"h":0.22278,"raggio":0.06538},"vetro":null},{"finestra":{"x":0.22977,"y":0.36947,"w":0.54045,"h":0.23497,"raggio":0.06892},"vetro":null},{"finestra":{"x":0.21624,"y":0.36289,"w":0.56751,"h":0.24663,"raggio":0.07229},"vetro":null},{"finestra":{"x":0.20463,"y":0.35723,"w":0.59074,"h":0.25662,"raggio":0.07518},"vetro":null},{"finestra":{"x":0.19652,"y":0.35328,"w":0.60697,"h":0.26361,"raggio":0.07719},"vetro":null},{"finestra":{"x":0.1935,"y":0.35181,"w":0.613,"h":0.2662,"raggio":0.07794},"vetro":null},{"finestra":{"x":0.19183,"y":0.351,"w":0.61635,"h":0.26767,"raggio":0.07837},"vetro":null},{"finestra":{"x":0.18732,"y":0.34885,"w":0.62535,"h":0.27163,"raggio":0.0795},"vetro":null},{"finestra":{"x":0.18074,"y":0.34572,"w":0.63853,"h":0.27742,"raggio":0.08117},"vetro":null},{"finestra":{"x":0.17285,"y":0.342,"w":0.65429,"h":0.28436,"raggio":0.08317},"vetro":null},{"finestra":{"x":0.16459,"y":0.33814,"w":0.67082,"h":0.29164,"raggio":0.08526},"vetro":null},{"finestra":{"x":0.15706,"y":0.3347,"w":0.68588,"h":0.29831,"raggio":0.08718},"vetro":null},{"finestra":{"x":0.15156,"y":0.33231,"w":0.69689,"h":0.3032,"raggio":0.08858},"vetro":null},{"finestra":{"x":0.14947,"y":0.33166,"w":0.70106,"h":0.30508,"raggio":0.08913},"vetro":null},{"finestra":{"x":0.14851,"y":0.33159,"w":0.70298,"h":0.30598,"raggio":0.08939},"vetro":null},{"finestra":{"x":0.14582,"y":0.33071,"w":0.70836,"h":0.30842,"raggio":0.09009},"vetro":null},{"finestra":{"x":0.14192,"y":0.32929,"w":0.71616,"h":0.31193,"raggio":0.09111},"vetro":null},{"finestra":{"x":0.13734,"y":0.32756,"w":0.72533,"h":0.31606,"raggio":0.09229},"vetro":null},{"finestra":{"x":0.13265,"y":0.32583,"w":0.73471,"h":0.3203,"raggio":0.09351},"vetro":null},{"finestra":{"x":0.12848,"y":0.32439,"w":0.74304,"h":0.32408,"raggio":0.09461},"vetro":null},{"finestra":{"x":0.12552,"y":0.32356,"w":0.74896,"h":0.3268,"raggio":0.09539},"vetro":null},{"finestra":{"x":0.12447,"y":0.32367,"w":0.75105,"h":0.32783,"raggio":0.09569},"vetro":null},{"finestra":{"x":0.12397,"y":0.32406,"w":0.75206,"h":0.32838,"raggio":0.09585},"vetro":null},{"finestra":{"x":0.12241,"y":0.32395,"w":0.75519,"h":0.32988,"raggio":0.09629},"vetro":null},{"finestra":{"x":0.12012,"y":0.32352,"w":0.75977,"h":0.33203,"raggio":0.09691},"vetro":null},{"finestra":{"x":0.11744,"y":0.32291,"w":0.76512,"h":0.33454,"raggio":0.09763},"vetro":null},{"finestra":{"x":0.11473,"y":0.3223,"w":0.77054,"h":0.33708,"raggio":0.09836},"vetro":null},{"finestra":{"x":0.11236,"y":0.32185,"w":0.77529,"h":0.33933,"raggio":0.09901},"vetro":null},{"finestra":{"x":0.1107,"y":0.32174,"w":0.77859,"h":0.34093,"raggio":0.09948},"vetro":null},{"finestra":{"x":0.11016,"y":0.32215,"w":0.77967,"h":0.34153,"raggio":0.09965},"vetro":null},{"finestra":{"x":0.10989,"y":0.32266,"w":0.78023,"h":0.3419,"raggio":0.09976},"vetro":null},{"finestra":{"x":0.10891,"y":0.32284,"w":0.78218,"h":0.3429,"raggio":0.10005},"vetro":null},{"finestra":{"x":0.10745,"y":0.32277,"w":0.78509,"h":0.34433,"raggio":0.10046},"vetro":null},{"finestra":{"x":0.10575,"y":0.32258,"w":0.7885,"h":0.34598,"raggio":0.10094},"vetro":null},{"finestra":{"x":0.10402,"y":0.32235,"w":0.79195,"h":0.34766,"raggio":0.10142},"vetro":null},{"finestra":{"x":0.10252,"y":0.3222,"w":0.79497,"h":0.34913,"raggio":0.10184},"vetro":null},{"finestra":{"x":0.10147,"y":0.32222,"w":0.79706,"h":0.35018,"raggio":0.10215},"vetro":null},{"finestra":{"x":0.10114,"y":0.32254,"w":0.79773,"h":0.35057,"raggio":0.10226},"vetro":null},{"finestra":{"x":0.10096,"y":0.32288,"w":0.79808,"h":0.35082,"raggio":0.10233},"vetro":null},{"finestra":{"x":0.10032,"y":0.32297,"w":0.79937,"h":0.35149,"raggio":0.10252},"vetro":null},{"finestra":{"x":0.09936,"y":0.32287,"w":0.80128,"h":0.35243,"raggio":0.10279},"vetro":null},{"finestra":{"x":0.09823,"y":0.32264,"w":0.80354,"h":0.35351,"raggio":0.1031},"vetro":null},{"finestra":{"x":0.09709,"y":0.32235,"w":0.80583,"h":0.35461,"raggio":0.10342},"vetro":null},{"finestra":{"x":0.09608,"y":0.32206,"w":0.80785,"h":0.35557,"raggio":0.10369},"vetro":null},{"finestra":{"x":0.09535,"y":0.32184,"w":0.80929,"h":0.35625,"raggio":0.10389},"vetro":null},{"finestra":{"x":0.09508,"y":0.32175,"w":0.80984,"h":0.35651,"raggio":0.10396},"vetro":null}]}}/*FINE*/;
+// Chiave del servizio che riceve le iscrizioni (web3forms.com, gratuito: la chiave arriva all'email di Missio). Vuota = invio non collegato.
+const CHIAVE_MODULO = '';
+
+const SCENE = 7;
+const fermate = [...document.querySelectorAll('.fermata')];
+const finestrini = fermate.map(f => f.querySelector('.finestrino'));
+const display = document.getElementById('display');
+const radice = document.documentElement.style;
+const fermo = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Due strati di paesaggio e due di cuccetta (il fotogramma e il successivo), riusati: con tanti strati invisibili
+// Chrome scarta le immagini e al ritorno restano nere.
+const nuovo = (dove, classe, dentro = '') => { const d = document.createElement('div'); d.className = classe; d.innerHTML = dentro; document.querySelector(dove).append(d); return d; };
+const paesaggi = [nuovo('.paesaggi', 'paesaggio', '<i></i>'), nuovo('.paesaggi', 'paesaggio', '<i></i>')];
+const strati = [nuovo('.cabine', 'cabina'), nuovo('.cabine', 'cabina')];
+
+// Precarico a gruppi di 6, nell'ordine in cui servono, con un secondo tentativo: tutte insieme saturano la connessione.
+const tenute = [], coda = [];
+let inCorso = 0;
+function tieni(u) { coda.push([u, 0]); scorri(); }
+function scorri() {
+  while (inCorso < 6 && coda.length) {
+    const [u, tentativo] = coda.shift(), i = new Image(); inCorso++;
+    i.onload = () => { inCorso--; scorri(); };
+    i.onerror = () => { inCorso--; if (tentativo < 2) coda.push([u, tentativo + 1]); scorri(); };
+    i.src = u; tenute.push(i);   // riferimento tenuto: l'immagine resta decodificata
+  }
+}
+
+let verso = '', A = null;
+const due = n => String(n).padStart(2, '0');
+const img = {
+  paesaggio: n => `risorse/img/paesaggio-${n + 1}.jpg`,
+  fotogramma: f => `risorse/img/${verso}/f-${due(f)}.jpg`,
+  maschera: f => `risorse/img/${verso}/m-${due(f)}.png`,
+};
+function strato(el, f) {
+  const u = img.fotogramma(f);
+  if (el.dataset.img !== u) { el.dataset.img = u; el.style.backgroundImage = `url(${u})`; el.style.setProperty('--m', `url(${img.maschera(f)})`); }
+}
+
+function misura() {
+  const v = innerWidth / innerHeight < .8 && RIPRESA.v ? 'v' : 'o';
+  if (v === verso) return;
+  verso = v; A = RIPRESA[v];
+  // prima le fermate, poi i fotogrammi di passaggio e i paesaggi
+  A.fermate.forEach(f => { tieni(img.fotogramma(f)); tieni(img.maschera(f)); });
+  for (let f = 0; f < A.fotogrammi.length; f++) if (!A.fermate.includes(f)) { tieni(img.fotogramma(f)); tieni(img.maschera(f)); }
+  for (let n = 0; n < SCENE; n++) tieni(img.paesaggio(n));
+  strati.forEach(el => el.dataset.img = '');
+  coppia = -1;
+}
+
+// Rettangolo in pixel, con lo stesso calcolo di background-size:cover centrato.
+function inPixel(r) {
+  const s = Math.max(innerWidth / A.larghezza, innerHeight / A.altezza);
+  const ox = (innerWidth - A.larghezza * s) / 2, oy = (innerHeight - A.altezza * s) / 2;
+  return { x: ox + r.x * A.larghezza * s, y: oy + r.y * A.altezza * s, w: r.w * A.larghezza * s, h: r.h * A.altezza * s, r: r.raggio * A.larghezza * s };
+}
+function mettiIn(el, r, prefisso) {
+  const p = inPixel(r);
+  if (prefisso) { for (const [k, v] of Object.entries({ x: p.x, y: p.y, w: p.w, h: p.h, r: p.r })) radice.setProperty(`--${prefisso}${k}`, v + 'px'); }
+  else for (const [k, v] of Object.entries({ left: p.x, top: p.y, width: p.w, height: p.h, 'border-radius': p.r, '--fr': p.r, '--fw': p.w, '--fh': p.h })) el.style.setProperty(k, v + 'px');
+}
+const mix = (a, b, k) => a + (b - a) * k;
+const mixRett = (a, b, k) => ({ x: mix(a.x, b.x, k), y: mix(a.y, b.y, k), w: mix(a.w, b.w, k), h: mix(a.h, b.h, k), raggio: mix(a.raggio, b.raggio, k) });
+const morbido = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+
+let pos = 0, attiva = -1, coppia = -1;
+function disegna() {
+  const meta = Math.min(SCENE - 1, scrollY / Math.max(1, innerHeight));   // finestra ancora senza altezza al caricamento: niente NaN
+  pos += (meta - pos) * (fermo ? 1 : .1);
+  if (!Number.isFinite(pos)) pos = meta;
+  if (Math.abs(meta - pos) < .0005) pos = meta;
+
+  // Una sola ripresa: dalla porta della cuccetta (fermata 1) fino all'oblò a tutto schermo (fermata 7).
+  const base = Math.min(SCENE - 2, Math.floor(pos)), t = Math.min(1, pos - base);
+  const F = A.fermate, f = mix(F[base], F[base + 1], t), fa = Math.floor(f), fb = Math.min(A.fotogrammi.length - 1, fa + 1), w = f - fa;
+  strato(strati[0], fa); strato(strati[1], fb);
+  strati[0].style.opacity = 1; strati[1].style.opacity = w;
+  const qa = A.fotogrammi[fa], qb = A.fotogrammi[fb];
+  mettiIn(null, mixRett(qa.finestra, qb.finestra, w), 'f');
+  if (qa.vetro) mettiIn(finestrini[0], qb.vetro ? mixRett(qa.vetro, qb.vetro, w) : qa.vetro);   // il biglietto segue il vetro della porta
+
+  if (base !== coppia) {
+    coppia = base;
+    paesaggi[0].firstChild.style.backgroundImage = `url(${img.paesaggio(base)})`;
+    paesaggi[1].firstChild.style.backgroundImage = `url(${img.paesaggio(base + 1)})`;
+  }
+  paesaggi[0].style.opacity = 1; paesaggi[1].style.opacity = t;
+  if (!fermo) {
+    paesaggi[0].style.transform = `translateX(${-t * 18}%)`; paesaggi[1].style.transform = `translateX(${(1 - t) * 18}%)`;
+    // il paesaggio è lontano: avvicinandosi al finestrino cresce molto meno della cuccetta
+    document.querySelector('.paesaggi').style.transform = `scale(${1 + .12 * pos / (SCENE - 1)})`;
+  }
+
+  for (let n = 0; n < SCENE; n++) {
+    const d = n - pos, fin = finestrini[n];
+    // il biglietto sta sul vetro finché la porta non si apre; le altre fermate compaiono quando la camera si ferma
+    const vis = n === 0 ? 1 - morbido(.04, .3, pos) : Math.max(0, 1 - Math.abs(d) * 2.6);
+    fin.style.opacity = vis;
+    fin.style.transform = fermo || n === 0 ? '' : `translateY(${d * -24}px)`;
+    fin.classList.toggle('attivo', vis > 0);
+  }
+  const ora = Math.round(pos);
+  if (ora !== attiva) {
+    attiva = ora;
+    finestrini.forEach((fin, i) => fin.inert = i !== ora);
+    if (ora !== 6) chiudiModulo();
+    scriviDisplay(modulo.hidden ? '' : `Iscrizione · tappa ${passo + 1} di 5`);
+    if (ora !== 5) chiudiStorie();
+  }
+  requestAnimationFrame(disegna);
+}
+function scriviDisplay(extra) {
+  display.innerHTML = `<span>Fermata ${attiva + 1} di ${SCENE} ·</span> ${extra || fermate[attiva].dataset.nome}`;
+}
+
+// Caroselli: le carte girano in prospettiva intorno al centro, come su un cilindro. Si scorrono col dito,
+// col trackpad, con le frecce o con i tasti ← → quando il carosello ha il fuoco.
+document.querySelectorAll('.giostra').forEach(g => {
+  const pista = g.querySelector('.pista'), carte = [...pista.children];
+  const passo = () => carte[0].getBoundingClientRect().width + parseFloat(getComputedStyle(pista).columnGap || 0);
+  function gira() {
+    const c = pista.getBoundingClientRect(), mezzo = c.left + c.width / 2;
+    carte.forEach(el => {
+      const r = el.getBoundingClientRect(), d = (r.left + r.width / 2 - mezzo) / r.width;
+      const a = Math.max(-1.6, Math.min(1.6, d));
+      el.style.transform = fermo ? '' : `rotateY(${-a * 32}deg) translateZ(${-Math.abs(a) * 70}px) scale(${1 - Math.abs(a) * .06})`;
+      el.style.opacity = 1 - Math.min(.55, Math.abs(d) * .3);
+      el.style.zIndex = 10 - Math.round(Math.abs(d) * 2);
+    });
+  }
+  pista.addEventListener('scroll', () => requestAnimationFrame(gira), { passive: true });
+  addEventListener('resize', gira);
+  const vai = s => pista.scrollBy({ left: s * passo(), behavior: fermo ? 'auto' : 'smooth' });
+  g.querySelector('.indietro-giostra').addEventListener('click', () => vai(-1));
+  g.querySelector('.avanti-giostra').addEventListener('click', () => vai(1));
+  g.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') vai(-1); if (e.key === 'ArrowRight') vai(1); });
+  requestAnimationFrame(gira);
+});
+
+// Reel e video: niente iframe finché non si preme Guarda, poi si apre dentro la carta.
+function chiudiStorie() { document.querySelectorAll('.storia iframe').forEach(i => i.remove()); }
+document.querySelectorAll('.storia .guarda').forEach(b => b.addEventListener('click', () => {
+  chiudiStorie();
+  const c = b.closest('.storia'), i = document.createElement('iframe');
+  i.src = c.dataset.yt ? `https://www.youtube-nocookie.com/embed/${c.dataset.yt}?autoplay=1&rel=0` : `https://www.instagram.com/p/${c.dataset.ig}/embed/`;
+  i.title = c.querySelector('b').textContent;
+  i.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+  c.append(i);
+  c.scrollIntoView({ inline: 'center', block: 'nearest', behavior: fermo ? 'auto' : 'smooth' });
+}));
+
+// Modulo di iscrizione: cinque tappe dentro l'oblò della fermata 7.
+const modulo = document.getElementById('modulo'), invito = document.querySelector('.invito');
+const passi = [...modulo.querySelectorAll('.passo')], barre = [...modulo.querySelectorAll('.tappe-modulo li')];
+const avanti = document.getElementById('avanti'), indietro = document.getElementById('indietro'), errore = document.getElementById('errore');
+const finestrinoModulo = finestrini[6];
+let passo = 0;
+function mostraPasso(n) {
+  passo = n;
+  passi.forEach((p, i) => p.hidden = i !== n);
+  barre.forEach((b, i) => b.classList.toggle('fatta', i <= n));
+  avanti.textContent = n === 4 ? 'Invia' : 'Avanti';
+  indietro.textContent = n === 0 ? 'Chiudi' : 'Indietro';
+  errore.textContent = '';
+  modulo.scrollTop = 0;
+  scriviDisplay(`Iscrizione · tappa ${n + 1} di 5`);
+  passi[n].querySelector('input, textarea')?.focus({ preventScroll: true });
+}
+function apriModulo() {
+  invito.hidden = true; modulo.hidden = false;
+  finestrinoModulo.classList.add('compilando');
+  mostraPasso(0);
+}
+function chiudiModulo() {
+  if (modulo.hidden) return;
+  modulo.hidden = true; invito.hidden = false;
+  finestrinoModulo.classList.remove('compilando');
+}
+document.getElementById('apri-modulo').addEventListener('click', apriModulo);
+function valido(sezione) {
+  for (const c of sezione.querySelectorAll('input, textarea')) {
+    if (!c.checkValidity()) { c.focus(); errore.textContent = c.type === 'email' ? 'Controlla l\'indirizzo email.' : 'Manca una risposta obbligatoria.'; return false; }
+  }
+  for (const g of sezione.querySelectorAll('[data-almeno-uno]')) {
+    if (!g.querySelector('input:checked')) { g.querySelector('input').focus(); errore.textContent = 'Scegli almeno una risposta.'; return false; }
+  }
+  return true;
+}
+indietro.addEventListener('click', () => passo === 0 ? chiudiModulo() : mostraPasso(passo - 1));
+avanti.addEventListener('click', async () => {
+  if (passo < 4) { if (valido(passi[passo])) mostraPasso(passo + 1); return; }
+  const dati = Object.fromEntries(['nome', 'cognome', 'nascita', 'provenienza', 'email', 'telefono', 'esperienze_dove', 'gruppo', 'conosci', 'chi_sei', 'perche', 'immagini', 'domande', 'consenso', 'aggiornamenti']
+    .map(k => [k, new FormData(modulo).get(k) || '']));
+  dati.esperienze = new FormData(modulo).getAll('esperienze').join(', ');
+  if (new FormData(modulo).get('botcheck')) return;   // campo esca: lo compilano solo i programmi automatici
+  if (!CHIAVE_MODULO) { errore.textContent = 'Anteprima: l\'invio non è ancora collegato, nessun dato è stato spedito.'; return; }
+  avanti.disabled = true; errore.textContent = 'Invio in corso…';
+  try {
+    const r = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ access_key: CHIAVE_MODULO, subject: `Iscrizione Missio Giovani: ${dati.nome} ${dati.cognome}`, from_name: 'Sito Missio Giovani Vicenza', replyto: dati.email, ...dati }),
+    });
+    if (!(await r.json()).success) throw new Error();
+    passi.forEach(p => p.hidden = p.dataset.passo !== 'fatto');
+    modulo.querySelector('.comandi').hidden = true; errore.textContent = '';
+    scriviDisplay('Iscrizione inviata');
+    passi.at(-1).focus();
+  } catch {
+    errore.textContent = 'L\'invio non è riuscito. Riprova tra poco o scrivici a missiogiovani.vi@gmail.com.';   // i dati restano nel modulo
+  } finally { avanti.disabled = false; }
+});
+
+addEventListener('resize', misura);
+misura(); disegna();
+</script>
+</body>
+</html>
