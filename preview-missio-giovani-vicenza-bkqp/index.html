@@ -630,7 +630,9 @@ const morbido = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - 
 
 let pos = 0, attiva = -1, coppia = -1;
 function disegna() {
-  const meta = Math.min(POSTO.length - 1, scrollY / Math.max(1, innerHeight));   // finestra ancora senza altezza al caricamento: niente NaN
+  // si divide per l'altezza vera di una fermata (100svh), non per innerHeight: sul telefono innerHeight cresce quando
+  // la barra del browser sparisce e la fermata restava a metà, col box mezzo trasparente. max(1): niente NaN al caricamento
+  const meta = Math.min(POSTO.length - 1, scrollY / Math.max(1, fermate[0].offsetHeight));
   pos += (meta - pos) * (fermo ? 1 : .07);   // la camera insegue lo scroll con dolcezza: niente scatti tra un fotogramma e l'altro
   if (!Number.isFinite(pos)) pos = meta;
   if (Math.abs(meta - pos) < .0005) pos = meta;
