@@ -158,7 +158,7 @@ p { margin:0 0 .8em; text-wrap:pretty; }
   background:rgba(20,22,26,.58); border:1px solid var(--bordo); border-radius:min(18px, calc(var(--fr) * .5));
   -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); box-shadow:0 1em 2.4em rgba(0,0,0,.3); transform-origin:50% 50%; will-change:transform; }
 .carta .numero { font:500 .8em Display, ui-monospace, monospace; color:var(--tenue); }
-.carta .giorno { font-size:3.4em; line-height:1; font-weight:600; color:var(--magenta); font-variant-numeric:tabular-nums; }
+.carta .giorno { font-size:2.8em; line-height:1; font-weight:600; letter-spacing:-.02em; white-space:nowrap; color:var(--magenta); font-variant-numeric:tabular-nums; }
 .carta .quando { color:var(--tenue); font-size:.85em; }
 .carta .tema { font-size:1.15em; font-weight:500; }
 .continente b { font-size:1.6em; font-weight:600; line-height:1.1; }
@@ -236,6 +236,20 @@ fieldset { border:0; padding:0; margin:0; display:grid; gap:.5em; }
 .contatti span { color:var(--tenue); font-size:.85em; min-width:5.5em; }
 .firma { font-size:.8em; color:var(--tenue); margin-top:1.2em; }
 
+.community { position:fixed; left:16px; bottom:16px; z-index:6; display:flex; align-items:center; gap:.8em; max-width:min(380px, calc(100% - 32px));
+  padding:.6em .6em .6em 1em; border-radius:16px; background:rgba(10,14,22,.78); color:#fff; font-size:14px; line-height:1.3;
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); box-shadow:0 8px 24px rgba(0,0,0,.35); }
+.community[hidden] { display:none; }
+.community p { margin:0; }
+.community small { display:block; color:var(--tenue); font-size:12px; }
+.community .bottone { padding:.6em 1em; flex:none; }
+.community .chiudi { flex:none; width:2em; height:2em; border:0; border-radius:50%; background:none; color:var(--tenue); font:inherit; font-size:18px; cursor:pointer; }
+.community .chiudi:hover { color:#fff; background:rgba(255,255,255,.12); }
+@media (max-width:760px) {
+  .community { left:12px; right:12px; bottom:8px; max-width:none; font-size:13px; padding:.45em .45em .45em .9em; }
+  .community small { display:none; }
+  .anteprima { bottom:60px !important; }
+}
 .anteprima { position:fixed; right:10px; bottom:10px; z-index:5; font-size:11px; background:rgba(0,0,0,.55); color:#fff; padding:5px 10px; border-radius:99px; }
 
 /* finestrino stretto: tutto in colonna */
@@ -249,7 +263,7 @@ fieldset { border:0; padding:0; margin:0; display:grid; gap:.5em; }
    (le misure di mettiIn() sono inline, da qui l'!important) e il vetro scuro e poco sfocato lascia vedere cabina e paesaggio */
 @media (max-width:760px) {
   .fermata:not(#fermata-1) .finestrino { --fr:22px !important; left:12px !important; top:calc(env(safe-area-inset-top) + 52px) !important;
-    width:calc(100% - 24px) !important; height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 100px) !important;
+    width:calc(100% - 24px) !important; height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 148px) !important;   /* sotto: community e avviso di anteprima */
     border-radius:var(--fr) !important; padding:0; z-index:4; }
   .fermata:not(#fermata-1) .pannello { font-size:clamp(14px, 4.1cqw, 17px); background:rgba(10,14,22,.6);
     -webkit-backdrop-filter:blur(6px) saturate(1.2); backdrop-filter:blur(6px) saturate(1.2); }
@@ -325,7 +339,7 @@ fieldset { border:0; padding:0; margin:0; display:grid; gap:.5em; }
   <section class="fermata" id="fermata-3" data-nome="Le tappe" aria-labelledby="t3">
     <div class="finestrino">
       <div class="scena">
-        <header class="titolo-vetro"><h2 id="t3">Sette incontri, da novembre a maggio</h2><p>Dalle 15 alle 18/18.30, poi la cena etnica</p></header>
+        <header class="titolo-vetro"><h2 id="t3">Sette incontri, da novembre a maggio</h2><p>Il percorso di quest'anno è già partito, ma puoi ancora chiedere di entrare in Missio Giovani Vicenza. Gli incontri vanno dalle 15 alle 18/18.30, poi c'è la cena etnica</p></header>
         <div class="giostra" role="region" aria-label="Le sette tappe" tabindex="0">
           <ol class="pista">
             <li class="carta"><span class="numero">1</span><b class="giorno">14</b><span class="quando">novembre · sabato</span><span class="tema">Scoprire la missione</span></li>
@@ -426,7 +440,8 @@ fieldset { border:0; padding:0; margin:0; display:grid; gap:.5em; }
       <div class="pannello due invito">
         <div>
           <h2 id="t7">Vuoi partire con noi?</h2>
-          <p>Hai sentito parlare di Missio Giovani? Conosci qualcuno che è partito con noi? Forse è arrivato anche per te il momento di metterti in gioco.</p>
+          <p>Il percorso di formazione di quest'anno è già partito, ma puoi comunque chiedere di far parte di Missio Giovani Vicenza.</p>
+          <p>C'è anche Missio 2.0, l'équipe che organizza incontri, missioni, spedizioni ed eventi.</p>
           <p class="tenue">Compila il modulo: ti contattiamo per un breve colloquio con l'équipe.</p>
           <button type="button" class="bottone" id="apri-modulo">Iscriviti</button>
         </div>
@@ -529,6 +544,12 @@ fieldset { border:0; padding:0; margin:0; display:grid; gap:.5em; }
   <div class="cabine"></div>
   <div class="display" id="display">Vicenza</div>
 </div>
+
+<aside class="community" aria-label="Community WhatsApp">
+  <p><b>Resta aggiornato su tutto</b><small>Entra nella community WhatsApp di Missio Giovani Vicenza</small></p>
+  <a class="bottone" href="https://chat.whatsapp.com/LeOCwa3lifj9E92H5HStZt" target="_blank" rel="noopener">Entra</a>
+  <button type="button" class="chiudi" aria-label="Chiudi" onclick="this.parentElement.hidden = true">×</button>
+</aside>
 
 <div class="anteprima">Anteprima del sito, non ancora pubblicato</div>
 
